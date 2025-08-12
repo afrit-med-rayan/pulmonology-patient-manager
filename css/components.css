@@ -36,6 +36,18 @@
     border-left: 4px solid var(--info-color);
 }
 
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.toast-content p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
 @keyframes slideIn {
     from {
         transform: translateX(100%);
@@ -45,6 +57,18 @@
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
     }
 }
 
@@ -185,6 +209,11 @@
     color: var(--text-primary);
 }
 
+.form-label .required {
+    color: var(--danger-color);
+    margin-left: var(--spacing-xs);
+}
+
 .form-control {
     display: block;
     width: 100%;
@@ -199,16 +228,350 @@
 .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.1);
+    outline: none;
 }
 
 .form-control.error {
     border-color: var(--danger-color);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: not-allowed;
 }
 
 .form-error {
     color: var(--danger-color);
     font-size: var(--font-size-sm);
     margin-top: var(--spacing-xs);
+    display: none;
+}
+
+/* Patient Form Specific Styles */
+.patient-form {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-xl);
+}
+
+.form-section {
+    margin-bottom: var(--spacing-xxl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: var(--spacing-xl);
+}
+
+.form-section-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.form-section-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background-color: var(--primary-color);
+    border-radius: var(--radius-sm);
+}
+
+.form-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-section-header .form-section-title {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Visits Section */
+.visits-container {
+    margin-top: var(--spacing-lg);
+}
+
+.no-visits-message {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+}
+
+.no-visits-message p {
+    margin: 0;
+    font-style: italic;
+}
+
+.visit-item {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+.visit-item:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary-light);
+}
+
+.visit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.visit-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.visit-title::before {
+    content: '📅';
+    font-size: var(--font-size-base);
+}
+
+.remove-visit-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+}
+
+.add-visit-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.add-visit-btn::before {
+    content: '+';
+    font-weight: bold;
+    font-size: var(--font-size-lg);
+}
+
+/* Form Validation Styles */
+.form-control.error {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+.form-error {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.form-error::before {
+    content: '⚠️';
+    font-size: var(--font-size-sm);
+}
+
+/* Textarea Specific Styles */
+.form-control[type="textarea"],
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+/* Date Input Styles */
+.form-control[type="date"] {
+    position: relative;
+}
+
+.form-control[type="date"]::-webkit-calendar-picker-indicator {
+    background-color: var(--primary-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+/* Select Dropdown Styles */
+select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    padding-right: 40px;
+    appearance: none;
+}
+
+select.form-control:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%232c5aa0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Character Counter */
+.form-group-with-counter {
+    position: relative;
+}
+
+.character-counter {
+    position: absolute;
+    bottom: var(--spacing-xs);
+    right: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+}
+
+.character-counter.warning {
+    color: var(--warning-color);
+}
+
+.character-counter.error {
+    color: var(--danger-color);
+}
+
+/* Form Loading State */
+.form-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.form-loading::after {
+    content: 'Saving...';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-color);
+}
+
+/* Success State */
+.form-success {
+    border: 2px solid var(--accent-color);
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+.form-success .form-section-title {
+    color: var(--accent-color);
+}
+
+/* Responsive Form Design */
+@media (max-width: 768px) {
+    .patient-form {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .form-section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-md);
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .visit-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+
+    .visit-title {
+        text-align: center;
+    }
+
+    .remove-visit-btn {
+        align-self: center;
+        width: fit-content;
+    }
+}
+
+@media (max-width: 480px) {
+    .patient-form {
+        padding: var(--spacing-md);
+        margin: var(--spacing-sm);
+    }
+
+    .form-section {
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-lg);
+    }
+
+    .visit-item {
+        padding: var(--spacing-md);
+    }
 }
 
 /* Cards */
@@ -378,4 +741,98 @@
 .logout-btn {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: var(--font-size-sm);
+}
+
+/* Form
+ Focus Enhancements */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+    outline: none;
+    transform: translateY(-1px);
+    transition: all var(--transition-fast);
+}
+
+/* Form Field Animations */
+.form-group {
+    transition: all var(--transition-fast);
+}
+
+.form-group:focus-within {
+    transform: translateY(-2px);
+}
+
+.form-group:focus-within .form-label {
+    color: var(--primary-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* Visit Item Animations */
+.visit-item {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Validation Success State */
+.form-control.valid {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.1);
+}
+
+.form-control.valid:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Enhanced Button States */
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Form Progress Indicator */
+.form-progress {
+    height: 4px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+    border-radius: var(--radius-sm);
+}
+
+/* Improved Date Input Styling */
+.form-control[type="date"]::-webkit-calendar-picker-indicator {
+    background-color: transparent;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%232c5aa0' viewBox='0 0 16 16'%3e%3cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.form-control[type="date"]::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(44, 90, 160, 0.1);
 }

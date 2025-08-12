@@ -53,6 +53,9 @@ class App {
             // Initialize authentication manager
             this.components.authManager = new AuthenticationManager();
 
+            // Initialize form manager
+            this.components.formManager = new FormManager();
+
             // Initialize other components (will be added in later tasks)
             // this.components.patientManager = new PatientManager();
             // this.components.dataStorage = new DataStorageManager();
@@ -92,6 +95,15 @@ class App {
                         break;
                 }
             }
+        });
+
+        // Handle form events
+        document.addEventListener('formSubmit', (event) => {
+            this.handleFormSubmit(event.detail);
+        });
+
+        document.addEventListener('formCancel', (event) => {
+            this.handleFormCancel(event.detail);
         });
     }
 
@@ -429,20 +441,7 @@ class App {
 
         switch (route) {
             case 'create-patient':
-                dynamicContent.innerHTML = `
-                    <div class="content-header">
-                        <h2 class="content-title">Create New Patient</h2>
-                        <p class="content-subtitle">Add a new patient record to the system</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <p>Patient creation form will be implemented in task 6.</p>
-                            <button class="btn btn-secondary" onclick="app.navigateToRoute('dashboard')">
-                                Back to Dashboard
-                            </button>
-                        </div>
-                    </div>
-                `;
+                this.loadCreatePatientForm(dynamicContent);
                 break;
 
             case 'search-patients':
@@ -518,12 +517,140 @@ class App {
     }
 
     /**
+     * Load create patient form
+     * @param {Element} container - Container element to load form into
+     */
+    loadCreatePatientForm(container) {
+        container.innerHTML = `
+            <div class="content-header">
+                <h2 class="content-title">Create New Patient</h2>
+                <p class="content-subtitle">Add a new patient record to the system</p>
+            </div>
+            <div id="create-patient-form-container">
+                ${this.components.formManager.renderPatientForm('create-patient-form')}
+            </div>
+        `;
+
+        // Initialize the form
+        setTimeout(() => {
+            this.components.formManager.initializeForm('create-patient-form');
+        }, 100);
+    }
+
+    /**
+     * Handle form submission
+     * @param {Object} detail - Form submission details
+     */
+    async handleFormSubmit(detail) {
+        const { formId, data } = detail;
+
+        try {
+            if (formId === 'create-patient-form') {
+                // Show loading state
+                this.showFormLoading(formId, true);
+
+                // Create patient (will be implemented in task 7)
+                console.log('Creating patient with data:', data);
+
+                // Simulate save operation for now
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Show success message
+                this.showToast('Patient record created successfully!', 'success');
+
+                // Navigate back to dashboard
+                setTimeout(() => {
+                    this.navigateToRoute('dashboard');
+                }, 1500);
+
+            } else {
+                console.log('Form submission for:', formId, data);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            this.showToast('Failed to save patient record. Please try again.', 'error');
+        } finally {
+            this.showFormLoading(formId, false);
+        }
+    }
+
+    /**
+     * Handle form cancellation
+     * @param {Object} detail - Form cancellation details
+     */
+    handleFormCancel(detail) {
+        const { formId } = detail;
+
+        if (formId === 'create-patient-form') {
+            this.navigateToRoute('dashboard');
+        }
+    }
+
+    /**
+     * Show/hide form loading state
+     * @param {string} formId - Form identifier
+     * @param {boolean} loading - Whether to show loading state
+     */
+    showFormLoading(formId, loading) {
+        const form = document.getElementById(formId);
+        if (form) {
+            if (loading) {
+                form.classList.add('form-loading');
+            } else {
+                form.classList.remove('form-loading');
+            }
+        }
+    }
+
+    /**
+     * Show toast notification
+     * @param {string} message - Message to display
+     * @param {string} type - Toast type ('success', 'error', 'warning', 'info')
+     */
+    showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return;
+
+        const toastId = generateId();
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <p>${message}</p>
+            </div>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        // Auto-remove toast after duration
+        setTimeout(() => {
+            const toastElement = document.getElementById(toastId);
+            if (toastElement) {
+                toastElement.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    toastElement.remove();
+                }, 300);
+            }
+        }, UI_CONFIG.toastDuration);
+    }
+
+    /**
      * Handle page unload event
      */
     handleBeforeUnload(event) {
-        // Check for unsaved changes (will be implemented in later tasks)
-        // For now, this is a placeholder
-        console.log('Page unload detected');
+        // Check for unsaved changes in forms
+        if (this.components.formManager) {
+            const hasUnsavedChanges = Object.keys(this.components.formManager.forms).some(formId =>
+                this.components.formManager.hasUnsavedChanges(formId)
+            );
+
+            if (hasUnsavedChanges) {
+                event.preventDefault();
+                event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                return event.returnValue;
+            }
+        }
     }
 
     /**
