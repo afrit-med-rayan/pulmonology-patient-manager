@@ -1,0 +1,106 @@
+/* CSS Reset - Normalize styles across browsers */
+
+/* Box sizing reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Remove default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* HTML and body setup */
+html {
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-weight: 400;
+    color: #333;
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove list styles */
+ul,
+ol {
+    list-style: none;
+}
+
+/* Remove default button styles */
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Remove default input styles */
+input,
+textarea,
+select {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    outline: none;
+}
+
+/* Remove default link styles */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Image defaults */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Table defaults */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Form elements */
+fieldset {
+    border: none;
+}
+
+legend {
+    padding: 0;
+}
+
+/* Remove default focus outline (we'll add custom ones) */
+:focus {
+    outline: none;
+}
+
+/* Ensure hidden elements are truly hidden */
+.hidden {
+    display: none !important;
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
