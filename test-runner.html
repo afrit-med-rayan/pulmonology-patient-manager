@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Management System - Test Runner</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .test-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .test-result {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .test-pass {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .test-fail {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .test-summary {
+        font-weight: bold;
+        margin: 20px 0;
+        padding: 15px;
+        border-radius: 4px;
+      }
+      .summary-pass {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+      .summary-fail {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      pre {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1>Patient Management System - Test Runner</h1>
+      <p>Running unit tests for Patient data model and validation...</p>
+
+      <div id="test-output"></div>
+
+      <div id="test-summary"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validation.js"></script>
+    <script src="js/models/Patient.js"></script>
+
+    <!-- Simple test framework -->
+    <script>
+      // Simple test framework implementation
+      let testResults = [];
+      let currentSuite = "";
+      let currentTest = "";
+
+      function describe(suiteName, testFunction) {
+        currentSuite = suiteName;
+        console.log(`\n=== ${suiteName} ===`);
+        try {
+          testFunction();
+        } catch (error) {
+          console.error(`Error in test suite ${suiteName}:`, error);
+        }
+      }
+
+      function test(testName, testFunction) {
+        currentTest = testName;
+        try {
+          testFunction();
+          testResults.push({
+            suite: currentSuite,
+            test: testName,
+            passed: true,
+            error: null,
+          });
+          console.log(`✓ ${testName}`);
+        } catch (error) {
+          testResults.push({
+            suite: currentSuite,
+            test: testName,
+            passed: false,
+            error: error.message,
+          });
+          console.log(`✗ ${testName}: ${error.message}`);
+        }
+      }
+
+      function beforeEach(setupFunction) {
+        // Simple beforeEach implementation
+        setupFunction();
+      }
+
+      function expect(actual) {
+        return {
+          toBe: (expected) => {
+            if (actual !== expected) {
+              throw new Error(`Expected ${expected}, but got ${actual}`);
+            }
+          },
+          toEqual: (expected) => {
+            if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+              throw new Error(
+                `Expected ${JSON.stringify(expected)}, but got ${JSON.stringify(
+                  actual
+                )}`
+              );
+            }
+          },
+          toBeDefined: () => {
+            if (actual === undefined) {
+              throw new Error(
+                `Expected value to be defined, but got undefined`
+              );
+            }
+          },
+          toBeNull: () => {
+            if (actual !== null) {
+              throw new Error(`Expected null, but got ${actual}`);
+            }
+          },
+          toHaveLength: (expected) => {
+            if (!actual || actual.length !== expected) {
+              throw new Error(
+                `Expected length ${expected}, but got ${
+                  actual ? actual.length : "undefined"
+                }`
+              );
+            }
+          },
+          toContain: (expected) => {
+            if (!actual || !actual.includes(expected)) {
+              throw new Error(`Expected array to contain ${expected}`);
+            }
+          },
+          toBeGreaterThan: (expected) => {
+            if (actual <= expected) {
+              throw new Error(
+                `Expected ${actual} to be greater than ${expected}`
+              );
+            }
+          },
+        };
+      }
+
+      // Display test results
+      function displayResults() {
+        const output = document.getElementById("test-output");
+        const summary = document.getElementById("test-summary");
+
+        let html = "";
+        let passed = 0;
+        let failed = 0;
+
+        testResults.forEach((result) => {
+          const className = result.passed ? "test-pass" : "test-fail";
+          const status = result.passed ? "✓" : "✗";
+
+          html += `<div class="test-result ${className}">
+                    <strong>${status} ${result.suite} - ${result.test}</strong>
+                    ${
+                      result.error
+                        ? `<br><small>Error: ${result.error}</small>`
+                        : ""
+                    }
+                </div>`;
+
+          if (result.passed) passed++;
+          else failed++;
+        });
+
+        output.innerHTML = html;
+
+        const summaryClass = failed === 0 ? "summary-pass" : "summary-fail";
+        const summaryText =
+          failed === 0 ? "All tests passed!" : `${failed} test(s) failed`;
+
+        summary.innerHTML = `<div class="test-summary ${summaryClass}">
+                Test Summary: ${passed} passed, ${failed} failed, ${testResults.length} total<br>
+                ${summaryText}
+            </div>`;
+      }
+
+      // Run tests after page loads
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          try {
+            // Load and run the test file
+            const script = document.createElement("script");
+            script.src = "js/tests/patient-validation.test.js";
+            script.onload = () => {
+              setTimeout(displayResults, 100);
+            };
+            script.onerror = () => {
+              document.getElementById("test-output").innerHTML =
+                '<div class="test-fail">Error loading test file</div>';
+            };
+            document.head.appendChild(script);
+          } catch (error) {
+            document.getElementById(
+              "test-output"
+            ).innerHTML = `<div class="test-fail">Error running tests: ${error.message}</div>`;
+          }
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
