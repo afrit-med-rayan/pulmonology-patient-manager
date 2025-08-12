@@ -2,7 +2,7 @@
 
 /* CSS Custom Properties (Variables) */
 :root {
-    /* Colors */
+    /* Medical-themed Colors */
     --primary-color: #2c5aa0;
     --primary-light: #4a7bc8;
     --primary-dark: #1e3f73;
@@ -11,6 +11,12 @@
     --danger-color: #dc3545;
     --warning-color: #ffc107;
     --info-color: #17a2b8;
+
+    /* Medical Professional Colors */
+    --medical-blue: #2c5aa0;
+    --medical-green: #28a745;
+    --medical-teal: #20c997;
+    --medical-gray: #6c757d;
 
     /* Text Colors */
     --text-primary: #212529;

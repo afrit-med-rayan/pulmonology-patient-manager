@@ -25,7 +25,7 @@
   - Write tests for data persistence functionality
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 4. Create authentication system
+- [x] 4. Create authentication system
 
   - Build login form HTML structure and styling
   - Implement AuthenticationManager class with credential validation
@@ -34,7 +34,7 @@
   - Implement login/logout functionality with proper state management
   - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 5. Design and implement main application layout
+- [x] 5. Design and implement main application layout
 
   - Create main page HTML structure with header and navigation
   - Implement responsive CSS layout with logo placement
