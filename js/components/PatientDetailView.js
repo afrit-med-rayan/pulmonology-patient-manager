@@ -358,39 +358,42 @@ class PatientDetailView {
     async handleDelete() {
         try {
             const patientName = this.patient.getFullName();
+            log(`Delete patient requested: ${this.patient.id}`, 'info');
 
             // Show confirmation dialog
-            const confirmed = confirm(
-                `Are you sure you want to delete the patient record for ${patientName}?\n\n` +
-                'This action cannot be undone and will permanently remove all patient data including visit history.'
-            );
-
+            const confirmed = await this.showDeleteConfirmationDialog(patientName);
             if (!confirmed) {
                 return;
             }
-
-            log(`Delete patient requested: ${this.patient.id}`, 'info');
 
             if (!this.patientManager) {
                 throw new Error('Patient manager not available');
             }
 
+            // Show loading state
+            this.showDeletionLoadingState();
+
             // Delete the patient
             const result = await this.patientManager.deletePatient(this.patient.id);
 
             if (result.success) {
-                this.showToast(`Patient ${patientName} has been deleted successfully`, 'success');
+                // Hide loading state
+                this.hideDeletionLoadingState();
 
-                // Navigate back to search after a short delay
+                // Show success confirmation
+                this.showDeletionSuccessDialog(patientName);
+
+                // Navigate back to search after user acknowledges
                 setTimeout(() => {
                     this.handleBack();
-                }, 1500);
+                }, 2000);
             } else {
                 throw new Error(result.message || 'Failed to delete patient');
             }
 
         } catch (error) {
             log(`Failed to delete patient: ${error.message}`, 'error');
+            this.hideDeletionLoadingState();
             this.showToast('Failed to delete patient. Please try again.', 'error');
         }
     }
@@ -740,6 +743,163 @@ class PatientDetailView {
         return text
             .replace(/\n/g, '<br>')
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    }
+
+    /**
+     * Show delete confirmation dialog
+     * @param {string} patientName - Name of patient to delete
+     * @returns {Promise<boolean>} True if confirmed
+     */
+    async showDeleteConfirmationDialog(patientName) {
+        return new Promise((resolve) => {
+            const modalContainer = document.getElementById('modal-container');
+            if (!modalContainer) {
+                // Fallback to basic confirm
+                resolve(confirm(
+                    `Are you sure you want to delete the patient record for ${patientName}?\n\n` +
+                    'This action cannot be undone and will permanently remove all patient data including visit history.'
+                ));
+                return;
+            }
+
+            modalContainer.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 class="modal-title">⚠️ Confirm Patient Deletion</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Are you sure you want to delete the patient record for:</strong></p>
+                        <p class="patient-name-highlight">${patientName}</p>
+                        <div class="warning-message">
+                            <div class="warning-icon">⚠️</div>
+                            <div class="warning-text">
+                                <p><strong>This action cannot be undone!</strong></p>
+                                <p>This will permanently remove:</p>
+                                <ul>
+                                    <li>All patient information</li>
+                                    <li>Complete visit history</li>
+                                    <li>All medications and observations</li>
+                                    <li>Any additional comments</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-delete-btn">
+                            Cancel
+                        </button>
+                        <button class="btn btn-danger confirm-delete-btn">
+                            Delete Patient
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modalContainer.classList.remove('hidden');
+
+            // Handle button clicks
+            const cancelBtn = modalContainer.querySelector('.cancel-delete-btn');
+            const confirmBtn = modalContainer.querySelector('.confirm-delete-btn');
+
+            const cleanup = () => {
+                modalContainer.classList.add('hidden');
+                modalContainer.innerHTML = '';
+            };
+
+            cancelBtn.addEventListener('click', () => {
+                cleanup();
+                resolve(false);
+            });
+
+            confirmBtn.addEventListener('click', () => {
+                cleanup();
+                resolve(true);
+            });
+
+            // Handle escape key
+            const handleEscape = (event) => {
+                if (event.key === 'Escape') {
+                    document.removeEventListener('keydown', handleEscape);
+                    cleanup();
+                    resolve(false);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        });
+    }
+
+    /**
+     * Show deletion success dialog
+     * @param {string} patientName - Name of deleted patient
+     */
+    showDeletionSuccessDialog(patientName) {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) {
+            this.showToast(`Patient ${patientName} has been deleted successfully`, 'success');
+            return;
+        }
+
+        modalContainer.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">✅ Patient Deleted Successfully</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="success-message">
+                        <div class="success-icon">✅</div>
+                        <div class="success-text">
+                            <p><strong>Patient record has been successfully deleted:</strong></p>
+                            <p class="patient-name-highlight">${patientName}</p>
+                            <p>All associated data has been permanently removed from the system.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary ok-btn">
+                        OK
+                    </button>
+                </div>
+            </div>
+        `;
+
+        modalContainer.classList.remove('hidden');
+
+        // Handle OK button click
+        const okBtn = modalContainer.querySelector('.ok-btn');
+        const cleanup = () => {
+            modalContainer.classList.add('hidden');
+            modalContainer.innerHTML = '';
+        };
+
+        okBtn.addEventListener('click', cleanup);
+
+        // Auto-close after 3 seconds
+        setTimeout(cleanup, 3000);
+    }
+
+    /**
+     * Show deletion loading state
+     */
+    showDeletionLoadingState() {
+        const deleteButton = document.querySelector('.delete-button');
+        if (deleteButton) {
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = `
+                <span class="loading-spinner-small"></span>
+                Deleting...
+            `;
+        }
+    }
+
+    /**
+     * Hide deletion loading state
+     */
+    hideDeletionLoadingState() {
+        const deleteButton = document.querySelector('.delete-button');
+        if (deleteButton) {
+            deleteButton.disabled = false;
+            deleteButton.innerHTML = 'Delete Patient';
+        }
     }
 
     /**

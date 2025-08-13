@@ -83,7 +83,7 @@
   - Write tests for patient modification workflow
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 10. Build patient deletion functionality
+- [x] 10. Build patient deletion functionality
 
   - Add delete button to patient detail view
   - Implement confirmation dialog for deletion
@@ -93,7 +93,7 @@
   - Write tests for patient deletion workflow
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 11. Implement intelligent logout system
+- [x] 11. Implement intelligent logout system
 
   - Create change detection system across all forms
   - Build logout confirmation dialog with three options

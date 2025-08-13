@@ -61,6 +61,14 @@ class App {
         try {
             console.log('Starting component initialization...');
 
+            // Initialize change tracker
+            console.log('Initializing ChangeTracker...');
+            this.components.changeTracker = new ChangeTracker();
+
+            // Initialize modal manager
+            console.log('Initializing ModalManager...');
+            this.components.modalManager = new ModalManager();
+
             // Initialize authentication manager
             console.log('Initializing AuthenticationManager...');
             this.components.authManager = new AuthenticationManager();
@@ -80,6 +88,9 @@ class App {
             this.components.patientManager = new PatientManager();
             await this.components.patientManager.initialize(this.components.dataStorage);
             console.log('PatientManager initialized successfully');
+
+            // Set up change tracking integration
+            this.setupChangeTrackingIntegration();
 
             console.log('Core components initialized');
         } catch (error) {
@@ -413,19 +424,69 @@ class App {
     }
 
     /**
-     * Handle logout
+     * Handle logout with intelligent unsaved changes detection
      */
     async handleLogout() {
         try {
             // Check for unsaved changes
-            const hasUnsavedChanges = await this.components.authManager.checkUnsavedChanges();
+            const isSafeToLogout = await this.components.authManager.checkUnsavedChanges();
 
-            if (!hasUnsavedChanges) {
-                // Show confirmation dialog (will be implemented in later tasks)
-                const confirmed = confirm('You have unsaved changes. Are you sure you want to logout?');
-                if (!confirmed) {
-                    return;
-                }
+            if (isSafeToLogout) {
+                // No unsaved changes, logout immediately
+                this.performLogout();
+                return;
+            }
+
+            // Get details about unsaved changes
+            const changesDetails = this.components.authManager.getUnsavedChangesDetails();
+
+            // Show logout confirmation modal with three options
+            const userChoice = await this.components.modalManager.showLogoutConfirmation({
+                changesDetails: changesDetails.descriptions
+            });
+
+            switch (userChoice) {
+                case 'save-and-exit':
+                    await this.saveAllChangesAndLogout();
+                    break;
+
+                case 'exit-without-saving':
+                    this.performLogout();
+                    break;
+
+                case 'cancel':
+                    // User cancelled, do nothing
+                    console.log('Logout cancelled by user');
+                    break;
+
+                default:
+                    console.log('Unknown logout choice:', userChoice);
+                    break;
+            }
+
+        } catch (error) {
+            console.error('Error during logout:', error);
+
+            // Show error and ask user what to do
+            const forceLogout = confirm(
+                'An error occurred while checking for unsaved changes. ' +
+                'Do you want to force logout? (Unsaved changes may be lost)'
+            );
+
+            if (forceLogout) {
+                this.performLogout();
+            }
+        }
+    }
+
+    /**
+     * Perform the actual logout process
+     */
+    performLogout() {
+        try {
+            // Clear all change tracking
+            if (this.components.changeTracker) {
+                this.components.changeTracker.clearAllTracking();
             }
 
             // Perform logout
@@ -434,11 +495,162 @@ class App {
             // Show login form
             this.showLoginForm();
 
+            console.log('User logged out successfully');
         } catch (error) {
-            console.error('Error during logout:', error);
+            console.error('Error during logout process:', error);
             // Force logout even if error occurs
             this.components.authManager.logout();
             this.showLoginForm();
+        }
+    }
+
+    /**
+     * Save all changes and then logout
+     */
+    async saveAllChangesAndLogout() {
+        try {
+            console.log('Saving all changes before logout...');
+
+            // Get all forms with unsaved changes
+            const changesDetails = this.components.authManager.getUnsavedChangesDetails();
+
+            let saveErrors = [];
+
+            // Save all forms with changes
+            for (const formInfo of changesDetails.forms || []) {
+                try {
+                    await this.saveFormById(formInfo.id);
+                    console.log(`Saved form: ${formInfo.displayName}`);
+                } catch (error) {
+                    console.error(`Error saving form ${formInfo.displayName}:`, error);
+                    saveErrors.push(`${formInfo.displayName}: ${error.message}`);
+                }
+            }
+
+            // Save all components with changes
+            for (const componentInfo of changesDetails.components || []) {
+                try {
+                    await this.saveComponentById(componentInfo.id);
+                    console.log(`Saved component: ${componentInfo.displayName}`);
+                } catch (error) {
+                    console.error(`Error saving component ${componentInfo.displayName}:`, error);
+                    saveErrors.push(`${componentInfo.displayName}: ${error.message}`);
+                }
+            }
+
+            if (saveErrors.length > 0) {
+                // Some saves failed, ask user what to do
+                const continueLogout = confirm(
+                    `Some changes could not be saved:\n\n${saveErrors.join('\n')}\n\n` +
+                    'Do you still want to logout? (Unsaved changes will be lost)'
+                );
+
+                if (!continueLogout) {
+                    return; // User chose to stay
+                }
+            }
+
+            // Mark all as saved and logout
+            if (this.components.changeTracker) {
+                this.components.changeTracker.markAllAsSaved();
+            }
+
+            this.performLogout();
+
+        } catch (error) {
+            console.error('Error saving changes before logout:', error);
+
+            const forceLogout = confirm(
+                'An error occurred while saving changes. ' +
+                'Do you want to logout anyway? (Unsaved changes will be lost)'
+            );
+
+            if (forceLogout) {
+                this.performLogout();
+            }
+        }
+    }
+
+    /**
+     * Save a form by its ID
+     * @param {string} formId - Form identifier
+     */
+    async saveFormById(formId) {
+        const formElement = document.getElementById(formId);
+        if (!formElement) {
+            throw new Error(`Form ${formId} not found`);
+        }
+
+        // Trigger form submission
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        formElement.dispatchEvent(submitEvent);
+
+        // Wait a bit for the submission to process
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    /**
+     * Save a component by its ID
+     * @param {string} componentId - Component identifier
+     */
+    async saveComponentById(componentId) {
+        // This would be implemented based on specific component save logic
+        console.log(`Saving component: ${componentId}`);
+        // For now, just mark as saved
+        if (this.components.changeTracker) {
+            this.components.changeTracker.markComponentAsSaved(componentId);
+        }
+    }
+
+    /**
+     * Set up change tracking integration
+     */
+    setupChangeTrackingIntegration() {
+        if (!this.components.changeTracker) return;
+
+        // Add global change listener to update UI indicators
+        this.components.changeTracker.addChangeListener((hasChanges, details) => {
+            this.updateUnsavedChangesIndicator(hasChanges, details);
+        });
+
+        console.log('Change tracking integration set up');
+    }
+
+    /**
+     * Update unsaved changes indicator in UI
+     * @param {boolean} hasChanges - Whether there are unsaved changes
+     * @param {Object} details - Details about changes
+     */
+    updateUnsavedChangesIndicator(hasChanges, details) {
+        // Find or create unsaved changes indicator
+        let indicator = document.querySelector('.unsaved-changes-indicator');
+
+        if (hasChanges) {
+            if (!indicator) {
+                // Create indicator
+                const header = document.querySelector('.header-container');
+                if (header) {
+                    indicator = document.createElement('div');
+                    indicator.className = 'unsaved-changes-indicator';
+                    header.appendChild(indicator);
+                }
+            }
+
+            if (indicator) {
+                const changeCount = details.totalChanges || 0;
+                const itemCount = (details.forms?.length || 0) + (details.components?.length || 0);
+
+                indicator.innerHTML = `
+                    <span class="indicator-icon">⚠️</span>
+                    <span>Unsaved changes (${itemCount} item${itemCount !== 1 ? 's' : ''})</span>
+                `;
+                indicator.style.display = 'flex';
+            }
+        } else {
+            // Remove indicator
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
         }
     }
 

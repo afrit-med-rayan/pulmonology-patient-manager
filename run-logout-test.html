@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Logout Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ccc;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      button {
+        margin: 5px;
+        padding: 10px 15px;
+      }
+      #results {
+        background: #f5f5f5;
+        padding: 10px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Intelligent Logout System Test</h1>
+
+    <div class="test-section">
+      <h2>Component Loading Test</h2>
+      <button onclick="testComponentLoading()">Test Component Loading</button>
+      <div id="loading-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Change Tracking Test</h2>
+      <button onclick="testChangeTracking()">Test Change Tracking</button>
+      <div id="tracking-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Modal System Test</h2>
+      <button onclick="testModalSystem()">Test Modal System</button>
+      <div id="modal-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Logout Flow Test</h2>
+      <button onclick="testLogoutFlow()">Test Complete Logout Flow</button>
+      <div id="logout-results"></div>
+    </div>
+
+    <div id="results"></div>
+
+    <!-- Include minimal CSS for modals -->
+    <style>
+      .modal-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1050;
+      }
+      .modal-container.hidden {
+        display: none;
+      }
+      .modal-dialog {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        max-width: 500px;
+        width: 90%;
+      }
+      .modal-actions {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .modal-actions button {
+        margin: 0 10px;
+        padding: 10px 20px;
+      }
+      .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+      }
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        border: none;
+      }
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+      }
+    </style>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal-container hidden"></div>
+
+    <!-- Load components -->
+    <script>
+      // Simple constants for testing
+      const AUTH_CONFIG = {
+        sessionTimeout: 8 * 60 * 60 * 1000,
+        maxLoginAttempts: 5,
+        lockoutDuration: 15 * 60 * 1000,
+        sessionStorageKey: "pneumo_session",
+      };
+
+      const ERROR_MESSAGES = {
+        auth: {
+          invalidCredentials: "Invalid username or password",
+          tooManyAttempts: "Too many failed attempts. Please try again later.",
+        },
+        validation: {
+          required: "This field is required",
+          minLength: "Minimum length is {min} characters",
+          maxLength: "Maximum length is {max} characters",
+          date: "Please enter a valid date",
+          future: "Date cannot be in the future",
+        },
+      };
+
+      // Helper functions
+      function log(message, level = "info") {
+        console.log(`[${level.toUpperCase()}] ${message}`);
+      }
+
+      function generateId() {
+        return "id_" + Math.random().toString(36).substr(2, 9);
+      }
+
+      function getCurrentTimestamp() {
+        return Date.now();
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function isEqual(obj1, obj2) {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+      }
+    </script>
+
+    <script src="js/components/ChangeTracker.js"></script>
+    <script src="js/components/ModalManager.js"></script>
+
+    <script>
+      let testResults = [];
+
+      function addResult(test, success, message) {
+        testResults.push({ test, success, message });
+        updateResults();
+      }
+
+      function updateResults() {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML =
+          "<h2>Test Results:</h2>" +
+          testResults
+            .map(
+              (r) =>
+                `<div class="${r.success ? "success" : "error"}">
+                        ${r.test}: ${r.success ? "✓" : "✗"} ${r.message}
+                    </div>`
+            )
+            .join("");
+      }
+
+      function testComponentLoading() {
+        const resultsDiv = document.getElementById("loading-results");
+        resultsDiv.innerHTML = "Testing...";
+
+        try {
+          const changeTracker = new ChangeTracker();
+          const modalManager = new ModalManager();
+
+          resultsDiv.innerHTML =
+            '<div class="success">✓ All components loaded successfully</div>';
+          addResult(
+            "Component Loading",
+            true,
+            "ChangeTracker and ModalManager loaded"
+          );
+        } catch (error) {
+          resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+          addResult("Component Loading", false, error.message);
+        }
+      }
+
+      function testChangeTracking() {
+        const resultsDiv = document.getElementById("tracking-results");
+        resultsDiv.innerHTML = "Testing...";
+
+        try {
+          const tracker = new ChangeTracker();
+
+          // Test initial state
+          if (tracker.hasUnsavedChanges()) {
+            throw new Error("Should not have changes initially");
+          }
+
+          // Test component tracking
+          tracker.trackComponent("test-comp", {
+            displayName: "Test Component",
+          });
+
+          tracker.markComponentChanged("test-comp", true);
+
+          if (!tracker.hasUnsavedChanges()) {
+            throw new Error(
+              "Should have changes after marking component changed"
+            );
+          }
+
+          const details = tracker.getUnsavedChangesDetails();
+          if (!details.hasChanges || details.components.length !== 1) {
+            throw new Error("Change details incorrect");
+          }
+
+          tracker.markComponentAsSaved("test-comp");
+
+          if (tracker.hasUnsavedChanges()) {
+            throw new Error("Should not have changes after marking saved");
+          }
+
+          resultsDiv.innerHTML =
+            '<div class="success">✓ Change tracking working correctly</div>';
+          addResult(
+            "Change Tracking",
+            true,
+            "All change tracking functions work"
+          );
+        } catch (error) {
+          resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+          addResult("Change Tracking", false, error.message);
+        }
+      }
+
+      function testModalSystem() {
+        const resultsDiv = document.getElementById("modal-results");
+        resultsDiv.innerHTML = "Testing...";
+
+        try {
+          const modal = new ModalManager();
+
+          // Test basic modal functionality
+          if (modal.hasOpenModals()) {
+            throw new Error("Should not have open modals initially");
+          }
+
+          // Test modal creation (without showing)
+          const modalCount = modal.getOpenModalCount();
+          if (modalCount !== 0) {
+            throw new Error("Modal count should be 0 initially");
+          }
+
+          resultsDiv.innerHTML =
+            '<div class="success">✓ Modal system initialized correctly</div>';
+          addResult("Modal System", true, "Modal manager functions work");
+        } catch (error) {
+          resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+          addResult("Modal System", false, error.message);
+        }
+      }
+
+      async function testLogoutFlow() {
+        const resultsDiv = document.getElementById("logout-results");
+        resultsDiv.innerHTML = "Testing...";
+
+        try {
+          const tracker = new ChangeTracker();
+          const modal = new ModalManager();
+
+          // Test 1: No changes - should allow immediate logout
+          let hasChanges = tracker.hasUnsavedChanges();
+          if (hasChanges) {
+            throw new Error("Should not have changes initially");
+          }
+
+          // Test 2: With changes - should require confirmation
+          tracker.trackComponent("logout-test", {
+            displayName: "Logout Test Form",
+          });
+          tracker.markComponentChanged("logout-test", true);
+
+          hasChanges = tracker.hasUnsavedChanges();
+          if (!hasChanges) {
+            throw new Error(
+              "Should have changes after marking component changed"
+            );
+          }
+
+          const details = tracker.getUnsavedChangesDetails();
+          if (details.descriptions.length === 0) {
+            throw new Error("Should have change descriptions");
+          }
+
+          resultsDiv.innerHTML =
+            '<div class="success">✓ Logout flow logic working correctly</div>';
+          addResult("Logout Flow", true, "Logout flow detection works");
+
+          // Test the actual modal (user interaction required)
+          const testModal = confirm(
+            "Do you want to test the logout confirmation modal? (This will show the actual modal)"
+          );
+          if (testModal) {
+            const choice = await modal.showLogoutConfirmation({
+              changesDetails: details.descriptions,
+            });
+            resultsDiv.innerHTML += `<div class="success">✓ Modal test completed. User chose: ${choice}</div>`;
+          }
+        } catch (error) {
+          resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+          addResult("Logout Flow", false, error.message);
+        }
+      }
+
+      // Auto-run basic tests on load
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          testComponentLoading();
+          setTimeout(() => {
+            testChangeTracking();
+            setTimeout(() => {
+              testModalSystem();
+            }, 100);
+          }, 100);
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
