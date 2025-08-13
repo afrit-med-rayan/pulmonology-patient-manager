@@ -69,6 +69,12 @@ class App {
             console.log('Initializing ModalManager...');
             this.components.modalManager = new ModalManager();
 
+            // Initialize logo manager
+            console.log('Initializing LogoManager...');
+            this.components.logoManager = new LogoManager();
+            // Preload available logo formats (will handle missing files gracefully)
+            await this.components.logoManager.preloadLogos(['svg', 'png']);
+
             // Initialize authentication manager
             console.log('Initializing AuthenticationManager...');
             this.components.authManager = new AuthenticationManager();
@@ -233,6 +239,40 @@ class App {
 
             // Initialize login form
             this.components.loginView.initialize();
+
+            // Insert login logo if LogoManager is available
+            this.insertLoginLogo();
+        }
+    }
+
+    /**
+     * Insert header logo using LogoManager
+     */
+    insertHeaderLogo() {
+        if (!this.components.logoManager) return;
+
+        const logoContainer = document.getElementById('header-logo-container');
+        if (logoContainer) {
+            const headerLogo = this.components.logoManager.createHeaderLogo({
+                onClick: () => {
+                    // Navigate to dashboard when logo is clicked
+                    this.navigateToRoute('dashboard');
+                }
+            });
+            logoContainer.appendChild(headerLogo);
+        }
+    }
+
+    /**
+     * Insert login logo using LogoManager
+     */
+    insertLoginLogo() {
+        if (!this.components.logoManager) return;
+
+        const loginLogoContainer = document.querySelector('.login-logo-container');
+        if (loginLogoContainer) {
+            const loginLogo = this.components.logoManager.createLoginLogo();
+            loginLogoContainer.appendChild(loginLogo);
         }
     }
 
@@ -255,10 +295,8 @@ class App {
                 <!-- Main Application Header -->
                 <header class="header">
                     <div class="header-container">
-                        <div class="logo-container">
-                            <img src="assets/logo.svg" alt="Dr. S. Sahboub Logo" class="logo"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <h1 class="logo-text" style="display: none;">Dr. S. Sahboub</h1>
+                        <div id="header-logo-container">
+                            <!-- Logo will be inserted here by LogoManager -->
                         </div>
                         <div class="header-actions">
                             <span class="user-info">Welcome, ${user.username}</span>
@@ -380,6 +418,9 @@ class App {
 
             // Initialize navigation event listeners
             this.initializeNavigation();
+
+            // Insert header logo
+            this.insertHeaderLogo();
 
             console.log('Main application displayed successfully');
         } catch (error) {
