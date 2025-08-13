@@ -12,6 +12,300 @@ class FormManager {
     }
 
     /**
+     * Render patient form HTML
+     * @param {string} formId - Unique form identifier
+     * @param {Object} data - Initial form data
+     * @returns {string} HTML string for the form
+     */
+    renderPatientForm(formId, data = {}) {
+        // Store original data for change tracking
+        this.originalData[formId] = deepClone(data);
+        this.unsavedChanges[formId] = false;
+        this.validationErrors[formId] = {};
+
+        const patient = data.id ? data : PATIENT_SCHEMA || {};
+        const visits = patient.visits || [];
+
+        return `
+            <form id="${formId}" class="patient-form" novalidate>
+                <input type="hidden" name="id" value="${patient.id || ''}" />
+                
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Personal Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="${formId}-firstName" class="form-label">
+                                First Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="${formId}-firstName" 
+                                name="firstName" 
+                                class="form-control" 
+                                value="${patient.firstName || ''}"
+                                placeholder="Enter first name"
+                                maxlength="50"
+                                required
+                            />
+                            <div class="form-error" id="${formId}-firstName-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${formId}-lastName" class="form-label">
+                                Last Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="${formId}-lastName" 
+                                name="lastName" 
+                                class="form-control" 
+                                value="${patient.lastName || ''}"
+                                placeholder="Enter last name"
+                                maxlength="50"
+                                required
+                            />
+                            <div class="form-error" id="${formId}-lastName-error"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="${formId}-dateOfBirth" class="form-label">
+                                Date of Birth <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="${formId}-dateOfBirth" 
+                                name="dateOfBirth" 
+                                class="form-control" 
+                                value="${this.formatDateForInput(patient.dateOfBirth)}"
+                                max="${this.formatDateForInput(new Date())}"
+                                required
+                            />
+                            <div class="form-error" id="${formId}-dateOfBirth-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${formId}-age" class="form-label">Age</label>
+                            <input 
+                                type="number" 
+                                id="${formId}-age" 
+                                name="age" 
+                                class="form-control" 
+                                value="${patient.age || ''}"
+                                min="0" 
+                                max="150"
+                                readonly
+                                placeholder="Calculated from birth date"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="${formId}-placeOfResidence" class="form-label">
+                                Place of Residence <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="${formId}-placeOfResidence" 
+                                name="placeOfResidence" 
+                                class="form-control" 
+                                value="${patient.placeOfResidence || ''}"
+                                placeholder="Enter place of residence"
+                                maxlength="100"
+                                required
+                            />
+                            <div class="form-error" id="${formId}-placeOfResidence-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${formId}-gender" class="form-label">
+                                Gender <span class="required">*</span>
+                            </label>
+                            <select 
+                                id="${formId}-gender" 
+                                name="gender" 
+                                class="form-control" 
+                                required
+                            >
+                                <option value="">Select gender</option>
+                                <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Male</option>
+                                <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Female</option>
+                                <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Other</option>
+                            </select>
+                            <div class="form-error" id="${formId}-gender-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visits Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <h3 class="form-section-title">Medical Visits</h3>
+                        <button type="button" class="btn btn-secondary btn-sm add-visit-btn" data-form-id="${formId}">
+                            Add Visit
+                        </button>
+                    </div>
+                    
+                    <div id="${formId}-visits-container" class="visits-container">
+                        ${this.renderVisits(formId, visits)}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary cancel-btn" data-form-id="${formId}">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary save-btn" data-form-id="${formId}">
+                        Save Patient
+                    </button>
+                </div>
+            </form>
+        `;
+    }
+
+    /**
+     * Render visits HTML
+     * @param {string} formId - Form identifier
+     * @param {Array} visits - Array of visit objects
+     * @returns {string} HTML string for visits
+     */
+    renderVisits(formId, visits = []) {
+        if (visits.length === 0) {
+            return `
+                <div class="no-visits-message">
+                    <p>No visits recorded yet. Click "Add Visit" to add the first visit.</p>
+                </div>
+            `;
+        }
+
+        return visits.map((visit, index) => this.renderVisit(formId, visit, index)).join('');
+    }
+
+    /**
+     * Render single visit HTML
+     * @param {string} formId - Form identifier
+     * @param {Object} visit - Visit object
+     * @param {number} index - Visit index
+     * @returns {string} HTML string for single visit
+     */
+    renderVisit(formId, visit, index) {
+        const visitId = visit.id || this.generateId();
+
+        return `
+            <div class="visit-item" data-visit-id="${visitId}" data-visit-index="${index}">
+                <div class="visit-header">
+                    <h4 class="visit-title">Visit ${index + 1}</h4>
+                    <button type="button" class="btn btn-danger btn-sm remove-visit-btn" 
+                            data-form-id="${formId}" data-visit-index="${index}">
+                        Remove
+                    </button>
+                </div>
+                
+                <input type="hidden" name="visits[${index}][id]" value="${visitId}" />
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="${formId}-visit-${index}-date" class="form-label">
+                            Visit Date <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="${formId}-visit-${index}-date" 
+                            name="visits[${index}][visitDate]" 
+                            class="form-control" 
+                            value="${this.formatDateForInput(visit.visitDate)}"
+                            max="${this.formatDateForInput(new Date())}"
+                            required
+                        />
+                        <div class="form-error" id="${formId}-visit-${index}-date-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="${formId}-visit-${index}-medications" class="form-label">
+                        Medications Prescribed
+                    </label>
+                    <textarea 
+                        id="${formId}-visit-${index}-medications" 
+                        name="visits[${index}][medications]" 
+                        class="form-control" 
+                        rows="3"
+                        placeholder="Enter medications prescribed during this visit"
+                        maxlength="1000"
+                    >${visit.medications || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-medications-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="${formId}-visit-${index}-observations" class="form-label">
+                        Observations and Notes
+                    </label>
+                    <textarea 
+                        id="${formId}-visit-${index}-observations" 
+                        name="visits[${index}][observations]" 
+                        class="form-control" 
+                        rows="4"
+                        placeholder="Enter observations and notes from this visit"
+                        maxlength="2000"
+                    >${visit.observations || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-observations-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="${formId}-visit-${index}-comments" class="form-label">
+                        Additional Comments
+                    </label>
+                    <textarea 
+                        id="${formId}-visit-${index}-comments" 
+                        name="visits[${index}][additionalComments]" 
+                        class="form-control" 
+                        rows="3"
+                        placeholder="Enter any additional comments"
+                        maxlength="1000"
+                    >${visit.additionalComments || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-comments-error"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Format date for input field
+     * @param {string|Date} date - Date to format
+     * @returns {string} Formatted date string
+     */
+    formatDateForInput(date) {
+        if (!date) return '';
+
+        try {
+            const d = new Date(date);
+            if (isNaN(d.getTime())) return '';
+
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        } catch (error) {
+            console.error('Error formatting date:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Generate unique ID
+     * @returns {string} Unique identifier
+     */
+    generateId() {
+        return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    }
+
+    /**
      * Initialize form after rendering
      * @param {string} formId - Form identifier
      * @param {Object} options - Initialization options
@@ -87,6 +381,30 @@ class FormManager {
             this.handleFormSubmit(formId);
         });
 
+        // Date of birth change - update age
+        const dobField = form.querySelector('[name="dateOfBirth"]');
+        if (dobField) {
+            dobField.addEventListener('change', () => {
+                this.updateAge(formId);
+            });
+        }
+
+        // Add visit button
+        const addVisitBtn = form.querySelector('.add-visit-btn');
+        if (addVisitBtn) {
+            addVisitBtn.addEventListener('click', () => {
+                this.addVisit(formId);
+            });
+        }
+
+        // Remove visit buttons (delegated event)
+        form.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-visit-btn')) {
+                const visitIndex = parseInt(e.target.dataset.visitIndex);
+                this.removeVisit(formId, visitIndex);
+            }
+        });
+
         // Cancel button
         const cancelBtn = form.querySelector('.cancel-btn');
         if (cancelBtn) {
@@ -94,6 +412,205 @@ class FormManager {
                 this.handleCancel(formId);
             });
         }
+    }
+
+    /**
+     * Update age field based on date of birth
+     * @param {string} formId - Form identifier
+     */
+    updateAge(formId) {
+        const form = this.forms[formId];
+        const dobField = form.querySelector('[name="dateOfBirth"]');
+        const ageField = form.querySelector('[name="age"]');
+
+        if (dobField && ageField && dobField.value) {
+            const age = this.calculateAge(dobField.value);
+            ageField.value = age;
+            this.checkForChanges(formId);
+        }
+    }
+
+    /**
+     * Calculate age from date of birth
+     * @param {string} dateOfBirth - Date of birth string
+     * @returns {number} Age in years
+     */
+    calculateAge(dateOfBirth) {
+        try {
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            return Math.max(0, age);
+        } catch (error) {
+            console.error('Error calculating age:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Add a new visit to the form
+     * @param {string} formId - Form identifier
+     */
+    addVisit(formId) {
+        const form = this.forms[formId];
+        const visitsContainer = form.querySelector(`#${formId}-visits-container`);
+        const noVisitsMessage = visitsContainer.querySelector('.no-visits-message');
+
+        // Remove "no visits" message if present
+        if (noVisitsMessage) {
+            noVisitsMessage.remove();
+        }
+
+        // Get current visit count
+        const existingVisits = visitsContainer.querySelectorAll('.visit-item');
+        const visitIndex = existingVisits.length;
+
+        // Create new visit
+        const newVisit = {
+            id: this.generateId(),
+            visitDate: this.formatDateForInput(new Date()),
+            medications: '',
+            observations: '',
+            additionalComments: ''
+        };
+
+        // Add visit HTML
+        const visitHtml = this.renderVisit(formId, newVisit, visitIndex);
+        visitsContainer.insertAdjacentHTML('beforeend', visitHtml);
+
+        // Set up event listeners for new visit
+        const newVisitElement = visitsContainer.querySelector(`[data-visit-index="${visitIndex}"]`);
+        this.setupVisitEventListeners(formId, newVisitElement, visitIndex);
+
+        // Mark as changed
+        this.checkForChanges(formId);
+
+        // Scroll to new visit
+        newVisitElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /**
+     * Remove a visit from the form
+     * @param {string} formId - Form identifier
+     * @param {number} visitIndex - Index of visit to remove
+     */
+    removeVisit(formId, visitIndex) {
+        const form = this.forms[formId];
+        const visitsContainer = form.querySelector(`#${formId}-visits-container`);
+        const visitElement = visitsContainer.querySelector(`[data-visit-index="${visitIndex}"]`);
+
+        if (visitElement) {
+            visitElement.remove();
+
+            // Reindex remaining visits
+            this.reindexVisits(formId);
+
+            // Check if no visits remain
+            const remainingVisits = visitsContainer.querySelectorAll('.visit-item');
+            if (remainingVisits.length === 0) {
+                visitsContainer.innerHTML = `
+                    <div class="no-visits-message">
+                        <p>No visits recorded yet. Click "Add Visit" to add the first visit.</p>
+                    </div>
+                `;
+            }
+
+            // Mark as changed
+            this.checkForChanges(formId);
+        }
+    }
+
+    /**
+     * Reindex visits after removal
+     * @param {string} formId - Form identifier
+     */
+    reindexVisits(formId) {
+        const form = this.forms[formId];
+        const visitsContainer = form.querySelector(`#${formId}-visits-container`);
+        const visitElements = visitsContainer.querySelectorAll('.visit-item');
+
+        visitElements.forEach((visitElement, newIndex) => {
+            // Update data attributes
+            visitElement.dataset.visitIndex = newIndex;
+
+            // Update visit title
+            const title = visitElement.querySelector('.visit-title');
+            if (title) {
+                title.textContent = `Visit ${newIndex + 1}`;
+            }
+
+            // Update form field names and IDs
+            const inputs = visitElement.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                const name = input.name;
+                if (name && name.includes('visits[')) {
+                    input.name = name.replace(/visits\[\d+\]/, `visits[${newIndex}]`);
+                }
+
+                const id = input.id;
+                if (id && id.includes('-visit-')) {
+                    input.id = id.replace(/-visit-\d+-/, `-visit-${newIndex}-`);
+                }
+            });
+
+            // Update labels
+            const labels = visitElement.querySelectorAll('label');
+            labels.forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr && forAttr.includes('-visit-')) {
+                    label.setAttribute('for', forAttr.replace(/-visit-\d+-/, `-visit-${newIndex}-`));
+                }
+            });
+
+            // Update error containers
+            const errorContainers = visitElement.querySelectorAll('.form-error');
+            errorContainers.forEach(container => {
+                const id = container.id;
+                if (id && id.includes('-visit-')) {
+                    container.id = id.replace(/-visit-\d+-/, `-visit-${newIndex}-`);
+                }
+            });
+
+            // Update remove button
+            const removeBtn = visitElement.querySelector('.remove-visit-btn');
+            if (removeBtn) {
+                removeBtn.dataset.visitIndex = newIndex;
+            }
+        });
+    }
+
+    /**
+     * Set up event listeners for a specific visit
+     * @param {string} formId - Form identifier
+     * @param {Element} visitElement - Visit DOM element
+     * @param {number} visitIndex - Visit index
+     */
+    setupVisitEventListeners(formId, visitElement, visitIndex) {
+        const inputs = visitElement.querySelectorAll('input, textarea');
+
+        inputs.forEach(input => {
+            // Validate on blur
+            input.addEventListener('blur', () => {
+                this.validateField(formId, input);
+            });
+
+            // Clear errors on input
+            input.addEventListener('input', () => {
+                this.clearFieldError(formId, input);
+                this.checkForChanges(formId);
+            });
+
+            // Track changes
+            input.addEventListener('change', () => {
+                this.checkForChanges(formId);
+            });
+        });
     }
 
     /**
@@ -178,10 +695,50 @@ class FormManager {
 
         // Convert FormData to object
         for (const [key, value] of formData.entries()) {
-            data[key] = value;
+            if (key.includes('[')) {
+                // Handle array fields (visits)
+                const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                if (match) {
+                    const [, arrayName, index, fieldName] = match;
+                    if (!data[arrayName]) data[arrayName] = [];
+                    if (!data[arrayName][index]) data[arrayName][index] = {};
+                    data[arrayName][index][fieldName] = value;
+                }
+            } else {
+                data[key] = value;
+            }
         }
 
+        // Calculate age if date of birth is provided
+        if (data.dateOfBirth) {
+            data.age = this.calculateAge(data.dateOfBirth);
+        }
+
+        // Clean up visits array (remove empty slots and add timestamps)
+        if (data.visits) {
+            data.visits = data.visits.filter(visit => visit && visit.visitDate).map(visit => ({
+                ...visit,
+                id: visit.id || this.generateId(),
+                createdAt: visit.createdAt || this.getCurrentTimestamp()
+            }));
+        }
+
+        // Add timestamps for new records
+        if (!data.id) {
+            data.id = this.generateId();
+            data.createdAt = this.getCurrentTimestamp();
+        }
+        data.updatedAt = this.getCurrentTimestamp();
+
         return data;
+    }
+
+    /**
+     * Get current timestamp
+     * @returns {number} Current timestamp
+     */
+    getCurrentTimestamp() {
+        return Date.now();
     }
 
     /**
