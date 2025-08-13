@@ -61,6 +61,10 @@ class App {
         try {
             console.log('Starting component initialization...');
 
+            // Initialize error handler first
+            console.log('Initializing ErrorHandler...');
+            this.components.errorHandler = new ErrorHandler();
+
             // Initialize change tracker
             console.log('Initializing ChangeTracker...');
             this.components.changeTracker = new ChangeTracker();
@@ -68,6 +72,17 @@ class App {
             // Initialize modal manager
             console.log('Initializing ModalManager...');
             this.components.modalManager = new ModalManager();
+
+            // Initialize logo manager
+            console.log('Initializing LogoManager...');
+            this.components.logoManager = new LogoManager();
+            // Preload available logo formats (will handle missing files gracefully)
+            await this.components.logoManager.preloadLogos(['svg', 'png']);
+
+            // Initialize UI router
+            console.log('Initializing UIRouter...');
+            this.components.uiRouter = new UIRouter();
+            this.components.uiRouter.registerDefaultRoutes();
 
             // Initialize authentication manager
             console.log('Initializing AuthenticationManager...');
@@ -178,11 +193,19 @@ class App {
 
         this.showMainApplication();
 
-        // Handle initial route from URL hash
-        const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
-        setTimeout(() => {
-            this.navigateToRoute(initialRoute);
-        }, 100);
+        // Handle initial route using UIRouter
+        if (this.components.uiRouter) {
+            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
+            setTimeout(() => {
+                this.components.uiRouter.navigateTo(initialRoute);
+            }, 100);
+        } else {
+            // Fallback to old navigation method
+            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
+            setTimeout(() => {
+                this.navigateToRoute(initialRoute);
+            }, 100);
+        }
 
         /* Original authentication-based routing:
         if (this.components.authManager.isAuthenticated()) {
@@ -191,7 +214,7 @@ class App {
             // Handle initial route from URL hash
             const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
             setTimeout(() => {
-                this.navigateToRoute(initialRoute);
+                this.components.uiRouter.navigateTo(initialRoute);
             }, 100);
         } else {
             this.showLoginForm();
@@ -233,6 +256,40 @@ class App {
 
             // Initialize login form
             this.components.loginView.initialize();
+
+            // Insert login logo if LogoManager is available
+            this.insertLoginLogo();
+        }
+    }
+
+    /**
+     * Insert header logo using LogoManager
+     */
+    insertHeaderLogo() {
+        if (!this.components.logoManager) return;
+
+        const logoContainer = document.getElementById('header-logo-container');
+        if (logoContainer) {
+            const headerLogo = this.components.logoManager.createHeaderLogo({
+                onClick: () => {
+                    // Navigate to dashboard when logo is clicked
+                    this.navigateToRoute('dashboard');
+                }
+            });
+            logoContainer.appendChild(headerLogo);
+        }
+    }
+
+    /**
+     * Insert login logo using LogoManager
+     */
+    insertLoginLogo() {
+        if (!this.components.logoManager) return;
+
+        const loginLogoContainer = document.querySelector('.login-logo-container');
+        if (loginLogoContainer) {
+            const loginLogo = this.components.logoManager.createLoginLogo();
+            loginLogoContainer.appendChild(loginLogo);
         }
     }
 
@@ -255,14 +312,12 @@ class App {
                 <!-- Main Application Header -->
                 <header class="header">
                     <div class="header-container">
-                        <div class="logo-container">
-                            <img src="assets/logo.svg" alt="Dr. S. Sahboub Logo" class="logo"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <h1 class="logo-text" style="display: none;">Dr. S. Sahboub</h1>
+                        <div id="header-logo-container">
+                            <!-- Logo will be inserted here by LogoManager -->
                         </div>
                         <div class="header-actions">
                             <span class="user-info">Welcome, ${user.username}</span>
-                            <button class="btn btn-secondary logout-btn" onclick="app.handleLogout()">
+                            <button class="btn btn-secondary logout-btn" id="logout-button">
                                 Logout
                             </button>
                         </div>
@@ -381,6 +436,9 @@ class App {
             // Initialize navigation event listeners
             this.initializeNavigation();
 
+            // Insert header logo
+            this.insertHeaderLogo();
+
             console.log('Main application displayed successfully');
         } catch (error) {
             console.error('Error showing main application:', error);
@@ -428,6 +486,24 @@ class App {
      */
     async handleLogout() {
         try {
+            console.log('Logout button clicked');
+
+            // Check if required components are available
+            if (!this.components.authManager) {
+                console.error('AuthManager not available');
+                this.performLogout();
+                return;
+            }
+
+            if (!this.components.modalManager) {
+                console.error('ModalManager not available, using simple confirmation');
+                const confirmed = confirm('Are you sure you want to logout?');
+                if (confirmed) {
+                    this.performLogout();
+                }
+                return;
+            }
+
             // Check for unsaved changes
             const isSafeToLogout = await this.components.authManager.checkUnsavedChanges();
 
@@ -467,6 +543,16 @@ class App {
         } catch (error) {
             console.error('Error during logout:', error);
 
+            // Use ErrorHandler if available
+            if (this.components.errorHandler) {
+                this.components.errorHandler.handleError({
+                    type: this.components.errorHandler.errorTypes.CLIENT,
+                    message: 'Error during logout process',
+                    error: error,
+                    context: 'Logout Handler'
+                });
+            }
+
             // Show error and ask user what to do
             const forceLogout = confirm(
                 'An error occurred while checking for unsaved changes. ' +
@@ -476,6 +562,16 @@ class App {
             if (forceLogout) {
                 this.performLogout();
             }
+        }
+    }
+
+    /**
+     * Simple logout method as fallback
+     */
+    simpleLogout() {
+        const confirmed = confirm('Are you sure you want to logout?');
+        if (confirmed) {
+            this.performLogout();
         }
     }
 
@@ -727,13 +823,19 @@ class App {
      * Initialize navigation event listeners
      */
     initializeNavigation() {
-        // Handle navigation link clicks
+        // Handle navigation link clicks using UIRouter
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
                 const route = event.target.getAttribute('data-route');
-                this.navigateToRoute(route);
+
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo(route);
+                } else {
+                    // Fallback to old navigation
+                    this.navigateToRoute(route);
+                }
             });
         });
 
@@ -745,6 +847,15 @@ class App {
                 this.handleDashboardAction(action);
             });
         });
+
+        // Handle logout button click
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.handleLogout();
+            });
+        }
     }
 
     /**
@@ -831,13 +942,25 @@ class App {
     handleDashboardAction(action) {
         switch (action) {
             case 'create-patient':
-                this.navigateToRoute('create-patient');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('create-patient');
+                } else {
+                    this.navigateToRoute('create-patient');
+                }
                 break;
             case 'search-patients':
-                this.navigateToRoute('search-patients');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('search-patients');
+                } else {
+                    this.navigateToRoute('search-patients');
+                }
                 break;
             case 'patient-list':
-                this.navigateToRoute('patient-list');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('patient-list');
+                } else {
+                    this.navigateToRoute('patient-list');
+                }
                 break;
             case 'reports':
                 // Reports functionality placeholder
@@ -1043,10 +1166,12 @@ class App {
      */
     async handleFormSubmit(detail) {
         const { formId, data } = detail;
+        let loadingState = null;
 
         try {
             if (formId === 'create-patient-form') {
                 // Show loading state
+                loadingState = this.components.errorHandler.showLoading('Creating patient record...');
                 this.showFormLoading(formId, true);
 
                 // Create patient using PatientManager
@@ -1067,8 +1192,10 @@ class App {
                 const result = await this.components.patientManager.createPatient(data);
 
                 if (result.success) {
-                    // Show success message
-                    this.showToast(result.message, 'success');
+                    // Show success message using ErrorHandler
+                    this.components.errorHandler.showSuccess(
+                        result.message || 'Patient record created successfully!'
+                    );
 
                     // Clear form unsaved changes
                     this.components.formManager.markFormAsSaved(formId);
@@ -1085,25 +1212,21 @@ class App {
                 console.log('Form submission for:', formId, data);
             }
         } catch (error) {
-            console.error('Error submitting form:', error);
-            console.error('Error details:', error.stack);
-
-            // Show user-friendly error message
-            let errorMessage = 'Failed to save patient record. Please try again.';
-
-            if (error.message.includes('validation')) {
-                errorMessage = 'Please check the form for errors and try again.';
-            } else if (error.message.includes('storage')) {
-                errorMessage = 'Unable to save data. Please check your permissions and try again.';
-            } else if (error.message.includes('not initialized') || error.message.includes('not ready')) {
-                errorMessage = 'System not ready. Please refresh the page and try again.';
-            }
-
-            // Add the actual error message for debugging
-            errorMessage += ` (Debug: ${error.message})`;
-
-            this.showToast(errorMessage, 'error');
+            // Use ErrorHandler for comprehensive error handling
+            this.components.errorHandler.handleError({
+                type: this.components.errorHandler.errorTypes.STORAGE,
+                message: error.message,
+                error: error,
+                context: `Form Submission - ${formId}`,
+                formId: formId,
+                formData: data,
+                retryCallback: () => this.handleFormSubmit(detail)
+            });
         } finally {
+            // Hide loading states
+            if (loadingState) {
+                this.components.errorHandler.hideLoading(loadingState.key);
+            }
             this.showFormLoading(formId, false);
         }
     }
@@ -1197,6 +1320,20 @@ class App {
 
 // Global application instance
 let app;
+
+// Global logout function as backup
+window.logout = function () {
+    if (window.app && window.app.handleLogout) {
+        window.app.handleLogout();
+    } else if (window.app && window.app.simpleLogout) {
+        window.app.simpleLogout();
+    } else {
+        const confirmed = confirm('Are you sure you want to logout?');
+        if (confirmed) {
+            window.location.reload();
+        }
+    }
+};
 
 // Debug function for troubleshooting
 window.debugApp = function () {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create PNG Logo</title>
+  </head>
+  <body>
+    <canvas
+      id="logoCanvas"
+      width="200"
+      height="80"
+      style="border: 1px solid #ccc"
+    ></canvas>
+    <br /><br />
+    <button onclick="downloadPNG()">Download PNG Logo</button>
+    <br /><br />
+    <div
+      id="dataUri"
+      style="word-break: break-all; font-family: monospace; font-size: 10px"
+    ></div>
+
+    <script>
+      // Create a simple PNG logo using canvas
+      const canvas = document.getElementById("logoCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 200, 80);
+
+      // Draw medical cross background
+      ctx.fillStyle = "rgba(44, 90, 160, 0.1)";
+      ctx.fillRect(10, 10, 60, 60);
+
+      // Draw medical cross
+      ctx.fillStyle = "#2c5aa0";
+      ctx.fillRect(35, 20, 10, 40); // vertical bar
+      ctx.fillRect(20, 35, 40, 10); // horizontal bar
+
+      // Draw stethoscope circle
+      ctx.strokeStyle = "#2c5aa0";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(45, 35, 3, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Draw stethoscope curves
+      ctx.beginPath();
+      ctx.moveTo(42, 35);
+      ctx.quadraticCurveTo(35, 28, 28, 35);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(48, 35);
+      ctx.quadraticCurveTo(55, 28, 62, 35);
+      ctx.stroke();
+
+      // Draw text
+      ctx.fillStyle = "#2c5aa0";
+      ctx.font = "bold 18px Arial";
+      ctx.fillText("Dr. S. Sahboub", 80, 30);
+
+      ctx.fillStyle = "#6c757d";
+      ctx.font = "12px Arial";
+      ctx.fillText("Pulmonology Practice", 80, 50);
+
+      // Draw medical symbol
+      ctx.strokeStyle = "#28a745";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(170, 35, 8, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Draw cross in circle
+      ctx.beginPath();
+      ctx.moveTo(166, 35);
+      ctx.lineTo(174, 35);
+      ctx.moveTo(170, 31);
+      ctx.lineTo(170, 39);
+      ctx.stroke();
+
+      function downloadPNG() {
+        const link = document.createElement("a");
+        link.download = "logo.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+
+      // Show data URI
+      document.getElementById("dataUri").textContent =
+        "Data URI: " + canvas.toDataURL("image/png");
+    </script>
+  </body>
+</html>

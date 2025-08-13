@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error Handling System Test - Dr. S. Sahboub</title>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
+    <style>
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+      .test-section h3 {
+        margin-top: 0;
+        color: var(--primary-color);
+      }
+      .test-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+      }
+      .test-buttons button {
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+      }
+      .test-buttons button:hover {
+        background: #f0f0f0;
+      }
+      .error-stats {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 15px 0;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+      }
+      .demo-form {
+        max-width: 500px;
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="header-container">
+          <div class="logo-container">
+            <h1 class="logo-text">Dr. S. Sahboub</h1>
+          </div>
+          <div class="header-actions">
+            <span class="user-info">Error Handling Test</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="main-container">
+        <div class="content-header">
+          <h1 class="content-title">Error Handling System Test</h1>
+          <p class="content-subtitle">
+            Testing comprehensive error handling and toast notifications
+          </p>
+        </div>
+
+        <!-- Toast Notification Tests -->
+        <div class="test-section">
+          <h3>Toast Notification Tests</h3>
+          <div class="test-buttons">
+            <button onclick="testSuccessToast()">Success Toast</button>
+            <button onclick="testErrorToast()">Error Toast</button>
+            <button onclick="testWarningToast()">Warning Toast</button>
+            <button onclick="testInfoToast()">Info Toast</button>
+            <button onclick="testLoadingState()">Loading State</button>
+            <button onclick="testMultipleToasts()">Multiple Toasts</button>
+            <button onclick="clearAllToasts()">Clear All</button>
+          </div>
+        </div>
+
+        <!-- Error Type Tests -->
+        <div class="test-section">
+          <h3>Error Type Tests</h3>
+          <div class="test-buttons">
+            <button onclick="testNetworkError()">Network Error</button>
+            <button onclick="testValidationError()">Validation Error</button>
+            <button onclick="testStorageError()">Storage Error</button>
+            <button onclick="testAuthError()">Authentication Error</button>
+            <button onclick="testCriticalError()">Critical Error</button>
+            <button onclick="testJavaScriptError()">JavaScript Error</button>
+          </div>
+        </div>
+
+        <!-- Form Validation Test -->
+        <div class="test-section">
+          <h3>Form Validation Test</h3>
+          <form id="test-form" class="demo-form">
+            <div class="form-group">
+              <label for="test-name" class="form-label"
+                >Name <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="test-name"
+                name="name"
+                class="form-control"
+                required
+              />
+              <div class="form-error" id="test-name-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="test-email" class="form-label"
+                >Email <span class="required">*</span></label
+              >
+              <input
+                type="email"
+                id="test-email"
+                name="email"
+                class="form-control"
+                required
+              />
+              <div class="form-error" id="test-email-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="test-date" class="form-label"
+                >Date <span class="required">*</span></label
+              >
+              <input
+                type="date"
+                id="test-date"
+                name="date"
+                class="form-control"
+                required
+              />
+              <div class="form-error" id="test-date-error"></div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Submit Form</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="triggerFormError()"
+              >
+                Trigger Form Error
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Error Recovery Tests -->
+        <div class="test-section">
+          <h3>Error Recovery Tests</h3>
+          <div class="test-buttons">
+            <button onclick="testRetryMechanism()">Test Retry Mechanism</button>
+            <button onclick="testRecoveryCallback()">
+              Test Recovery Callback
+            </button>
+            <button onclick="testExponentialBackoff()">
+              Test Exponential Backoff
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Statistics -->
+        <div class="test-section">
+          <h3>Error Statistics</h3>
+          <div class="test-buttons">
+            <button onclick="showErrorStats()">Show Error Stats</button>
+            <button onclick="showErrorLog()">Show Error Log</button>
+            <button onclick="clearErrorLog()">Clear Error Log</button>
+            <button onclick="exportErrorLog()">Export Error Log</button>
+          </div>
+          <div id="error-stats" class="error-stats">
+            Click buttons above to view error statistics and logs
+          </div>
+        </div>
+
+        <!-- Global Error Tests -->
+        <div class="test-section">
+          <h3>Global Error Handler Tests</h3>
+          <div class="test-buttons">
+            <button onclick="testUnhandledPromise()">
+              Unhandled Promise Rejection
+            </button>
+            <button onclick="testResourceLoadError()">
+              Resource Load Error
+            </button>
+            <button onclick="testGlobalJSError()">
+              Global JavaScript Error
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/components/ErrorHandler.js"></script>
+
+    <script>
+      let errorHandler;
+      let retryCount = 0;
+
+      // Initialize error handling test
+      function initializeErrorTest() {
+        try {
+          console.log("Initializing Error Handling Test...");
+
+          // Create ErrorHandler instance
+          errorHandler = new ErrorHandler();
+
+          // Set up form validation test
+          setupFormTest();
+
+          console.log("Error Handling Test initialized successfully");
+          errorHandler.showSuccess(
+            "Error handling system initialized successfully!"
+          );
+        } catch (error) {
+          console.error("Error initializing test:", error);
+          alert("Error initializing test: " + error.message);
+        }
+      }
+
+      // Set up form test
+      function setupFormTest() {
+        const form = document.getElementById("test-form");
+        if (form) {
+          form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            // Simulate form validation
+            const name = form.querySelector('[name="name"]').value;
+            const email = form.querySelector('[name="email"]').value;
+            const date = form.querySelector('[name="date"]').value;
+
+            if (!name || !email || !date) {
+              errorHandler.handleError({
+                type: errorHandler.errorTypes.VALIDATION,
+                message: "Please fill in all required fields",
+                context: "Form Validation Test",
+              });
+              return;
+            }
+
+            if (!email.includes("@")) {
+              errorHandler.handleError({
+                type: errorHandler.errorTypes.VALIDATION,
+                message: "Please enter a valid email address",
+                context: "Form Validation Test",
+              });
+              return;
+            }
+
+            errorHandler.showSuccess("Form submitted successfully!");
+          });
+        }
+      }
+
+      // Toast notification tests
+      function testSuccessToast() {
+        errorHandler.showSuccess("This is a success message!");
+      }
+
+      function testErrorToast() {
+        errorHandler.showError("This is an error message!");
+      }
+
+      function testWarningToast() {
+        errorHandler.showWarning("This is a warning message!");
+      }
+
+      function testInfoToast() {
+        errorHandler.showInfo("This is an info message!");
+      }
+
+      function testLoadingState() {
+        const loading = errorHandler.showLoading("Processing your request...");
+        setTimeout(() => {
+          errorHandler.hideLoading(loading.key);
+          errorHandler.showSuccess("Loading completed!");
+        }, 3000);
+      }
+
+      function testMultipleToasts() {
+        errorHandler.showInfo("First toast");
+        setTimeout(() => errorHandler.showWarning("Second toast"), 500);
+        setTimeout(() => errorHandler.showError("Third toast"), 1000);
+        setTimeout(() => errorHandler.showSuccess("Fourth toast"), 1500);
+      }
+
+      function clearAllToasts() {
+        errorHandler.clearAllToasts();
+      }
+
+      // Error type tests
+      function testNetworkError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.NETWORK,
+          message: "Failed to connect to server",
+          context: "Network Test",
+          retryCallback: () => {
+            errorHandler.showInfo("Retrying network request...");
+          },
+        });
+      }
+
+      function testValidationError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.VALIDATION,
+          message: "Invalid input data provided",
+          context: "Validation Test",
+        });
+      }
+
+      function testStorageError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.STORAGE,
+          message: "Unable to save data to local storage",
+          context: "Storage Test",
+        });
+      }
+
+      function testAuthError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.AUTHENTICATION,
+          message: "Authentication token expired",
+          context: "Authentication Test",
+        });
+      }
+
+      function testCriticalError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.CLIENT,
+          message: "Critical system error occurred",
+          context: "Critical Error Test",
+          error: new Error("Simulated critical error"),
+        });
+      }
+
+      function testJavaScriptError() {
+        try {
+          // This will throw an error
+          nonExistentFunction();
+        } catch (error) {
+          errorHandler.handleError(error);
+        }
+      }
+
+      // Form error test
+      function triggerFormError() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.VALIDATION,
+          message: "Form contains invalid data",
+          context: "Form Error Test",
+          formId: "test-form",
+        });
+      }
+
+      // Recovery tests
+      function testRetryMechanism() {
+        retryCount = 0;
+        const maxRetries = 3;
+
+        function attemptOperation() {
+          retryCount++;
+          errorHandler.showInfo(`Attempt ${retryCount} of ${maxRetries}`);
+
+          if (retryCount < maxRetries) {
+            errorHandler.handleError({
+              type: errorHandler.errorTypes.NETWORK,
+              message: `Operation failed (attempt ${retryCount})`,
+              context: "Retry Test",
+              retryCallback: () => {
+                setTimeout(attemptOperation, 1000);
+              },
+            });
+          } else {
+            errorHandler.showSuccess("Operation succeeded after retries!");
+          }
+        }
+
+        attemptOperation();
+      }
+
+      function testRecoveryCallback() {
+        errorHandler.handleError({
+          type: errorHandler.errorTypes.NETWORK,
+          message: "Connection failed, attempting recovery",
+          context: "Recovery Test",
+          retryCallback: () => {
+            errorHandler.showInfo("Recovery callback executed!");
+            setTimeout(() => {
+              errorHandler.showSuccess("Recovery successful!");
+            }, 1000);
+          },
+        });
+      }
+
+      function testExponentialBackoff() {
+        let attempt = 0;
+        const maxAttempts = 4;
+
+        function attemptWithBackoff() {
+          attempt++;
+          const delay = 1000 * Math.pow(2, attempt - 1);
+
+          errorHandler.showInfo(`Attempt ${attempt}: Next retry in ${delay}ms`);
+
+          if (attempt < maxAttempts) {
+            setTimeout(() => {
+              errorHandler.handleError({
+                type: errorHandler.errorTypes.NETWORK,
+                message: `Backoff test attempt ${attempt}`,
+                context: "Exponential Backoff Test",
+                retryCallback: attemptWithBackoff,
+              });
+            }, delay);
+          } else {
+            errorHandler.showSuccess("Exponential backoff test completed!");
+          }
+        }
+
+        attemptWithBackoff();
+      }
+
+      // Statistics and logging
+      function showErrorStats() {
+        const stats = errorHandler.getErrorStats();
+        document.getElementById("error-stats").textContent =
+          "Error Statistics:\n" + JSON.stringify(stats, null, 2);
+      }
+
+      function showErrorLog() {
+        const log = errorHandler.getErrorLog();
+        document.getElementById("error-stats").textContent =
+          "Error Log:\n" + JSON.stringify(log.slice(-10), null, 2); // Show last 10 errors
+      }
+
+      function clearErrorLog() {
+        errorHandler.clearErrorLog();
+        errorHandler.showInfo("Error log cleared");
+        document.getElementById("error-stats").textContent =
+          "Error log cleared";
+      }
+
+      function exportErrorLog() {
+        const log = errorHandler.getErrorLog();
+        const dataStr = JSON.stringify(log, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = "error-log.json";
+        link.click();
+
+        errorHandler.showSuccess("Error log exported successfully!");
+      }
+
+      // Global error tests
+      function testUnhandledPromise() {
+        // Create an unhandled promise rejection
+        Promise.reject(new Error("Simulated unhandled promise rejection"));
+      }
+
+      function testResourceLoadError() {
+        // Try to load a non-existent image
+        const img = document.createElement("img");
+        img.src = "non-existent-image.jpg";
+        document.body.appendChild(img);
+
+        setTimeout(() => {
+          document.body.removeChild(img);
+        }, 2000);
+      }
+
+      function testGlobalJSError() {
+        // Trigger a global JavaScript error
+        setTimeout(() => {
+          throw new Error("Simulated global JavaScript error");
+        }, 100);
+      }
+
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", initializeErrorTest);
+    </script>
+  </body>
+</html>

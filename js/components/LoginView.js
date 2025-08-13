@@ -30,10 +30,8 @@ class LoginView {
             <div class="login-container">
                 <div class="login-card">
                     <div class="login-header">
-                        <div class="login-logo">
-                            <img src="assets/logo.svg" alt="Dr. S. Sahboub Logo" 
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <h1 class="login-logo-text" style="display: none;">Dr. S. Sahboub</h1>
+                        <div class="login-logo-container">
+                            <!-- Logo will be inserted here by LogoManager -->
                         </div>
                         <p class="login-subtitle">Patient Management System</p>
                     </div>
