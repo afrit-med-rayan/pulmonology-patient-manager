@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance Optimizations Test - Patient Management System</title>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+
+    <style>
+      .test-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .test-section {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--bg-primary);
+      }
+
+      .test-title {
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .test-description {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .test-controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .test-results {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        font-family: monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .performance-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .metric-card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .metric-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <header>
+        <h1>Performance Optimizations Test</h1>
+        <p>
+          Testing the performance optimization features of the Patient
+          Management System
+        </p>
+      </header>
+
+      <!-- Search Index Test -->
+      <section class="test-section">
+        <h2 class="test-title">1. Search Index Performance</h2>
+        <p class="test-description">
+          Tests the performance of the search index building and optimized
+          search functionality.
+        </p>
+
+        <div class="test-controls">
+          <button class="btn btn-primary" id="build-index-btn">
+            Build Search Index
+          </button>
+          <button class="btn btn-secondary" id="test-search-btn">
+            Test Search Performance
+          </button>
+          <input
+            type="text"
+            id="search-term"
+            class="form-control"
+            placeholder="Enter search term..."
+            style="max-width: 200px"
+          />
+          <button class="btn btn-secondary" id="clear-index-btn">
+            Clear Index
+          </button>
+        </div>
+
+        <div class="test-results" id="search-results"></div>
+
+        <div class="performance-metrics">
+          <div class="metric-card">
+            <div class="metric-value" id="index-size">0</div>
+            <div class="metric-label">Index Entries</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="search-time">0ms</div>
+            <div class="metric-label">Last Search Time</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="cache-hit-rate">0%</div>
+            <div class="metric-label">Cache Hit Rate</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pagination Test -->
+      <section class="test-section">
+        <h2 class="test-title">2. Pagination Performance</h2>
+        <p class="test-description">
+          Tests pagination functionality with large datasets and memory
+          management.
+        </p>
+
+        <div class="test-controls">
+          <button class="btn btn-primary" id="generate-data-btn">
+            Generate Test Data
+          </button>
+          <select id="data-size" class="form-control" style="max-width: 150px">
+            <option value="100">100 patients</option>
+            <option value="500">500 patients</option>
+            <option value="1000">1000 patients</option>
+            <option value="5000">5000 patients</option>
+          </select>
+          <button class="btn btn-secondary" id="test-pagination-btn">
+            Test Pagination
+          </button>
+          <button class="btn btn-secondary" id="clear-data-btn">
+            Clear Data
+          </button>
+        </div>
+
+        <div class="test-results" id="pagination-results"></div>
+
+        <div class="performance-metrics">
+          <div class="metric-card">
+            <div class="metric-value" id="total-patients">0</div>
+            <div class="metric-label">Total Patients</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="load-time">0ms</div>
+            <div class="metric-label">Load Time</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="memory-usage">0KB</div>
+            <div class="metric-label">Memory Usage</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Virtual Scrolling Test -->
+      <section class="test-section">
+        <h2 class="test-title">3. Virtual Scrolling Performance</h2>
+        <p class="test-description">
+          Tests virtual scrolling implementation for handling large lists
+          efficiently.
+        </p>
+
+        <div class="test-controls">
+          <button class="btn btn-primary" id="setup-virtual-scroll-btn">
+            Setup Virtual Scroll
+          </button>
+          <button class="btn btn-secondary" id="test-scroll-performance-btn">
+            Test Scroll Performance
+          </button>
+          <button class="btn btn-secondary" id="toggle-virtual-scroll-btn">
+            Toggle Virtual Scroll
+          </button>
+        </div>
+
+        <div
+          id="virtual-scroll-demo"
+          class="virtual-scroll-container"
+          style="display: none"
+        >
+          <div id="virtual-scroll-content" class="virtual-scroll-content">
+            <!-- Virtual scroll content will be rendered here -->
+          </div>
+        </div>
+
+        <div class="test-results" id="virtual-scroll-results"></div>
+
+        <div class="performance-metrics">
+          <div class="metric-card">
+            <div class="metric-value" id="visible-items">0</div>
+            <div class="metric-label">Visible Items</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="render-time">0ms</div>
+            <div class="metric-label">Render Time</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="scroll-fps">0</div>
+            <div class="metric-label">Scroll FPS</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loading Indicators Test -->
+      <section class="test-section">
+        <h2 class="test-title">4. Loading Indicators</h2>
+        <p class="test-description">
+          Tests loading indicators for slow operations and user feedback.
+        </p>
+
+        <div class="test-controls">
+          <button class="btn btn-primary" id="show-loading-btn">
+            Show Loading
+          </button>
+          <button class="btn btn-secondary" id="simulate-slow-operation-btn">
+            Simulate Slow Operation
+          </button>
+          <button class="btn btn-secondary" id="hide-loading-btn">
+            Hide Loading
+          </button>
+        </div>
+
+        <div
+          id="loading-demo-container"
+          style="
+            min-height: 200px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            margin: 1rem 0;
+          "
+        >
+          <!-- Loading indicators will be shown here -->
+        </div>
+
+        <div class="test-results" id="loading-results"></div>
+      </section>
+
+      <!-- Overall Performance Metrics -->
+      <section class="test-section">
+        <h2 class="test-title">5. Overall Performance Metrics</h2>
+        <p class="test-description">
+          Overall system performance metrics and optimization status.
+        </p>
+
+        <div class="test-controls">
+          <button class="btn btn-primary" id="get-metrics-btn">
+            Get Performance Metrics
+          </button>
+          <button class="btn btn-secondary" id="force-cleanup-btn">
+            Force Memory Cleanup
+          </button>
+          <button class="btn btn-secondary" id="reset-metrics-btn">
+            Reset Metrics
+          </button>
+        </div>
+
+        <div class="test-results" id="metrics-results"></div>
+      </section>
+    </div>
+
+    <!-- Include all necessary JavaScript files -->
+    <script src="js/utils/constants.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/validation.js"></script>
+    <script src="js/models/Patient.js"></script>
+    <script src="js/components/ErrorHandler.js"></script>
+    <script src="js/components/DataStorageManager.js"></script>
+    <script src="js/components/PerformanceOptimizer.js"></script>
+    <script src="js/components/PatientManager.js"></script>
+    <script src="js/components/PatientListView.js"></script>
+
+    <script>
+      // Test application instance
+      let testApp = {
+        dataStorage: null,
+        performanceOptimizer: null,
+        patientManager: null,
+        testData: [],
+      };
+
+      // Initialize test environment
+      async function initializeTestEnvironment() {
+        try {
+          console.log("Initializing test environment...");
+
+          // Initialize components
+          testApp.dataStorage = new DataStorageManager();
+          await testApp.dataStorage.initializeStorage();
+
+          testApp.performanceOptimizer = new PerformanceOptimizer();
+          await testApp.performanceOptimizer.initialize(testApp.dataStorage);
+
+          testApp.patientManager = new PatientManager();
+          await testApp.patientManager.initialize(testApp.dataStorage);
+
+          console.log("Test environment initialized successfully");
+          updateResults(
+            "search-results",
+            "Test environment initialized successfully"
+          );
+        } catch (error) {
+          console.error("Failed to initialize test environment:", error);
+          updateResults("search-results", `Error: ${error.message}`);
+        }
+      }
+
+      // Generate test patient data
+      function generateTestPatients(count) {
+        const firstNames = [
+          "John",
+          "Jane",
+          "Michael",
+          "Sarah",
+          "David",
+          "Lisa",
+          "Robert",
+          "Emily",
+          "James",
+          "Maria",
+        ];
+        const lastNames = [
+          "Smith",
+          "Johnson",
+          "Williams",
+          "Brown",
+          "Jones",
+          "Garcia",
+          "Miller",
+          "Davis",
+          "Rodriguez",
+          "Martinez",
+        ];
+        const genders = ["male", "female"];
+        const residences = [
+          "New York",
+          "Los Angeles",
+          "Chicago",
+          "Houston",
+          "Phoenix",
+          "Philadelphia",
+          "San Antonio",
+          "San Diego",
+        ];
+
+        const patients = [];
+
+        for (let i = 0; i < count; i++) {
+          const firstName =
+            firstNames[Math.floor(Math.random() * firstNames.length)];
+          const lastName =
+            lastNames[Math.floor(Math.random() * lastNames.length)];
+          const age = Math.floor(Math.random() * 80) + 18;
+          const gender = genders[Math.floor(Math.random() * genders.length)];
+          const residence =
+            residences[Math.floor(Math.random() * residences.length)];
+
+          patients.push({
+            id: `test-${i}`,
+            firstName,
+            lastName,
+            fullName: `${firstName} ${lastName}`,
+            age,
+            gender,
+            placeOfResidence: residence,
+            dateOfBirth: new Date(
+              Date.now() - age * 365 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            visits: [],
+            createdAt: Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
+            updatedAt: Date.now(),
+          });
+        }
+
+        return patients;
+      }
+
+      // Update results display
+      function updateResults(elementId, content) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = content;
+        }
+      }
+
+      // Update metric display
+      function updateMetric(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = value;
+        }
+      }
+
+      // Event listeners
+      document.addEventListener("DOMContentLoaded", async () => {
+        await initializeTestEnvironment();
+
+        // Search Index Tests
+        document
+          .getElementById("build-index-btn")
+          .addEventListener("click", async () => {
+            try {
+              const startTime = performance.now();
+              await testApp.performanceOptimizer.buildSearchIndex();
+              const buildTime = performance.now() - startTime;
+
+              const metrics =
+                testApp.performanceOptimizer.getPerformanceMetrics();
+              updateResults(
+                "search-results",
+                `Search index built in ${buildTime.toFixed(2)}ms\nIndex size: ${
+                  metrics.searchIndex.size
+                } entries\nMemory usage: ${metrics.searchIndex.memoryUsage}`
+              );
+              updateMetric("index-size", metrics.searchIndex.size);
+            } catch (error) {
+              updateResults("search-results", `Error: ${error.message}`);
+            }
+          });
+
+        document
+          .getElementById("test-search-btn")
+          .addEventListener("click", async () => {
+            const searchTerm =
+              document.getElementById("search-term").value || "John";
+            try {
+              const startTime = performance.now();
+              const results =
+                await testApp.performanceOptimizer.optimizedSearch(searchTerm);
+              const searchTime = performance.now() - startTime;
+
+              const metrics =
+                testApp.performanceOptimizer.getPerformanceMetrics();
+              updateResults(
+                "search-results",
+                `Search for "${searchTerm}" completed in ${searchTime.toFixed(
+                  2
+                )}ms\nFound ${results.length} results\nCache hit rate: ${
+                  metrics.cache.hitRate
+                }`
+              );
+              updateMetric("search-time", `${searchTime.toFixed(2)}ms`);
+              updateMetric("cache-hit-rate", metrics.cache.hitRate);
+            } catch (error) {
+              updateResults("search-results", `Error: ${error.message}`);
+            }
+          });
+
+        // Pagination Tests
+        document
+          .getElementById("generate-data-btn")
+          .addEventListener("click", async () => {
+            const dataSize = parseInt(
+              document.getElementById("data-size").value
+            );
+            try {
+              const startTime = performance.now();
+              testApp.testData = generateTestPatients(dataSize);
+
+              // Save test data to storage
+              for (const patient of testApp.testData) {
+                await testApp.dataStorage.savePatient(patient);
+              }
+
+              const loadTime = performance.now() - startTime;
+              updateResults(
+                "pagination-results",
+                `Generated and saved ${dataSize} test patients in ${loadTime.toFixed(
+                  2
+                )}ms`
+              );
+              updateMetric("total-patients", dataSize);
+              updateMetric("load-time", `${loadTime.toFixed(2)}ms`);
+            } catch (error) {
+              updateResults("pagination-results", `Error: ${error.message}`);
+            }
+          });
+
+        document
+          .getElementById("test-pagination-btn")
+          .addEventListener("click", async () => {
+            try {
+              const startTime = performance.now();
+              const paginatedResults =
+                testApp.performanceOptimizer.paginateResults(testApp.testData, {
+                  page: 1,
+                  pageSize: 20,
+                });
+              const paginationTime = performance.now() - startTime;
+
+              updateResults(
+                "pagination-results",
+                `Pagination test completed in ${paginationTime.toFixed(
+                  2
+                )}ms\nPage 1 of ${
+                  paginatedResults.metadata.totalPages
+                }\nShowing ${paginatedResults.results.length} of ${
+                  paginatedResults.metadata.totalItems
+                } items`
+              );
+            } catch (error) {
+              updateResults("pagination-results", `Error: ${error.message}`);
+            }
+          });
+
+        // Virtual Scrolling Tests
+        document
+          .getElementById("setup-virtual-scroll-btn")
+          .addEventListener("click", () => {
+            const container = document.getElementById("virtual-scroll-demo");
+            container.style.display = "block";
+
+            const lazyConfig = testApp.performanceOptimizer.setupLazyLoading(
+              testApp.testData,
+              {
+                itemHeight: 120,
+                bufferSize: 5,
+              }
+            );
+
+            updateResults(
+              "virtual-scroll-results",
+              `Virtual scrolling setup complete\nTotal items: ${
+                lazyConfig.totalItems
+              }\nItem height: ${
+                lazyConfig.itemHeight
+              }px\nTotal height: ${lazyConfig.getTotalHeight()}px`
+            );
+            updateMetric("visible-items", "0");
+          });
+
+        // Loading Indicators Tests
+        document
+          .getElementById("show-loading-btn")
+          .addEventListener("click", () => {
+            testApp.performanceOptimizer.showLoadingIndicator(
+              "test-loading",
+              "Testing loading indicator...",
+              document.getElementById("loading-demo-container")
+            );
+            updateResults("loading-results", "Loading indicator shown");
+          });
+
+        document
+          .getElementById("simulate-slow-operation-btn")
+          .addEventListener("click", async () => {
+            testApp.performanceOptimizer.showLoadingIndicator(
+              "slow-operation",
+              "Simulating slow operation...",
+              document.getElementById("loading-demo-container")
+            );
+
+            // Simulate slow operation
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+
+            testApp.performanceOptimizer.hideLoadingIndicator("slow-operation");
+            updateResults(
+              "loading-results",
+              "Slow operation simulation completed"
+            );
+          });
+
+        document
+          .getElementById("hide-loading-btn")
+          .addEventListener("click", () => {
+            testApp.performanceOptimizer.hideLoadingIndicator("test-loading");
+            updateResults("loading-results", "Loading indicator hidden");
+          });
+
+        // Performance Metrics
+        document
+          .getElementById("get-metrics-btn")
+          .addEventListener("click", () => {
+            const metrics =
+              testApp.performanceOptimizer.getPerformanceMetrics();
+            updateResults("metrics-results", JSON.stringify(metrics, null, 2));
+          });
+
+        document
+          .getElementById("force-cleanup-btn")
+          .addEventListener("click", () => {
+            testApp.performanceOptimizer.forceMemoryCleanup();
+            updateResults("metrics-results", "Memory cleanup forced");
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -247,7 +247,7 @@ class PatientSearchView {
     }
 
     /**
-     * Perform the actual search
+     * Perform the actual search with performance optimizations
      * @param {string} searchTerm - Search term
      */
     async performSearch(searchTerm) {
@@ -258,8 +258,23 @@ class PatientSearchView {
 
             log(`Searching for patients with term: "${searchTerm}"`, 'info');
 
-            // Search using PatientManager
-            const results = await this.patientManager.searchPatients(searchTerm);
+            // Use performance optimizer if available
+            let results;
+            if (window.app && window.app.components.performanceOptimizer) {
+                const operationId = 'patient-search';
+                window.app.components.performanceOptimizer.showLoadingIndicator(
+                    operationId,
+                    'Searching patients...',
+                    document.getElementById('search-results-container')
+                );
+
+                results = await window.app.components.performanceOptimizer.optimizedSearch(searchTerm);
+
+                window.app.components.performanceOptimizer.hideLoadingIndicator(operationId);
+            } else {
+                // Fallback to regular search
+                results = await this.patientManager.searchPatients(searchTerm);
+            }
 
             this.searchResults = results;
             this.isSearching = false;

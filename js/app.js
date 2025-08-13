@@ -98,6 +98,12 @@ class App {
             await this.components.dataStorage.initializeStorage();
             console.log('DataStorageManager initialized successfully');
 
+            // Initialize performance optimizer
+            console.log('Initializing PerformanceOptimizer...');
+            this.components.performanceOptimizer = new PerformanceOptimizer();
+            await this.components.performanceOptimizer.initialize(this.components.dataStorage);
+            console.log('PerformanceOptimizer initialized successfully');
+
             // Initialize patient manager
             console.log('Initializing PatientManager...');
             this.components.patientManager = new PatientManager();
@@ -759,6 +765,129 @@ class App {
     }
 
     /**
+     * Load patient list view with performance optimizations
+     * @param {Element} container - Container element
+     */
+    async loadPatientListView(container) {
+        try {
+            console.log('Loading patient list view...');
+
+            // Create patient list view with performance optimizer
+            const patientListView = new PatientListView(
+                this.components.patientManager,
+                this.components.performanceOptimizer
+            );
+
+            // Render the view
+            container.innerHTML = patientListView.render();
+
+            // Initialize the view
+            await patientListView.initialize();
+
+            // Store reference for cleanup
+            this.currentView = patientListView;
+
+            console.log('Patient list view loaded successfully');
+
+        } catch (error) {
+            console.error('Failed to load patient list view:', error);
+            container.innerHTML = `
+                <div class="error-container">
+                    <h2>Error Loading Patient List</h2>
+                    <p>Failed to load the patient list. Please try refreshing the page.</p>
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Load patient search view with performance optimizations
+     * @param {Element} container - Container element
+     */
+    async loadPatientSearchView(container) {
+        try {
+            console.log('Loading patient search view...');
+
+            // Create patient search view
+            const patientSearchView = new PatientSearchView(
+                this.components.patientManager,
+                this.components.uiRouter
+            );
+
+            // Render the view
+            container.innerHTML = patientSearchView.render();
+
+            // Initialize the view
+            patientSearchView.initialize();
+
+            // Store reference for cleanup
+            this.currentView = patientSearchView;
+
+            // Make it globally accessible for event handlers
+            window.patientSearchView = patientSearchView;
+
+            console.log('Patient search view loaded successfully');
+
+        } catch (error) {
+            console.error('Failed to load patient search view:', error);
+            container.innerHTML = `
+                <div class="error-container">
+                    <h2>Error Loading Search</h2>
+                    <p>Failed to load the patient search. Please try refreshing the page.</p>
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Load create patient form
+     * @param {Element} container - Container element
+     */
+    async loadCreatePatientForm(container) {
+        try {
+            console.log('Loading create patient form...');
+
+            const formId = 'create-patient-form';
+            const formHtml = this.components.formManager.renderPatientForm(formId);
+
+            container.innerHTML = `
+                <div class="content-header">
+                    <h2 class="content-title">Create New Patient</h2>
+                    <p class="content-subtitle">Add a new patient record to the system</p>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        ${formHtml}
+                    </div>
+                </div>
+            `;
+
+            // Initialize the form
+            this.components.formManager.initializeForm(formId, {
+                displayName: 'New Patient Form',
+                description: 'Creating a new patient record',
+                onChangeCallback: (hasChanges) => {
+                    console.log('Form changes detected:', hasChanges);
+                }
+            });
+
+            console.log('Create patient form loaded successfully');
+
+        } catch (error) {
+            console.error('Failed to load create patient form:', error);
+            container.innerHTML = `
+                <div class="error-container">
+                    <h2>Error Loading Form</h2>
+                    <p>Failed to load the patient creation form. Please try refreshing the page.</p>
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                </div>
+            `;
+        }
+    }
+
+    /**
      * Get component status for debugging
      * @returns {Object} Component status information
      */
@@ -777,6 +906,10 @@ class App {
                 exists: !!this.components.dataStorage,
                 isInitialized: this.components.dataStorage ? this.components.dataStorage.isInitialized : false,
                 type: typeof this.components.dataStorage
+            },
+            performanceOptimizer: {
+                exists: !!this.components.performanceOptimizer,
+                type: typeof this.components.performanceOptimizer
             },
             patientManager: {
                 exists: !!this.components.patientManager,

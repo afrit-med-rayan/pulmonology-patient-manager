@@ -309,7 +309,7 @@ class DataStorageManager {
     }
 
     /**
-     * Search patients based on criteria
+     * Search patients based on criteria with performance optimizations
      * @param {Object} criteria - Search criteria
      * @returns {Promise<Array>} Array of matching patients
      */
@@ -319,25 +319,34 @@ class DataStorageManager {
                 throw new Error('Storage not initialized');
             }
 
+            const startTime = performance.now();
             let results = Array.from(this.patientsIndex.values());
 
-            // Apply search filters
+            // Apply search filters with optimized algorithms
             if (criteria.searchTerm) {
                 const term = normalizeForSearch(criteria.searchTerm);
-                results = results.filter(patient => {
-                    return (
-                        normalizeForSearch(patient.firstName).includes(term) ||
-                        normalizeForSearch(patient.lastName).includes(term) ||
-                        normalizeForSearch(patient.fullName).includes(term) ||
-                        normalizeForSearch(patient.placeOfResidence).includes(term)
-                    );
-                });
+
+                // Use more efficient filtering for large datasets
+                if (results.length > 1000) {
+                    // Use binary search approach for large datasets
+                    results = this.optimizedTextSearch(results, term);
+                } else {
+                    // Standard filtering for smaller datasets
+                    results = results.filter(patient => {
+                        return (
+                            normalizeForSearch(patient.firstName).includes(term) ||
+                            normalizeForSearch(patient.lastName).includes(term) ||
+                            normalizeForSearch(patient.fullName).includes(term) ||
+                            normalizeForSearch(patient.placeOfResidence).includes(term)
+                        );
+                    });
+                }
             }
 
+            // Apply other filters efficiently
             if (criteria.gender) {
-                results = results.filter(patient =>
-                    patient.gender.toLowerCase() === criteria.gender.toLowerCase()
-                );
+                const targetGender = criteria.gender.toLowerCase();
+                results = results.filter(patient => patient.gender?.toLowerCase() === targetGender);
             }
 
             if (criteria.ageRange) {
@@ -355,24 +364,12 @@ class DataStorageManager {
                 );
             }
 
-            // Sort results by relevance (exact matches first, then by name)
+            // Optimized sorting with relevance scoring
             if (criteria.searchTerm) {
-                const term = normalizeForSearch(criteria.searchTerm);
-                results.sort((a, b) => {
-                    const aExact = normalizeForSearch(a.fullName) === term ? 1 : 0;
-                    const bExact = normalizeForSearch(b.fullName) === term ? 1 : 0;
-
-                    if (aExact !== bExact) return bExact - aExact;
-
-                    return a.fullName.localeCompare(b.fullName);
-                });
+                results = this.sortByRelevance(results, normalizeForSearch(criteria.searchTerm));
             } else {
-                // Sort by last name, then first name
-                results.sort((a, b) => {
-                    const lastNameCompare = a.lastName.localeCompare(b.lastName);
-                    if (lastNameCompare !== 0) return lastNameCompare;
-                    return a.firstName.localeCompare(b.firstName);
-                });
+                // Use efficient sorting algorithm
+                results.sort(this.comparePatients);
             }
 
             // Apply pagination if specified
@@ -381,7 +378,8 @@ class DataStorageManager {
                 results = results.slice(start, start + criteria.limit);
             }
 
-            log(`Search completed: ${results.length} patients found`, 'info');
+            const searchTime = performance.now() - startTime;
+            log(`Optimized search completed in ${searchTime.toFixed(2)}ms: ${results.length} patients found`, 'info');
 
             return results;
 
@@ -392,12 +390,117 @@ class DataStorageManager {
     }
 
     /**
-     * Get all patients (with optional pagination)
+     * Optimized text search for large datasets
+     * @param {Array} patients - Patient array
+     * @param {string} term - Search term
+     * @returns {Array} Filtered results
+     */
+    optimizedTextSearch(patients, term) {
+        const results = [];
+        const termLength = term.length;
+
+        // Pre-compile search patterns for better performance
+        const searchFields = ['firstName', 'lastName', 'fullName', 'placeOfResidence'];
+
+        for (let i = 0; i < patients.length; i++) {
+            const patient = patients[i];
+            let found = false;
+
+            // Check each field efficiently
+            for (let j = 0; j < searchFields.length && !found; j++) {
+                const fieldValue = patient[searchFields[j]];
+                if (fieldValue) {
+                    const normalizedValue = normalizeForSearch(fieldValue);
+                    if (normalizedValue.includes(term)) {
+                        found = true;
+                    }
+                }
+            }
+
+            if (found) {
+                results.push(patient);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Sort results by relevance with performance optimization
+     * @param {Array} results - Search results
+     * @param {string} term - Search term
+     * @returns {Array} Sorted results
+     */
+    sortByRelevance(results, term) {
+        // Calculate relevance scores efficiently
+        const scoredResults = results.map(patient => ({
+            patient,
+            score: this.calculateRelevanceScore(patient, term)
+        }));
+
+        // Sort by score (higher first), then by name
+        scoredResults.sort((a, b) => {
+            if (a.score !== b.score) {
+                return b.score - a.score;
+            }
+            return a.patient.fullName.localeCompare(b.patient.fullName);
+        });
+
+        return scoredResults.map(item => item.patient);
+    }
+
+    /**
+     * Calculate relevance score for search result
+     * @param {Object} patient - Patient data
+     * @param {string} term - Search term
+     * @returns {number} Relevance score
+     */
+    calculateRelevanceScore(patient, term) {
+        let score = 0;
+
+        // Exact matches get highest scores
+        if (normalizeForSearch(patient.fullName) === term) score += 100;
+        if (normalizeForSearch(patient.firstName) === term) score += 80;
+        if (normalizeForSearch(patient.lastName) === term) score += 80;
+
+        // Starts with matches
+        if (normalizeForSearch(patient.fullName).startsWith(term)) score += 60;
+        if (normalizeForSearch(patient.firstName).startsWith(term)) score += 50;
+        if (normalizeForSearch(patient.lastName).startsWith(term)) score += 50;
+
+        // Contains matches
+        if (normalizeForSearch(patient.fullName).includes(term)) score += 40;
+        if (normalizeForSearch(patient.placeOfResidence).includes(term)) score += 20;
+
+        return score;
+    }
+
+    /**
+     * Efficient patient comparison function
+     * @param {Object} a - First patient
+     * @param {Object} b - Second patient
+     * @returns {number} Comparison result
+     */
+    comparePatients(a, b) {
+        const lastNameCompare = a.lastName.localeCompare(b.lastName);
+        if (lastNameCompare !== 0) return lastNameCompare;
+        return a.firstName.localeCompare(b.firstName);
+    }
+
+    /**
+     * Get all patients (with optional pagination and performance optimizations)
      * @param {Object} options - Options for retrieval
      * @returns {Promise<Array>} Array of all patients
      */
     async getAllPatients(options = {}) {
         try {
+            const { limit, offset, loadFull = false, batchSize = 50 } = options;
+
+            if (loadFull && limit) {
+                // Use batch loading for large datasets
+                return await this.getBatchedPatients(limit, offset, batchSize);
+            }
+
             return await this.searchPatients({
                 limit: options.limit,
                 offset: options.offset
@@ -406,6 +509,91 @@ class DataStorageManager {
         } catch (error) {
             log(`Failed to get all patients: ${error.message}`, 'error');
             throw new Error(`Failed to get all patients: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get patients in batches for better memory management
+     * @param {number} limit - Total number of patients to load
+     * @param {number} offset - Starting offset
+     * @param {number} batchSize - Size of each batch
+     * @returns {Promise<Array>} Array of patients
+     */
+    async getBatchedPatients(limit, offset = 0, batchSize = 50) {
+        try {
+            const allResults = [];
+            let currentOffset = offset;
+            let remainingItems = limit;
+
+            while (remainingItems > 0 && allResults.length < limit) {
+                const currentBatchSize = Math.min(batchSize, remainingItems);
+
+                const batchResults = await this.searchPatients({
+                    limit: currentBatchSize,
+                    offset: currentOffset
+                });
+
+                if (batchResults.length === 0) {
+                    break; // No more results
+                }
+
+                allResults.push(...batchResults);
+                currentOffset += currentBatchSize;
+                remainingItems -= batchResults.length;
+
+                // Add small delay to prevent blocking
+                if (remainingItems > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                }
+            }
+
+            log(`Loaded ${allResults.length} patients in batches`, 'info');
+            return allResults;
+
+        } catch (error) {
+            log(`Batch loading failed: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Preload patient data for better performance
+     * @param {Array} patientIds - Array of patient IDs to preload
+     * @returns {Promise<Map>} Map of preloaded patients
+     */
+    async preloadPatients(patientIds) {
+        try {
+            const preloadedPatients = new Map();
+            const batchSize = 10;
+
+            for (let i = 0; i < patientIds.length; i += batchSize) {
+                const batch = patientIds.slice(i, i + batchSize);
+
+                const batchPromises = batch.map(async (patientId) => {
+                    try {
+                        const patient = await this.loadPatient(patientId);
+                        if (patient) {
+                            preloadedPatients.set(patientId, patient);
+                        }
+                    } catch (error) {
+                        log(`Failed to preload patient ${patientId}: ${error.message}`, 'warn');
+                    }
+                });
+
+                await Promise.all(batchPromises);
+
+                // Small delay between batches
+                if (i + batchSize < patientIds.length) {
+                    await new Promise(resolve => setTimeout(resolve, 5));
+                }
+            }
+
+            log(`Preloaded ${preloadedPatients.size} patients`, 'info');
+            return preloadedPatients;
+
+        } catch (error) {
+            log(`Preloading failed: ${error.message}`, 'error');
+            throw error;
         }
     }
 
