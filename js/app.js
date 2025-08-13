@@ -61,6 +61,10 @@ class App {
         try {
             console.log('Starting component initialization...');
 
+            // Initialize error handler first
+            console.log('Initializing ErrorHandler...');
+            this.components.errorHandler = new ErrorHandler();
+
             // Initialize change tracker
             console.log('Initializing ChangeTracker...');
             this.components.changeTracker = new ChangeTracker();
@@ -300,7 +304,7 @@ class App {
                         </div>
                         <div class="header-actions">
                             <span class="user-info">Welcome, ${user.username}</span>
-                            <button class="btn btn-secondary logout-btn" onclick="app.handleLogout()">
+                            <button class="btn btn-secondary logout-btn" id="logout-button">
                                 Logout
                             </button>
                         </div>
@@ -469,6 +473,24 @@ class App {
      */
     async handleLogout() {
         try {
+            console.log('Logout button clicked');
+
+            // Check if required components are available
+            if (!this.components.authManager) {
+                console.error('AuthManager not available');
+                this.performLogout();
+                return;
+            }
+
+            if (!this.components.modalManager) {
+                console.error('ModalManager not available, using simple confirmation');
+                const confirmed = confirm('Are you sure you want to logout?');
+                if (confirmed) {
+                    this.performLogout();
+                }
+                return;
+            }
+
             // Check for unsaved changes
             const isSafeToLogout = await this.components.authManager.checkUnsavedChanges();
 
@@ -508,6 +530,16 @@ class App {
         } catch (error) {
             console.error('Error during logout:', error);
 
+            // Use ErrorHandler if available
+            if (this.components.errorHandler) {
+                this.components.errorHandler.handleError({
+                    type: this.components.errorHandler.errorTypes.CLIENT,
+                    message: 'Error during logout process',
+                    error: error,
+                    context: 'Logout Handler'
+                });
+            }
+
             // Show error and ask user what to do
             const forceLogout = confirm(
                 'An error occurred while checking for unsaved changes. ' +
@@ -517,6 +549,16 @@ class App {
             if (forceLogout) {
                 this.performLogout();
             }
+        }
+    }
+
+    /**
+     * Simple logout method as fallback
+     */
+    simpleLogout() {
+        const confirmed = confirm('Are you sure you want to logout?');
+        if (confirmed) {
+            this.performLogout();
         }
     }
 
@@ -786,6 +828,15 @@ class App {
                 this.handleDashboardAction(action);
             });
         });
+
+        // Handle logout button click
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.handleLogout();
+            });
+        }
     }
 
     /**
@@ -1084,10 +1135,12 @@ class App {
      */
     async handleFormSubmit(detail) {
         const { formId, data } = detail;
+        let loadingState = null;
 
         try {
             if (formId === 'create-patient-form') {
                 // Show loading state
+                loadingState = this.components.errorHandler.showLoading('Creating patient record...');
                 this.showFormLoading(formId, true);
 
                 // Create patient using PatientManager
@@ -1108,8 +1161,10 @@ class App {
                 const result = await this.components.patientManager.createPatient(data);
 
                 if (result.success) {
-                    // Show success message
-                    this.showToast(result.message, 'success');
+                    // Show success message using ErrorHandler
+                    this.components.errorHandler.showSuccess(
+                        result.message || 'Patient record created successfully!'
+                    );
 
                     // Clear form unsaved changes
                     this.components.formManager.markFormAsSaved(formId);
@@ -1126,25 +1181,21 @@ class App {
                 console.log('Form submission for:', formId, data);
             }
         } catch (error) {
-            console.error('Error submitting form:', error);
-            console.error('Error details:', error.stack);
-
-            // Show user-friendly error message
-            let errorMessage = 'Failed to save patient record. Please try again.';
-
-            if (error.message.includes('validation')) {
-                errorMessage = 'Please check the form for errors and try again.';
-            } else if (error.message.includes('storage')) {
-                errorMessage = 'Unable to save data. Please check your permissions and try again.';
-            } else if (error.message.includes('not initialized') || error.message.includes('not ready')) {
-                errorMessage = 'System not ready. Please refresh the page and try again.';
-            }
-
-            // Add the actual error message for debugging
-            errorMessage += ` (Debug: ${error.message})`;
-
-            this.showToast(errorMessage, 'error');
+            // Use ErrorHandler for comprehensive error handling
+            this.components.errorHandler.handleError({
+                type: this.components.errorHandler.errorTypes.STORAGE,
+                message: error.message,
+                error: error,
+                context: `Form Submission - ${formId}`,
+                formId: formId,
+                formData: data,
+                retryCallback: () => this.handleFormSubmit(detail)
+            });
         } finally {
+            // Hide loading states
+            if (loadingState) {
+                this.components.errorHandler.hideLoading(loadingState.key);
+            }
             this.showFormLoading(formId, false);
         }
     }
@@ -1238,6 +1289,20 @@ class App {
 
 // Global application instance
 let app;
+
+// Global logout function as backup
+window.logout = function () {
+    if (window.app && window.app.handleLogout) {
+        window.app.handleLogout();
+    } else if (window.app && window.app.simpleLogout) {
+        window.app.simpleLogout();
+    } else {
+        const confirmed = confirm('Are you sure you want to logout?');
+        if (confirmed) {
+            window.location.reload();
+        }
+    }
+};
 
 // Debug function for troubleshooting
 window.debugApp = function () {

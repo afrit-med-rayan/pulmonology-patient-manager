@@ -670,8 +670,108 @@ class FormManager {
      * @param {Element} field - Field element to validate
      */
     validateField(formId, field) {
-        // Basic validation - can be expanded
-        return true;
+        const fieldName = field.name;
+        const fieldValue = field.value.trim();
+        const errors = [];
+
+        // Skip validation for hidden fields
+        if (field.type === 'hidden') return true;
+
+        try {
+            // Required field validation
+            if (field.required && !fieldValue) {
+                errors.push('This field is required');
+            }
+
+            // Field-specific validation
+            if (fieldValue) {
+                if (fieldName === 'firstName' || fieldName === 'lastName') {
+                    if (fieldValue.length < 2) {
+                        errors.push('Must be at least 2 characters long');
+                    }
+                    if (fieldValue.length > 50) {
+                        errors.push('Must be less than 50 characters');
+                    }
+                    if (!/^[a-zA-Z\s\-']+$/.test(fieldValue)) {
+                        errors.push('Only letters, spaces, hyphens, and apostrophes are allowed');
+                    }
+                }
+
+                if (fieldName === 'dateOfBirth' || fieldName.includes('visitDate')) {
+                    const date = new Date(fieldValue);
+                    const today = new Date();
+                    today.setHours(23, 59, 59, 999);
+
+                    if (isNaN(date.getTime())) {
+                        errors.push('Please enter a valid date');
+                    } else if (date > today) {
+                        errors.push('Date cannot be in the future');
+                    }
+                }
+
+                if (fieldName === 'placeOfResidence') {
+                    if (fieldValue.length < 2) {
+                        errors.push('Must be at least 2 characters long');
+                    }
+                    if (fieldValue.length > 100) {
+                        errors.push('Must be less than 100 characters');
+                    }
+                }
+
+                // Validate textarea fields for visits
+                if (fieldName.includes('medications') || fieldName.includes('observations') || fieldName.includes('additionalComments')) {
+                    if (fieldValue.length > 2000) {
+                        errors.push('Text is too long (maximum 2000 characters)');
+                    }
+                }
+            }
+
+            // Display errors or clear them
+            if (errors.length > 0) {
+                this.showFieldError(formId, field, errors[0]);
+                return false;
+            } else {
+                this.clearFieldError(formId, field);
+                return true;
+            }
+
+        } catch (error) {
+            // Handle validation errors
+            if (typeof window !== 'undefined' && window.app && window.app.components.errorHandler) {
+                window.app.components.errorHandler.handleError({
+                    type: window.app.components.errorHandler.errorTypes.CLIENT,
+                    message: 'Error validating form field',
+                    error: error,
+                    context: `Field Validation - ${formId}.${fieldName}`,
+                    formId: formId,
+                    fieldName: fieldName
+                });
+            }
+
+            console.error('Field validation error:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Show field validation error
+     * @param {string} formId - Form identifier
+     * @param {Element} field - Field element
+     * @param {string} message - Error message
+     */
+    showFieldError(formId, field, message) {
+        field.classList.add('error');
+
+        const errorId = field.id + '-error';
+        const errorContainer = document.getElementById(errorId);
+
+        if (errorContainer) {
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+        }
+
+        // Add error indicator
+        this.addFieldErrorIndicator(field);
     }
 
     /**
@@ -681,6 +781,88 @@ class FormManager {
      */
     clearFieldError(formId, field) {
         field.classList.remove('error');
+        field.classList.add('valid');
+
+        const errorId = field.id + '-error';
+        const errorContainer = document.getElementById(errorId);
+
+        if (errorContainer) {
+            errorContainer.textContent = '';
+            errorContainer.style.display = 'none';
+        }
+
+        // Remove error indicator and add success indicator
+        this.removeFieldErrorIndicator(field);
+        this.addFieldSuccessIndicator(field);
+    }
+
+    /**
+     * Add error indicator to field
+     * @param {Element} field - Field element
+     */
+    addFieldErrorIndicator(field) {
+        this.removeFieldIndicators(field);
+
+        const indicator = document.createElement('span');
+        indicator.className = 'field-error-indicator';
+        indicator.innerHTML = '✗';
+        indicator.setAttribute('aria-hidden', 'true');
+
+        const parent = field.parentElement;
+        if (parent && parent.style.position !== 'relative') {
+            parent.style.position = 'relative';
+        }
+        parent.appendChild(indicator);
+    }
+
+    /**
+     * Add success indicator to field
+     * @param {Element} field - Field element
+     */
+    addFieldSuccessIndicator(field) {
+        // Only add success indicator for required fields that have values
+        if (!field.required || !field.value.trim()) {
+            return;
+        }
+
+        this.removeFieldIndicators(field);
+
+        const indicator = document.createElement('span');
+        indicator.className = 'field-success-indicator';
+        indicator.innerHTML = '✓';
+        indicator.setAttribute('aria-hidden', 'true');
+
+        const parent = field.parentElement;
+        if (parent && parent.style.position !== 'relative') {
+            parent.style.position = 'relative';
+        }
+        parent.appendChild(indicator);
+    }
+
+    /**
+     * Remove all field indicators
+     * @param {Element} field - Field element
+     */
+    removeFieldIndicators(field) {
+        const parent = field.parentElement;
+        if (parent) {
+            const indicators = parent.querySelectorAll('.field-error-indicator, .field-success-indicator');
+            indicators.forEach(indicator => indicator.remove());
+        }
+    }
+
+    /**
+     * Remove error indicator from field
+     * @param {Element} field - Field element
+     */
+    removeFieldErrorIndicator(field) {
+        const parent = field.parentElement;
+        if (parent) {
+            const indicator = parent.querySelector('.field-error-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
     }
 
     /**
@@ -746,13 +928,197 @@ class FormManager {
      * @param {string} formId - Form identifier
      */
     async handleFormSubmit(formId) {
-        const formData = this.getFormData(formId);
+        try {
+            // Validate form before submission
+            const validation = this.validateForm(formId);
 
-        // Emit form submit event
-        const event = new CustomEvent('formSubmit', {
-            detail: { formId, data: formData }
+            if (!validation.isValid) {
+                // Show validation errors
+                this.showValidationErrors(formId, validation.errors);
+
+                // Use ErrorHandler if available
+                if (typeof window !== 'undefined' && window.app && window.app.components.errorHandler) {
+                    window.app.components.errorHandler.handleError({
+                        type: window.app.components.errorHandler.errorTypes.VALIDATION,
+                        message: 'Please correct the form errors and try again.',
+                        context: `Form Validation - ${formId}`,
+                        formId: formId,
+                        validationErrors: validation.errors
+                    });
+                }
+
+                // Scroll to first error
+                const firstError = document.querySelector(`#${formId} .form-control.error`);
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return;
+            }
+
+            const formData = this.getFormData(formId);
+
+            // Emit form submit event
+            const event = new CustomEvent('formSubmit', {
+                detail: { formId, data: formData }
+            });
+            document.dispatchEvent(event);
+
+        } catch (error) {
+            // Handle unexpected errors during form submission
+            if (typeof window !== 'undefined' && window.app && window.app.components.errorHandler) {
+                window.app.components.errorHandler.handleError({
+                    type: window.app.components.errorHandler.errorTypes.CLIENT,
+                    message: 'An error occurred while processing the form.',
+                    error: error,
+                    context: `Form Submission Handler - ${formId}`,
+                    formId: formId
+                });
+            } else {
+                console.error('Form submission error:', error);
+            }
+        }
+    }
+
+    /**
+     * Validate entire form
+     * @param {string} formId - Form identifier
+     * @returns {Object} Validation result
+     */
+    validateForm(formId) {
+        const form = this.forms[formId];
+        if (!form) {
+            return { isValid: false, errors: { form: 'Form not found' } };
+        }
+
+        const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+        const errors = {};
+
+        // Validate each required field
+        inputs.forEach(input => {
+            if (!this.validateField(formId, input)) {
+                isValid = false;
+                errors[input.name] = 'Validation failed';
+            }
         });
-        document.dispatchEvent(event);
+
+        // Additional custom validation
+        const customValidation = this.performCustomValidation(formId, form);
+        if (!customValidation.isValid) {
+            isValid = false;
+            Object.assign(errors, customValidation.errors);
+        }
+
+        this.validationErrors[formId] = errors;
+        return { isValid, errors };
+    }
+
+    /**
+     * Perform custom validation logic
+     * @param {string} formId - Form identifier
+     * @param {HTMLFormElement} form - Form element
+     * @returns {Object} Validation result
+     */
+    performCustomValidation(formId, form) {
+        const errors = {};
+        let isValid = true;
+
+        // Validate date of birth is not in the future
+        const dobField = form.querySelector('[name="dateOfBirth"]');
+        if (dobField && dobField.value) {
+            const dob = new Date(dobField.value);
+            const today = new Date();
+            today.setHours(23, 59, 59, 999);
+
+            if (dob > today) {
+                errors.dateOfBirth = 'Date of birth cannot be in the future';
+                isValid = false;
+                this.showFieldError(formId, dobField, errors.dateOfBirth);
+            }
+        }
+
+        // Validate that at least one visit has meaningful data if visits exist
+        const visitElements = form.querySelectorAll('.visit-item');
+        if (visitElements.length > 0) {
+            let hasValidVisit = false;
+            visitElements.forEach((visitElement, index) => {
+                const dateField = visitElement.querySelector('[name*="visitDate"]');
+                const medicationsField = visitElement.querySelector('[name*="medications"]');
+                const observationsField = visitElement.querySelector('[name*="observations"]');
+
+                if (dateField && dateField.value &&
+                    (medicationsField && medicationsField.value.trim() ||
+                        observationsField && observationsField.value.trim())) {
+                    hasValidVisit = true;
+                }
+            });
+
+            if (!hasValidVisit && visitElements.length > 0) {
+                errors.visits = 'At least one visit must have a date and either medications or observations';
+                isValid = false;
+            }
+        }
+
+        return { isValid, errors };
+    }
+
+    /**
+     * Show validation errors summary
+     * @param {string} formId - Form identifier
+     * @param {Object} errors - Validation errors
+     */
+    showValidationErrors(formId, errors) {
+        const form = this.forms[formId];
+        if (!form) return;
+
+        // Remove existing error summary
+        const existingSummary = form.querySelector('.form-error-summary');
+        if (existingSummary) {
+            existingSummary.remove();
+        }
+
+        // Create error summary
+        const errorSummary = document.createElement('div');
+        errorSummary.className = 'form-error-summary';
+
+        const errorList = Object.entries(errors).map(([field, message]) =>
+            `<li class="form-error-summary-item">${this.getFieldDisplayName(field)}: ${message}</li>`
+        ).join('');
+
+        errorSummary.innerHTML = `
+            <div class="form-error-summary-title">
+                <span>⚠</span> Please correct the following errors:
+            </div>
+            <ul class="form-error-summary-list">
+                ${errorList}
+            </ul>
+        `;
+
+        // Insert at the top of the form
+        form.insertBefore(errorSummary, form.firstChild);
+
+        // Scroll to error summary
+        errorSummary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    /**
+     * Get display name for form field
+     * @param {string} fieldName - Field name
+     * @returns {string} Display name
+     */
+    getFieldDisplayName(fieldName) {
+        const displayNames = {
+            firstName: 'First Name',
+            lastName: 'Last Name',
+            dateOfBirth: 'Date of Birth',
+            placeOfResidence: 'Place of Residence',
+            gender: 'Gender',
+            visits: 'Visits',
+            form: 'Form'
+        };
+
+        return displayNames[fieldName] || fieldName;
     }
 
     /**
