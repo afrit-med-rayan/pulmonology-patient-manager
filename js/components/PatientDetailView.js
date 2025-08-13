@@ -8,11 +8,17 @@ class PatientDetailView {
         this.patient = patient;
         this.patientManager = patientManager;
         this.uiRouter = uiRouter;
+        this.isEditMode = false;
+        this.formManager = null;
+        this.originalPatientData = null;
 
         // Bind methods
         this.handleEdit = this.handleEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleBack = this.handleBack.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+        this.handleCancelEdit = this.handleCancelEdit.bind(this);
+        this.toggleEditMode = this.toggleEditMode.bind(this);
     }
 
     /**
@@ -24,6 +30,18 @@ class PatientDetailView {
             return this.renderNotFound();
         }
 
+        if (this.isEditMode) {
+            return this.renderEditMode();
+        } else {
+            return this.renderViewMode();
+        }
+    }
+
+    /**
+     * Render view mode (read-only display)
+     * @returns {string} HTML string for view mode
+     */
+    renderViewMode() {
         return `
             <div class="patient-detail-container">
                 <div class="content-header">
@@ -107,6 +125,56 @@ class PatientDetailView {
                                     <span class="info-value">${this.formatDateTime(this.patient.updatedAt)}</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Render edit mode (editable form)
+     * @returns {string} HTML string for edit mode
+     */
+    renderEditMode() {
+        // Initialize form manager if not already done
+        if (!this.formManager) {
+            this.formManager = new FormManager();
+        }
+
+        const formId = `edit-patient-${this.patient.id}`;
+
+        return `
+            <div class="patient-detail-container edit-mode">
+                <div class="content-header">
+                    <div class="content-header-actions">
+                        <button class="btn btn-secondary back-button" onclick="patientDetailView.handleBack()">
+                            ← Back to Search
+                        </button>
+                        <div class="patient-actions">
+                            <button class="btn btn-success save-button" onclick="patientDetailView.handleSave()">
+                                Save Changes
+                            </button>
+                            <button class="btn btn-secondary cancel-edit-button" onclick="patientDetailView.handleCancelEdit()">
+                                Cancel Edit
+                            </button>
+                        </div>
+                    </div>
+                    <h2 class="content-title">Edit Patient: ${this.patient.getFullName()}</h2>
+                    <p class="content-subtitle">Modify patient record information</p>
+                    <div class="unsaved-changes-indicator" id="unsaved-changes-indicator" style="display: none;">
+                        <span class="indicator-icon">⚠️</span>
+                        <span class="indicator-text">You have unsaved changes</span>
+                    </div>
+                </div>
+
+                <div class="patient-edit-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit Patient Information</h3>
+                        </div>
+                        <div class="card-body">
+                            ${this.formManager.renderPatientForm(formId, this.patient.toJSON())}
                         </div>
                     </div>
                 </div>
@@ -216,6 +284,59 @@ class PatientDetailView {
      */
     initialize() {
         log('PatientDetailView initialized', 'info');
+
+        // Initialize form manager if in edit mode
+        if (this.isEditMode && !this.formManager) {
+            this.formManager = new FormManager();
+            const formId = `edit-patient-${this.patient.id}`;
+            setTimeout(() => {
+                this.formManager.initializeForm(formId);
+                this.setupChangeTracking(formId);
+            }, 100);
+        }
+
+        // Set up keyboard shortcuts
+        this.setupKeyboardShortcuts();
+    }
+
+    /**
+     * Set up keyboard shortcuts
+     */
+    setupKeyboardShortcuts() {
+        const handleKeyDown = (event) => {
+            // Only handle shortcuts when this view is active
+            if (!document.querySelector('.patient-detail-container')) {
+                return;
+            }
+
+            if (event.ctrlKey || event.metaKey) {
+                switch (event.key) {
+                    case 's':
+                        event.preventDefault();
+                        if (this.isEditMode) {
+                            this.handleSave();
+                        }
+                        break;
+                    case 'e':
+                        event.preventDefault();
+                        if (!this.isEditMode) {
+                            this.handleEdit();
+                        }
+                        break;
+                    case 'Escape':
+                        event.preventDefault();
+                        if (this.isEditMode) {
+                            this.handleCancelEdit();
+                        }
+                        break;
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        // Store reference for cleanup
+        this.keydownHandler = handleKeyDown;
     }
 
     /**
@@ -224,15 +345,7 @@ class PatientDetailView {
     handleEdit() {
         try {
             log(`Edit patient requested: ${this.patient.id}`, 'info');
-
-            if (this.uiRouter) {
-                this.uiRouter.navigateTo('edit-patient', { patientId: this.patient.id });
-            } else if (window.app) {
-                window.app.navigateToRoute('edit-patient', { patientId: this.patient.id });
-            } else {
-                this.showToast('Edit functionality will be implemented in a future task', 'info');
-            }
-
+            this.toggleEditMode(true);
         } catch (error) {
             log(`Failed to edit patient: ${error.message}`, 'error');
             this.showToast('Failed to open edit form', 'error');
@@ -289,6 +402,17 @@ class PatientDetailView {
         try {
             log('Back to search requested', 'info');
 
+            // Check for unsaved changes if in edit mode
+            if (this.isEditMode && this.hasUnsavedChanges()) {
+                const confirmed = confirm(
+                    'You have unsaved changes. Are you sure you want to leave without saving?\n\n' +
+                    'Your changes will be lost.'
+                );
+                if (!confirmed) {
+                    return;
+                }
+            }
+
             if (window.app) {
                 window.app.navigateToRoute('search-patients');
             } else if (this.uiRouter) {
@@ -303,6 +427,209 @@ class PatientDetailView {
 
         } catch (error) {
             log(`Failed to navigate back: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Toggle edit mode on/off
+     * @param {boolean} editMode - Whether to enable edit mode
+     */
+    toggleEditMode(editMode) {
+        try {
+            this.isEditMode = editMode;
+
+            if (editMode) {
+                // Store original data for change tracking
+                this.originalPatientData = deepClone(this.patient.toJSON());
+                log('Entering edit mode', 'info');
+            } else {
+                // Clear original data
+                this.originalPatientData = null;
+                log('Exiting edit mode', 'info');
+            }
+
+            // Re-render the view
+            this.rerender();
+
+            // Initialize form if entering edit mode
+            if (editMode && this.formManager) {
+                const formId = `edit-patient-${this.patient.id}`;
+                setTimeout(() => {
+                    this.formManager.initializeForm(formId);
+                    this.setupChangeTracking(formId);
+                }, 100);
+            }
+
+        } catch (error) {
+            log(`Failed to toggle edit mode: ${error.message}`, 'error');
+            this.showToast('Failed to toggle edit mode', 'error');
+        }
+    }
+
+    /**
+     * Handle save button click
+     */
+    async handleSave() {
+        try {
+            log('Save patient changes requested', 'info');
+
+            if (!this.formManager) {
+                throw new Error('Form manager not available');
+            }
+
+            const formId = `edit-patient-${this.patient.id}`;
+
+            // Validate form
+            const validation = this.formManager.validateForm(formId);
+            if (!validation.isValid) {
+                this.showToast('Please fix the validation errors before saving', 'error');
+                return;
+            }
+
+            // Get form data
+            const formData = this.formManager.getFormData(formId);
+
+            // Show loading state
+            this.showLoadingState('Saving changes...');
+
+            // Update patient via patient manager
+            const result = await this.patientManager.updatePatient(this.patient.id, formData);
+
+            if (result.success) {
+                // Update local patient data
+                this.patient = new Patient(result.patient);
+
+                // Mark form as saved
+                this.formManager.markFormAsSaved(formId);
+
+                // Exit edit mode
+                this.toggleEditMode(false);
+
+                // Show success message
+                this.showToast('Patient record updated successfully', 'success');
+
+                log(`Patient ${this.patient.getFullName()} updated successfully`, 'info');
+            } else {
+                throw new Error(result.message || 'Failed to update patient');
+            }
+
+        } catch (error) {
+            log(`Failed to save patient changes: ${error.message}`, 'error');
+            this.showToast('Failed to save changes. Please try again.', 'error');
+        } finally {
+            this.hideLoadingState();
+        }
+    }
+
+    /**
+     * Handle cancel edit button click
+     */
+    handleCancelEdit() {
+        try {
+            log('Cancel edit requested', 'info');
+
+            // Check for unsaved changes
+            if (this.hasUnsavedChanges()) {
+                const confirmed = confirm(
+                    'You have unsaved changes. Are you sure you want to cancel?\n\n' +
+                    'Your changes will be lost.'
+                );
+                if (!confirmed) {
+                    return;
+                }
+            }
+
+            // Exit edit mode
+            this.toggleEditMode(false);
+
+        } catch (error) {
+            log(`Failed to cancel edit: ${error.message}`, 'error');
+            this.showToast('Failed to cancel edit', 'error');
+        }
+    }
+
+    /**
+     * Check if there are unsaved changes
+     * @returns {boolean} True if there are unsaved changes
+     */
+    hasUnsavedChanges() {
+        if (!this.isEditMode || !this.formManager || !this.originalPatientData) {
+            return false;
+        }
+
+        const formId = `edit-patient-${this.patient.id}`;
+        return this.formManager.hasUnsavedChanges(formId);
+    }
+
+    /**
+     * Set up change tracking for the form
+     * @param {string} formId - Form identifier
+     */
+    setupChangeTracking(formId) {
+        if (!this.formManager) return;
+
+        // Set up change tracking
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                this.updateUnsavedChangesIndicator();
+            });
+            input.addEventListener('change', () => {
+                this.updateUnsavedChangesIndicator();
+            });
+        });
+    }
+
+    /**
+     * Update the unsaved changes indicator
+     */
+    updateUnsavedChangesIndicator() {
+        const indicator = document.getElementById('unsaved-changes-indicator');
+        if (!indicator) return;
+
+        if (this.hasUnsavedChanges()) {
+            indicator.style.display = 'flex';
+        } else {
+            indicator.style.display = 'none';
+        }
+    }
+
+    /**
+     * Re-render the current view
+     */
+    rerender() {
+        const container = document.querySelector('.patient-detail-container');
+        if (container && container.parentElement) {
+            container.parentElement.innerHTML = this.render();
+        }
+    }
+
+    /**
+     * Show loading state
+     * @param {string} message - Loading message
+     */
+    showLoadingState(message = 'Loading...') {
+        const saveButton = document.querySelector('.save-button');
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.innerHTML = `
+                <span class="loading-spinner-small"></span>
+                ${message}
+            `;
+        }
+    }
+
+    /**
+     * Hide loading state
+     */
+    hideLoadingState() {
+        const saveButton = document.querySelector('.save-button');
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.innerHTML = 'Save Changes';
         }
     }
 
@@ -434,6 +761,23 @@ class PatientDetailView {
      */
     destroy() {
         log('PatientDetailView destroyed', 'info');
+
+        // Clean up keyboard shortcuts
+        if (this.keydownHandler) {
+            document.removeEventListener('keydown', this.keydownHandler);
+            this.keydownHandler = null;
+        }
+
+        // Clean up form manager
+        if (this.formManager) {
+            const formId = `edit-patient-${this.patient.id}`;
+            this.formManager.destroyForm(formId);
+            this.formManager = null;
+        }
+
+        // Clear references
+        this.originalPatientData = null;
+        this.isEditMode = false;
     }
 }
 
