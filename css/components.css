@@ -1484,3 +1484,95 @@ atient Detail View Edit Mode Styles */
         padding: var(--spacing-xs) var(--spacing-sm);
     }
 }
+
+/* Patient Deletion Dialog Styles */
+.modal-container:not(.hidden) {
+    display: flex;
+}
+
+.patient-name-highlight {
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-color);
+    font-size: var(--font-size-lg);
+    margin: var(--spacing-sm) 0;
+    padding: var(--spacing-sm);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.warning-message {
+    display: flex;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--radius-sm);
+    color: #856404;
+}
+
+.warning-icon {
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+}
+
+.warning-text p {
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.warning-text ul {
+    margin: var(--spacing-sm) 0 0 var(--spacing-md);
+    padding: 0;
+}
+
+.warning-text li {
+    margin-bottom: var(--spacing-xs);
+}
+
+.success-message {
+    display: flex;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: var(--radius-sm);
+    color: #155724;
+}
+
+.success-icon {
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+}
+
+.success-text p {
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* Enhanced modal animations */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Delete button loading state */
+.delete-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.delete-button .loading-spinner-small {
+    margin-right: var(--spacing-xs);
+}
