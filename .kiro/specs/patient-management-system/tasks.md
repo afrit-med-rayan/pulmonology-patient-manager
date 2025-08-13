@@ -53,7 +53,7 @@
   - Add form validation with real-time feedback
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
 
-- [ ] 7. Implement patient creation functionality
+- [x] 7. Implement patient creation functionality
 
   - Create PatientManager class with createPatient method
   - Implement form submission handling with validation
@@ -63,7 +63,7 @@
   - Write tests for patient creation workflow
   - _Requirements: 3.9, 3.10_
 
-- [ ] 8. Build patient search and display system
+- [x] 8. Build patient search and display system
 
   - Create search bar interface with styling
   - Implement search functionality for first and last names

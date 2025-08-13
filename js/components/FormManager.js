@@ -792,6 +792,15 @@ class FormManager {
     }
 
     /**
+     * Mark form as saved (clear unsaved changes)
+     * @param {string} formId - Form identifier
+     */
+    markFormAsSaved(formId) {
+        this.unsavedChanges[formId] = false;
+        this.originalData[formId] = this.getFormData(formId);
+    }
+
+    /**
      * Check if form has unsaved changes
      * @param {string} formId - Form identifier
      * @returns {boolean} True if form has unsaved changes
