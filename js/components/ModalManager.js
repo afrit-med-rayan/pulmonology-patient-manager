@@ -122,6 +122,84 @@ class ModalManager {
     }
 
     /**
+     * Show navigation confirmation modal for unsaved changes
+     * @param {Object} options - Modal options
+     * @returns {Promise} Promise that resolves with user choice
+     */
+    showNavigationConfirmation(options = {}) {
+        const modalId = 'navigation-confirmation';
+
+        return new Promise((resolve) => {
+            const modalHtml = `
+                <div class="modal-backdrop">
+                    <div class="modal-dialog navigation-confirmation-modal">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Unsaved Changes</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="modal-icon warning">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <p class="modal-message">
+                                You have unsaved changes that will be lost if you navigate away. 
+                                What would you like to do?
+                            </p>
+                            ${options.changesDetails ? `
+                                <div class="changes-details">
+                                    <p><strong>Unsaved changes in:</strong></p>
+                                    <ul>
+                                        ${options.changesDetails.descriptions ?
+                        options.changesDetails.descriptions.map(detail => `<li>${detail}</li>`).join('') :
+                        '<li>Form data</li>'
+                    }
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-primary save-and-continue-btn" data-action="save-and-continue">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17,21 17,13 7,13 7,21"/>
+                                    <polyline points="7,3 7,8 15,8"/>
+                                </svg>
+                                Save and Continue
+                            </button>
+                            <button type="button" class="btn btn-danger continue-without-saving-btn" data-action="continue-without-saving">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16,17 21,12 16,7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Continue Without Saving
+                            </button>
+                            <button type="button" class="btn btn-secondary cancel-btn" data-action="cancel">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            this.showModal(modalId, modalHtml, {
+                closable: false,
+                onAction: (action) => {
+                    this.closeModal(modalId);
+                    resolve(action);
+                }
+            });
+        });
+    }
+
+    /**
      * Show a generic confirmation modal
      * @param {Object} options - Modal options
      * @returns {Promise} Promise that resolves with user choice

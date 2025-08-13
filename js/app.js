@@ -79,6 +79,11 @@ class App {
             // Preload available logo formats (will handle missing files gracefully)
             await this.components.logoManager.preloadLogos(['svg', 'png']);
 
+            // Initialize UI router
+            console.log('Initializing UIRouter...');
+            this.components.uiRouter = new UIRouter();
+            this.components.uiRouter.registerDefaultRoutes();
+
             // Initialize authentication manager
             console.log('Initializing AuthenticationManager...');
             this.components.authManager = new AuthenticationManager();
@@ -188,11 +193,19 @@ class App {
 
         this.showMainApplication();
 
-        // Handle initial route from URL hash
-        const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
-        setTimeout(() => {
-            this.navigateToRoute(initialRoute);
-        }, 100);
+        // Handle initial route using UIRouter
+        if (this.components.uiRouter) {
+            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
+            setTimeout(() => {
+                this.components.uiRouter.navigateTo(initialRoute);
+            }, 100);
+        } else {
+            // Fallback to old navigation method
+            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
+            setTimeout(() => {
+                this.navigateToRoute(initialRoute);
+            }, 100);
+        }
 
         /* Original authentication-based routing:
         if (this.components.authManager.isAuthenticated()) {
@@ -201,7 +214,7 @@ class App {
             // Handle initial route from URL hash
             const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
             setTimeout(() => {
-                this.navigateToRoute(initialRoute);
+                this.components.uiRouter.navigateTo(initialRoute);
             }, 100);
         } else {
             this.showLoginForm();
@@ -810,13 +823,19 @@ class App {
      * Initialize navigation event listeners
      */
     initializeNavigation() {
-        // Handle navigation link clicks
+        // Handle navigation link clicks using UIRouter
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
                 const route = event.target.getAttribute('data-route');
-                this.navigateToRoute(route);
+
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo(route);
+                } else {
+                    // Fallback to old navigation
+                    this.navigateToRoute(route);
+                }
             });
         });
 
@@ -923,13 +942,25 @@ class App {
     handleDashboardAction(action) {
         switch (action) {
             case 'create-patient':
-                this.navigateToRoute('create-patient');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('create-patient');
+                } else {
+                    this.navigateToRoute('create-patient');
+                }
                 break;
             case 'search-patients':
-                this.navigateToRoute('search-patients');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('search-patients');
+                } else {
+                    this.navigateToRoute('search-patients');
+                }
                 break;
             case 'patient-list':
-                this.navigateToRoute('patient-list');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('patient-list');
+                } else {
+                    this.navigateToRoute('patient-list');
+                }
                 break;
             case 'reports':
                 // Reports functionality placeholder
