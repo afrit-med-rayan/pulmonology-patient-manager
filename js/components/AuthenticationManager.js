@@ -374,9 +374,47 @@ class AuthenticationManager {
      * @returns {Promise<boolean>} True if safe to logout
      */
     async checkUnsavedChanges() {
-        // This will be implemented when form management is added
-        // For now, always return true
-        return true;
+        try {
+            // Check if change tracker is available
+            if (typeof window !== 'undefined' && window.app && window.app.components.changeTracker) {
+                return !window.app.components.changeTracker.hasUnsavedChanges();
+            }
+
+            // Fallback: check form manager if available
+            if (typeof window !== 'undefined' && window.app && window.app.components.formManager) {
+                const formManager = window.app.components.formManager;
+
+                // Check all tracked forms for unsaved changes
+                for (const formId of Object.keys(formManager.unsavedChanges || {})) {
+                    if (formManager.hasUnsavedChanges && formManager.hasUnsavedChanges(formId)) {
+                        return false;
+                    }
+                }
+            }
+
+            // If no tracking systems available, assume safe to logout
+            return true;
+        } catch (error) {
+            console.error('Error checking unsaved changes:', error);
+            // On error, assume there might be unsaved changes for safety
+            return false;
+        }
+    }
+
+    /**
+     * Get details about unsaved changes
+     * @returns {Object} Details about unsaved changes
+     */
+    getUnsavedChangesDetails() {
+        try {
+            if (typeof window !== 'undefined' && window.app && window.app.components.changeTracker) {
+                return window.app.components.changeTracker.getUnsavedChangesDetails();
+            }
+            return { hasChanges: false, descriptions: [] };
+        } catch (error) {
+            console.error('Error getting unsaved changes details:', error);
+            return { hasChanges: false, descriptions: [] };
+        }
     }
 }
 
