@@ -2560,3 +2560,347 @@ Modal Styles */
         opacity: 0;
     }
 }
+
+/* Perf
+ormance Optimization Styles */
+
+/* Loading Indicators */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.loading-indicator .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.75rem;
+}
+
+.loading-message {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Virtual Scrolling */
+.virtual-scroll-container {
+    height: 600px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.virtual-scroll-content {
+    position: relative;
+}
+
+/* Patient List Container */
+.patient-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.list-controls {
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.controls-row:last-child {
+    margin-bottom: 0;
+}
+
+.search-group {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 400px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.view-options {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.sort-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sort-group label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.stats-group {
+    margin-left: auto;
+}
+
+.stats-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Patient List Items */
+.patient-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.patient-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.patient-item:hover {
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.patient-item-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.patient-main-info {
+    flex: 1;
+}
+
+.patient-name {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.patient-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.patient-secondary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 150px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+
+.info-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.info-value {
+    color: var(--text-primary);
+}
+
+.patient-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-btn {
+    min-width: 40px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.pagination-btn:hover:not(.disabled) {
+    border-color: var(--accent-color);
+    background: var(--bg-secondary);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.btn-primary {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.pagination-ellipsis {
+    padding: 0 0.5rem;
+    color: var(--text-secondary);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    margin: 0 0 1.5rem 0;
+}
+
+/* Performance Indicators */
+.unsaved-changes-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--warning-bg);
+    color: var(--warning-color);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.indicator-icon {
+    font-size: 1rem;
+}
+
+/* Responsive Design for Performance Components */
+@media (max-width: 768px) {
+    .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-group,
+    .filter-group,
+    .view-options,
+    .sort-group {
+        max-width: none;
+        margin-left: 0;
+    }
+
+    .patient-item-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .patient-secondary-info {
+        min-width: auto;
+    }
+
+    .pagination {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .pagination-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .virtual-scroll-container {
+        height: 400px;
+    }
+}
