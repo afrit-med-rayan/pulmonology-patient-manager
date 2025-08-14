@@ -553,16 +553,38 @@ class UIRouter {
      * Show create patient view
      */
     async showCreatePatient() {
+        console.log('UIRouter: showCreatePatient called');
+
         const dashboardContent = document.getElementById('dashboard-content');
         const dynamicContent = document.getElementById('dynamic-content');
 
+        console.log('Dashboard content element:', !!dashboardContent);
+        console.log('Dynamic content element:', !!dynamicContent);
+
         if (dashboardContent && dynamicContent) {
+            console.log('Hiding dashboard, showing dynamic content');
             dashboardContent.style.display = 'none';
             dynamicContent.style.display = 'block';
 
+            console.log('Window.app available:', !!window.app);
+            console.log('loadCreatePatientForm method available:', !!(window.app && window.app.loadCreatePatientForm));
+
             if (window.app && window.app.loadCreatePatientForm) {
-                window.app.loadCreatePatientForm(dynamicContent);
+                console.log('Calling loadCreatePatientForm...');
+                await window.app.loadCreatePatientForm(dynamicContent);
+            } else {
+                console.error('loadCreatePatientForm method not available');
+                dynamicContent.innerHTML = `
+                    <div style="padding: 20px; color: red;">
+                        <h2>Error</h2>
+                        <p>loadCreatePatientForm method not available</p>
+                        <p>Window.app: ${!!window.app}</p>
+                        <p>Method exists: ${!!(window.app && window.app.loadCreatePatientForm)}</p>
+                    </div>
+                `;
             }
+        } else {
+            console.error('Required DOM elements not found');
         }
     }
 

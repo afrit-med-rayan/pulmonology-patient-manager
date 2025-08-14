@@ -81,7 +81,7 @@ class FormManager {
                                 name="dateOfBirth" 
                                 class="form-control" 
                                 value="${this.formatDateForInput(patient.dateOfBirth)}"
-                                max="${this.formatDateForInput(new Date())}"
+                                max="${this.getTodayDateString()}"
                                 required
                             />
                             <div class="form-error" id="${formId}-dateOfBirth-error"></div>
@@ -219,7 +219,7 @@ class FormManager {
                             name="visits[${index}][visitDate]" 
                             class="form-control" 
                             value="${this.formatDateForInput(visit.visitDate)}"
-                            max="${this.formatDateForInput(new Date())}"
+                            max="${this.getTodayDateString()}"
                             required
                         />
                         <div class="form-error" id="${formId}-visit-${index}-date-error"></div>
@@ -295,6 +295,18 @@ class FormManager {
             console.error('Error formatting date:', error);
             return '';
         }
+    }
+
+    /**
+     * Get today's date as a string for date input max attribute
+     * @returns {string} Today's date in YYYY-MM-DD format
+     */
+    getTodayDateString() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     /**

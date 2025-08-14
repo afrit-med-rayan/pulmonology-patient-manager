@@ -848,11 +848,20 @@ class App {
     async loadCreatePatientForm(container) {
         try {
             console.log('Loading create patient form...');
+            console.log('Container:', container);
+            console.log('FormManager available:', !!this.components.formManager);
+
+            if (!this.components.formManager) {
+                throw new Error('FormManager component not available');
+            }
 
             const formId = 'create-patient-form';
-            const formHtml = this.components.formManager.renderPatientForm(formId);
+            console.log('Rendering form with ID:', formId);
 
-            container.innerHTML = `
+            const formHtml = this.components.formManager.renderPatientForm(formId);
+            console.log('Form HTML generated, length:', formHtml.length);
+
+            const containerHtml = `
                 <div class="content-header">
                     <h2 class="content-title">Create New Patient</h2>
                     <p class="content-subtitle">Add a new patient record to the system</p>
@@ -864,7 +873,11 @@ class App {
                 </div>
             `;
 
+            console.log('Setting container innerHTML...');
+            container.innerHTML = containerHtml;
+
             // Initialize the form
+            console.log('Initializing form...');
             this.components.formManager.initializeForm(formId, {
                 displayName: 'New Patient Form',
                 description: 'Creating a new patient record',
@@ -877,11 +890,15 @@ class App {
 
         } catch (error) {
             console.error('Failed to load create patient form:', error);
+            console.error('Error stack:', error.stack);
+
             container.innerHTML = `
-                <div class="error-container">
+                <div class="error-container" style="padding: 20px; border: 1px solid #dc3545; border-radius: 5px; background-color: #f8d7da; color: #721c24;">
                     <h2>Error Loading Form</h2>
-                    <p>Failed to load the patient creation form. Please try refreshing the page.</p>
+                    <p>Failed to load the patient creation form.</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
                     <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                    <button class="btn btn-secondary" onclick="console.log('Debug info:', window.app.getComponentStatus())">Debug Info</button>
                 </div>
             `;
         }
