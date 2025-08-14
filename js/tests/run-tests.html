@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Management System - Test Runner</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        font-weight: 300;
+      }
+
+      .header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1em;
+      }
+
+      .controls {
+        padding: 30px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .control-group {
+        margin-bottom: 20px;
+      }
+
+      .control-group h3 {
+        margin: 0 0 15px 0;
+        color: #495057;
+        font-size: 1.2em;
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 120px;
+      }
+
+      .btn-primary {
+        background: #007bff;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #545b62;
+        transform: translateY(-1px);
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #1e7e34;
+        transform: translateY(-1px);
+      }
+
+      .btn-warning {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .btn-warning:hover {
+        background: #e0a800;
+        transform: translateY(-1px);
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-1px);
+      }
+
+      .btn-info {
+        background: #17a2b8;
+        color: white;
+      }
+
+      .btn-info:hover {
+        background: #138496;
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      .options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 15px;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+      }
+
+      .checkbox-group label {
+        font-size: 14px;
+        color: #495057;
+        cursor: pointer;
+      }
+
+      .output {
+        padding: 30px;
+        min-height: 400px;
+      }
+
+      .output h3 {
+        margin: 0 0 20px 0;
+        color: #495057;
+        font-size: 1.3em;
+      }
+
+      #testOutput {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        border-radius: 6px;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        max-height: 600px;
+        overflow-y: auto;
+        border: 1px solid #333;
+      }
+
+      .status {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 6px;
+        font-weight: 500;
+      }
+
+      .status.running {
+        background: #cce5ff;
+        color: #004085;
+        border: 1px solid #b3d7ff;
+      }
+
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .progress {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 15px 0;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .stat-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #e9ecef;
+      }
+
+      .stat-card h4 {
+        margin: 0 0 10px 0;
+        color: #495057;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-card .value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      .footer {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 768px) {
+        .button-group {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+
+        .options {
+          flex-direction: column;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Console output styling */
+      .log-success {
+        color: #4caf50;
+      }
+      .log-error {
+        color: #f44336;
+      }
+      .log-warning {
+        color: #ff9800;
+      }
+      .log-info {
+        color: #2196f3;
+      }
+      .log-debug {
+        color: #9e9e9e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🧪 Test Runner</h1>
+        <p>Comprehensive Testing Suite for Patient Management System</p>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <h3>Quick Actions</h3>
+          <div class="button-group">
+            <button class="btn-success" onclick="runSmokeTests()">
+              🚀 Smoke Tests
+            </button>
+            <button class="btn-primary" onclick="runAllTests()">
+              🧪 Run All Tests
+            </button>
+            <button class="btn-danger" onclick="clearOutput()">
+              🗑️ Clear Output
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Individual Test Suites</h3>
+          <div class="button-group">
+            <button class="btn-info" onclick="runUnitTests()">
+              📋 Unit Tests
+            </button>
+            <button class="btn-info" onclick="runIntegrationTests()">
+              🔗 Integration Tests
+            </button>
+            <button class="btn-info" onclick="runEndToEndTests()">
+              🎯 End-to-End Tests
+            </button>
+            <button class="btn-warning" onclick="runPerformanceTests()">
+              ⚡ Performance Tests
+            </button>
+            <button class="btn-secondary" onclick="runErrorScenarioTests()">
+              🚨 Error Scenarios
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Test Options</h3>
+          <div class="options">
+            <div class="checkbox-group">
+              <input type="checkbox" id="verboseOutput" checked />
+              <label for="verboseOutput">Verbose Output</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="stopOnFailure" />
+              <label for="stopOnFailure">Stop on First Failure</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="showPerformanceMetrics" checked />
+              <label for="showPerformanceMetrics"
+                >Show Performance Metrics</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="output">
+        <h3>Test Output</h3>
+        <div id="status" class="status" style="display: none"></div>
+        <div class="progress" id="progressContainer" style="display: none">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="stats" id="statsContainer" style="display: none">
+          <div class="stat-card">
+            <h4>Total Tests</h4>
+            <div class="value" id="totalTests">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Passed</h4>
+            <div class="value" id="passedTests" style="color: #28a745">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Failed</h4>
+            <div class="value" id="failedTests" style="color: #dc3545">0</div>
+          </div>
+          <div class="stat-card">
+            <h4>Duration</h4>
+            <div class="value" id="testDuration">0s</div>
+          </div>
+        </div>
+        <div id="testOutput">
+          Ready to run tests. Click a button above to start.
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          Patient Management System Test Suite | Built with ❤️ for reliable
+          healthcare software
+        </p>
+      </div>
+    </div>
+
+    <!-- Load all required dependencies -->
+    <script src="../utils/constants.js"></script>
+    <script src="../utils/helpers.js"></script>
+    <script src="../utils/validation.js"></script>
+    <script src="../models/Patient.js"></script>
+    <script src="../models/Session.js"></script>
+    <script src="../components/ErrorHandler.js"></script>
+    <script src="../components/DataStorageManager.js"></script>
+    <script src="../components/AuthenticationManager.js"></script>
+    <script src="../components/PatientManager.js"></script>
+    <script src="../components/FormManager.js"></script>
+    <script src="../components/ChangeTracker.js"></script>
+    <script src="../components/UIRouter.js"></script>
+
+    <!-- Load test suites -->
+    <script src="unit-tests.js"></script>
+    <script src="integration-tests.js"></script>
+    <script src="end-to-end-tests.js"></script>
+    <script src="performance-tests.js"></script>
+    <script src="error-scenario-tests.js"></script>
+    <script src="test-runner-comprehensive.js"></script>
+
+    <script>
+      // Global test runner instance
+      let testRunner = null;
+      let isRunning = false;
+
+      // Initialize test runner
+      async function initializeTestRunner() {
+        if (!testRunner) {
+          testRunner = new ComprehensiveTestRunner();
+          await testRunner.initializeTestSuites();
+        }
+        return testRunner;
+      }
+
+      // UI Helper functions
+      function setStatus(message, type = "running") {
+        const statusEl = document.getElementById("status");
+        statusEl.textContent = message;
+        statusEl.className = `status ${type}`;
+        statusEl.style.display = "block";
+      }
+
+      function updateProgress(percentage) {
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
+
+        if (percentage > 0) {
+          progressContainer.style.display = "block";
+          progressBar.style.width = percentage + "%";
+        } else {
+          progressContainer.style.display = "none";
+        }
+      }
+
+      function updateStats(stats) {
+        const statsContainer = document.getElementById("statsContainer");
+
+        if (stats) {
+          document.getElementById("totalTests").textContent = stats.total || 0;
+          document.getElementById("passedTests").textContent =
+            stats.passed || 0;
+          document.getElementById("failedTests").textContent =
+            stats.failed || 0;
+          document.getElementById("testDuration").textContent =
+            (stats.duration || 0) + "s";
+          statsContainer.style.display = "grid";
+        } else {
+          statsContainer.style.display = "none";
+        }
+      }
+
+      function appendOutput(message, type = "info") {
+        const output = document.getElementById("testOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        const colorClass = `log-${type}`;
+
+        // Create formatted message
+        const formattedMessage = `[${timestamp}] ${message}`;
+
+        // Append to output
+        if (
+          output.textContent ===
+          "Ready to run tests. Click a button above to start."
+        ) {
+          output.textContent = "";
+        }
+
+        output.innerHTML += `<span class="${colorClass}">${formattedMessage}</span>\n`;
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function clearOutput() {
+        document.getElementById("testOutput").textContent =
+          "Ready to run tests. Click a button above to start.";
+        document.getElementById("status").style.display = "none";
+        updateProgress(0);
+        updateStats(null);
+      }
+
+      function setButtonsDisabled(disabled) {
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((button) => {
+          if (button.onclick !== clearOutput) {
+            button.disabled = disabled;
+          }
+        });
+        isRunning = disabled;
+      }
+
+      // Override console methods to capture output
+      function setupConsoleCapture() {
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function (...args) {
+          appendOutput(args.join(" "), "info");
+          originalLog.apply(console, args);
+        };
+
+        console.error = function (...args) {
+          appendOutput(args.join(" "), "error");
+          originalError.apply(console, args);
+        };
+
+        console.warn = function (...args) {
+          appendOutput(args.join(" "), "warning");
+          originalWarn.apply(console, args);
+        };
+      }
+
+      // Test execution functions
+      async function runSmokeTests() {
+        if (isRunning) return;
+
+        setButtonsDisabled(true);
+        setStatus("Running smoke tests...", "running");
+        updateProgress(10);
+
+        try {
+          const runner = await initializeTestRunner();
+          updateProgress(30);
+
+          const success = await runner.runSmokeTests();
+          updateProgress(100);
+
+          if (success) {
+            setStatus("✅ Smoke tests completed successfully!", "success");
+          } else {
+            setStatus("❌ Smoke tests failed!", "error");
+          }
+        } catch (error) {
+          setStatus(`❌ Smoke tests failed: ${error.message}`, "error");
+          appendOutput(`Error: ${error.message}`, "error");
+        } finally {
+          setButtonsDisabled(false);
+          setTimeout(() => updateProgress(0), 2000);
+        }
+      }
+
+      async function runAllTests() {
+        if (isRunning) return;
+
+        setButtonsDisabled(true);
+        setStatus("Running all tests...", "running");
+        updateProgress(5);
+
+        try {
+          const runner = await initializeTestRunner();
+          updateProgress(10);
+
+          const options = {
+            verbose: document.getElementById("verboseOutput").checked,
+          };
+
+          const success = await runner.runAllTests(options);
+          updateProgress(100);
+
+          // Update final stats
+          const totalPassed = Object.values(runner.overallResults).reduce(
+            (sum, r) => sum + r.passed,
+            0
+          );
+          const totalFailed = Object.values(runner.overallResults).reduce(
+            (sum, r) => sum + r.failed,
+            0
+          );
+          const totalTests = totalPassed + totalFailed;
+          const totalDuration = (
+            (Date.now() - runner.startTime) /
+            1000
+          ).toFixed(1);
+
+          updateStats({
+            total: totalTests,
+            passed: totalPassed,
+            failed: totalFailed,
+            duration: totalDuration,
+          });
+
+          if (success) {
+            setStatus("✅ All tests completed successfully!", "success");
+          } else {
+            setStatus("❌ Some tests failed!", "error");
+          }
+        } catch (error) {
+          setStatus(`❌ Test execution failed: ${error.message}`, "error");
+          appendOutput(`Error: ${error.message}`, "error");
+        } finally {
+          setButtonsDisabled(false);
+          setTimeout(() => updateProgress(0), 2000);
+        }
+      }
+
+      async function runUnitTests() {
+        if (isRunning) return;
+        await runSpecificTestSuite("unit", "Unit Tests");
+      }
+
+      async function runIntegrationTests() {
+        if (isRunning) return;
+        await runSpecificTestSuite("integration", "Integration Tests");
+      }
+
+      async function runEndToEndTests() {
+        if (isRunning) return;
+        await runSpecificTestSuite("endToEnd", "End-to-End Tests");
+      }
+
+      async function runPerformanceTests() {
+        if (isRunning) return;
+        await runSpecificTestSuite("performance", "Performance Tests");
+      }
+
+      async function runErrorScenarioTests() {
+        if (isRunning) return;
+        await runSpecificTestSuite("errorScenario", "Error Scenario Tests");
+      }
+
+      async function runSpecificTestSuite(suiteKey, suiteName) {
+        setButtonsDisabled(true);
+        setStatus(`Running ${suiteName}...`, "running");
+        updateProgress(10);
+
+        try {
+          const runner = await initializeTestRunner();
+          updateProgress(30);
+
+          await runner.runTestSuite(suiteKey, suiteName, true);
+          updateProgress(100);
+
+          const results = runner.overallResults[suiteKey];
+          updateStats({
+            total: results.total,
+            passed: results.passed,
+            failed: results.failed,
+            duration: (results.duration / 1000).toFixed(1),
+          });
+
+          if (results.failed === 0) {
+            setStatus(`✅ ${suiteName} completed successfully!`, "success");
+          } else {
+            setStatus(
+              `❌ ${suiteName} completed with ${results.failed} failure(s)!`,
+              "error"
+            );
+          }
+        } catch (error) {
+          setStatus(`❌ ${suiteName} failed: ${error.message}`, "error");
+          appendOutput(`Error: ${error.message}`, "error");
+        } finally {
+          setButtonsDisabled(false);
+          setTimeout(() => updateProgress(0), 2000);
+        }
+      }
+
+      // Initialize when page loads
+      window.addEventListener("load", function () {
+        setupConsoleCapture();
+        appendOutput("Test runner initialized. Ready to run tests.", "success");
+      });
+
+      // Handle page unload
+      window.addEventListener("beforeunload", function (e) {
+        if (isRunning) {
+          e.preventDefault();
+          e.returnValue =
+            "Tests are currently running. Are you sure you want to leave?";
+        }
+      });
+    </script>
+  </body>
+</html>
