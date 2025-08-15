@@ -14,6 +14,7 @@ class PatientSearchView {
         // Bind methods
         this.handleSearch = this.handleSearch.bind(this);
         this.handlePatientSelect = this.handlePatientSelect.bind(this);
+        this.handlePatientEdit = this.handlePatientEdit.bind(this);
         this.clearSearch = this.clearSearch.bind(this);
         this.renderSearchResults = this.renderSearchResults.bind(this);
     }
@@ -156,6 +157,9 @@ class PatientSearchView {
                     <div class="patient-actions">
                         <button class="btn btn-sm btn-primary view-patient-btn" data-patient-id="${patient.id}">
                             View Details
+                        </button>
+                        <button class="btn btn-sm btn-secondary edit-patient-btn" data-patient-id="${patient.id}" onclick="event.stopPropagation(); patientSearchView.handlePatientEdit('${patient.id}')">
+                            Edit
                         </button>
                     </div>
                 </div>
@@ -348,6 +352,30 @@ class PatientSearchView {
         } catch (error) {
             log(`Failed to select patient: ${error.message}`, 'error');
             this.showToast('Failed to load patient details', 'error');
+        }
+    }
+
+    /**
+     * Handle patient edit button click
+     * @param {string} patientId - ID of patient to edit
+     */
+    async handlePatientEdit(patientId) {
+        try {
+            console.log(`Patient edit requested: ${patientId}`);
+
+            // Navigate to patient edit view
+            if (this.uiRouter) {
+                this.uiRouter.navigateTo('edit-patient', { patientId });
+            } else if (window.app && window.app.components.uiRouter) {
+                window.app.components.uiRouter.navigateTo('edit-patient', { patientId });
+            } else {
+                // Fallback - construct edit URL manually
+                window.location.hash = `edit-patient?patientId=${patientId}`;
+            }
+
+        } catch (error) {
+            console.error(`Failed to navigate to edit patient: ${error.message}`);
+            this.showToast('Failed to open patient for editing', 'error');
         }
     }
 

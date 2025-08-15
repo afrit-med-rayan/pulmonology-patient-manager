@@ -193,37 +193,52 @@ class App {
      * Initialize application routing
      */
     initializeRouting() {
-        // For development/testing, bypass authentication and go straight to main app
-        // TODO: Re-enable authentication in production
-        console.log('Initializing routing - bypassing authentication for development');
+        console.log('Initializing routing with authentication...');
+        console.log('AuthManager available:', !!this.components.authManager);
 
-        this.showMainApplication();
-
-        // Handle initial route using UIRouter
-        if (this.components.uiRouter) {
-            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
-            setTimeout(() => {
-                this.components.uiRouter.navigateTo(initialRoute);
-            }, 100);
-        } else {
-            // Fallback to old navigation method
-            const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
-            setTimeout(() => {
-                this.navigateToRoute(initialRoute);
-            }, 100);
+        if (this.components.authManager) {
+            const isAuth = this.components.authManager.isAuthenticated();
+            console.log('User authentication status:', isAuth);
+            console.log('Current session:', this.components.authManager.currentSession);
         }
 
-        /* Original authentication-based routing:
-        if (this.components.authManager.isAuthenticated()) {
+        // For development: bypass authentication and always show main application
+        // TODO: Restore proper authentication for production
+        console.log('🚧 Development mode: bypassing authentication');
+        console.log('About to call showMainApplication...');
+        this.showMainApplication();
+        console.log('showMainApplication call completed');
+
+        // Handle initial route from URL hash
+        const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
+        setTimeout(() => {
+            if (this.components.uiRouter) {
+                this.components.uiRouter.navigateTo(initialRoute);
+            } else {
+                this.navigateToRoute(initialRoute);
+            }
+        }, 100);
+
+        /* Original authentication logic - commented out for development
+        // Check if user is authenticated
+        if (this.components.authManager && this.components.authManager.isAuthenticated()) {
+            console.log('✅ User is authenticated, showing main application');
             this.showMainApplication();
 
             // Handle initial route from URL hash
             const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
             setTimeout(() => {
-                this.components.uiRouter.navigateTo(initialRoute);
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo(initialRoute);
+                } else {
+                    this.navigateToRoute(initialRoute);
+                }
             }, 100);
         } else {
-            this.showLoginForm();
+            console.log('❌ User not authenticated, showing login form');
+            // Get the intended route from URL hash
+            const intendedRoute = window.location.hash.replace('#', '') || 'dashboard';
+            this.showLoginForm(intendedRoute);
         }
         */
     }
@@ -249,22 +264,69 @@ class App {
 
     /**
      * Show login form
+     * @param {string} returnTo - Route to return to after login
+     * @param {Object} returnParams - Parameters for return route
      */
-    showLoginForm() {
+    showLoginForm(returnTo = null, returnParams = null) {
+        console.log('🔐 Showing login form', { returnTo, returnParams });
+        console.log('Auth status when showing login:', this.components.authManager?.isAuthenticated());
+
         const mainContent = document.getElementById('main-content');
+        console.log('Main content element found:', !!mainContent);
+
         if (mainContent) {
-            // Create login view
-            this.components.loginView = new LoginView(this.components.authManager);
+            console.log('Main content classes before:', mainContent.className);
+
+            // Make sure loading screen is hidden
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                loadingScreen.style.display = 'none';
+                console.log('Loading screen hidden for login');
+            }
+
+            // Create login view with return parameters
+            this.components.loginView = new LoginView(this.components.authManager, {
+                returnTo: returnTo,
+                returnParams: returnParams,
+                onLoginSuccess: this.handleLoginSuccess.bind(this)
+            });
 
             // Render login form
-            mainContent.innerHTML = this.components.loginView.render();
-            mainContent.classList.remove('hidden');
+            const loginHtml = this.components.loginView.render();
+            console.log('Login HTML generated, length:', loginHtml.length);
+
+            // Clear any existing content and styles
+            mainContent.innerHTML = '';
+            mainContent.className = '';
+            mainContent.style.display = 'block';
+
+            // Set the login HTML
+            mainContent.innerHTML = loginHtml;
+
+            console.log('Main content classes after:', mainContent.className);
+            console.log('Main content display style:', mainContent.style.display);
+            console.log('Main content innerHTML length:', mainContent.innerHTML.length);
 
             // Initialize login form
             this.components.loginView.initialize();
 
             // Insert login logo if LogoManager is available
             this.insertLoginLogo();
+
+            // Add a temporary visual test
+            setTimeout(() => {
+                const loginContainer = document.querySelector('.login-container');
+                console.log('Login container found after render:', !!loginContainer);
+                if (loginContainer) {
+                    console.log('Login container display:', window.getComputedStyle(loginContainer).display);
+                    console.log('Login container visibility:', window.getComputedStyle(loginContainer).visibility);
+                }
+            }, 100);
+
+            console.log('✅ Login form setup completed');
+        } else {
+            console.error('❌ Main content element not found!');
         }
     }
 
@@ -304,8 +366,14 @@ class App {
      */
     showMainApplication() {
         try {
-            console.log('Showing main application...');
+            console.log('🏠 Showing main application...');
+            console.log('Auth check before showing main app:', this.components.authManager?.isAuthenticated());
+
             const mainContent = document.getElementById('main-content');
+            console.log('main-content element found:', !!mainContent);
+            console.log('main-content current classes:', mainContent?.className);
+            console.log('main-content current display:', mainContent?.style.display);
+
             if (!mainContent) {
                 throw new Error('main-content element not found');
             }
@@ -374,6 +442,9 @@ class App {
                                 <p class="dashboard-card-description">
                                     Add a new patient record with comprehensive medical information
                                 </p>
+                                <button onclick="window.app.testFormDirectly()" style="margin-top: 10px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 3px; font-size: 12px;">
+                                    🔧 Debug Form
+                                </button>
                             </div>
                             
                             <div class="dashboard-card" data-action="search-patients">
@@ -434,10 +505,15 @@ class App {
                 </div>
             `;
 
+            // Force remove hidden class and show content
             mainContent.classList.remove('hidden');
             mainContent.style.display = 'block';
+            mainContent.style.visibility = 'visible';
+
             console.log('Main content classes after showing:', mainContent.className);
             console.log('Main content display style:', mainContent.style.display);
+            console.log('Main content visibility:', mainContent.style.visibility);
+            console.log('Main content innerHTML length:', mainContent.innerHTML.length);
 
             // Initialize navigation event listeners
             this.initializeNavigation();
@@ -445,7 +521,40 @@ class App {
             // Insert header logo
             this.insertHeaderLogo();
 
+            // Update dashboard statistics
+            this.updateDashboardStats();
+
             console.log('Main application displayed successfully');
+
+            // Verify the content is actually there
+            const dashboardContent = document.getElementById('dashboard-content');
+            const dynamicContent = document.getElementById('dynamic-content');
+            const header = document.querySelector('.header');
+            const nav = document.querySelector('.nav');
+
+            console.log('Dashboard content created:', !!dashboardContent);
+            console.log('Dynamic content created:', !!dynamicContent);
+            console.log('Header created:', !!header);
+            console.log('Nav created:', !!nav);
+
+            // Test if elements are visible
+            if (dashboardContent) {
+                console.log('Dashboard content display:', window.getComputedStyle(dashboardContent).display);
+                console.log('Dashboard content visibility:', window.getComputedStyle(dashboardContent).visibility);
+            }
+
+            if (header) {
+                console.log('Header display:', window.getComputedStyle(header).display);
+                console.log('Header visibility:', window.getComputedStyle(header).visibility);
+            }
+
+            // Add a simple visual test element
+            const testDiv = document.createElement('div');
+            testDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 10px; z-index: 9999; font-size: 12px;';
+            testDiv.textContent = 'Main App Loaded!';
+            document.body.appendChild(testDiv);
+
+            console.log('Visual test element added');
         } catch (error) {
             console.error('Error showing main application:', error);
             console.error('Error stack:', error.stack);
@@ -470,8 +579,12 @@ class App {
 
     /**
      * Handle successful login
+     * @param {string} returnTo - Route to return to after login
+     * @param {Object} returnParams - Parameters for return route
      */
-    handleLoginSuccess() {
+    handleLoginSuccess(returnTo = null, returnParams = null) {
+        console.log('Login successful', { returnTo, returnParams });
+
         // Clean up login view
         if (this.components.loginView) {
             this.components.loginView.destroy();
@@ -481,9 +594,23 @@ class App {
         // Show main application
         this.showMainApplication();
 
-        // Navigate to dashboard by default
+        // Navigate to return route or dashboard
         setTimeout(() => {
-            this.navigateToRoute('dashboard');
+            if (returnTo && returnTo !== 'login') {
+                console.log(`Redirecting to return route: ${returnTo}`);
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo(returnTo, returnParams || {});
+                } else {
+                    this.navigateToRoute(returnTo, returnParams || {});
+                }
+            } else {
+                console.log('Navigating to dashboard');
+                if (this.components.uiRouter) {
+                    this.components.uiRouter.navigateTo('dashboard');
+                } else {
+                    this.navigateToRoute('dashboard');
+                }
+            }
         }, 100);
     }
 
@@ -842,6 +969,69 @@ class App {
     }
 
     /**
+     * Update dashboard statistics
+     */
+    async updateDashboardStats() {
+        try {
+            if (!this.components.patientManager) {
+                console.log('PatientManager not available for stats update');
+                return;
+            }
+
+            // Get all patients
+            const patients = await this.components.patientManager.getAllPatients();
+            const totalPatients = patients.length;
+
+            // Calculate recent visits (last 30 days)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            let recentVisits = 0;
+            let thisMonthVisits = 0;
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+
+            patients.forEach(patient => {
+                if (patient.visits && patient.visits.length > 0) {
+                    patient.visits.forEach(visit => {
+                        const visitDate = new Date(visit.visitDate);
+
+                        // Count recent visits (last 30 days)
+                        if (visitDate >= thirtyDaysAgo) {
+                            recentVisits++;
+                        }
+
+                        // Count this month's visits
+                        if (visitDate.getMonth() === thisMonth && visitDate.getFullYear() === thisYear) {
+                            thisMonthVisits++;
+                        }
+                    });
+                }
+            });
+
+            // Update the statistics in the DOM
+            const totalPatientsElement = document.querySelector('.stat-item .stat-value');
+            const recentVisitsElement = document.querySelectorAll('.stat-item .stat-value')[1];
+            const thisMonthElement = document.querySelectorAll('.stat-item .stat-value')[2];
+
+            if (totalPatientsElement) {
+                totalPatientsElement.textContent = totalPatients;
+            }
+            if (recentVisitsElement) {
+                recentVisitsElement.textContent = recentVisits;
+            }
+            if (thisMonthElement) {
+                thisMonthElement.textContent = thisMonthVisits;
+            }
+
+            console.log(`Dashboard stats updated: ${totalPatients} patients, ${recentVisits} recent visits, ${thisMonthVisits} this month`);
+
+        } catch (error) {
+            console.error('Failed to update dashboard stats:', error);
+        }
+    }
+
+    /**
      * Load create patient form
      * @param {Element} container - Container element
      */
@@ -901,6 +1091,101 @@ class App {
                     <button class="btn btn-secondary" onclick="console.log('Debug info:', window.app.getComponentStatus())">Debug Info</button>
                 </div>
             `;
+        }
+    }
+
+    /**
+     * Handle patient deletion
+     * @param {string} patientId - ID of patient to delete
+     */
+    async handlePatientDeletion(patientId) {
+        try {
+            if (!this.components.patientManager) {
+                throw new Error('Patient manager not available');
+            }
+
+            // Show confirmation dialog
+            const confirmed = confirm('Are you sure you want to delete this patient? This action cannot be undone.');
+            if (!confirmed) {
+                return false;
+            }
+
+            // Show loading state
+            const loadingState = this.components.errorHandler.showLoading('Deleting patient...');
+
+            // Delete patient
+            const result = await this.components.patientManager.deletePatient(patientId);
+
+            // Hide loading state
+            if (loadingState && loadingState.hide) {
+                loadingState.hide();
+            }
+
+            if (result.success) {
+                // Show success message
+                this.components.errorHandler.showSuccess('Patient deleted successfully');
+
+                // Update dashboard statistics
+                this.updateDashboardStats();
+
+                // Navigate to patient list
+                setTimeout(() => {
+                    if (this.components.uiRouter) {
+                        this.components.uiRouter.navigateTo('patient-list');
+                    } else {
+                        this.navigateToRoute('patient-list');
+                    }
+                }, 1500);
+
+                return true;
+            } else {
+                throw new Error(result.message || 'Failed to delete patient');
+            }
+
+        } catch (error) {
+            console.error('Failed to delete patient:', error);
+            this.components.errorHandler.handleError({
+                type: 'STORAGE',
+                message: error.message,
+                context: 'Patient Deletion'
+            });
+            return false;
+        }
+    }
+
+    /**
+     * Test form loading directly (for debugging)
+     */
+    async testFormDirectly() {
+        try {
+            console.log('🔧 DIRECT FORM TEST STARTED');
+
+            const dynamicContent = document.getElementById('dynamic-content');
+            if (!dynamicContent) {
+                console.error('❌ dynamic-content element not found!');
+                alert('Error: dynamic-content element not found!');
+                return;
+            }
+
+            console.log('✅ dynamic-content element found');
+
+            // Show the dynamic content
+            const dashboardContent = document.getElementById('dashboard-content');
+            if (dashboardContent) {
+                dashboardContent.style.display = 'none';
+            }
+            dynamicContent.style.display = 'block';
+
+            console.log('✅ Switched to dynamic content view');
+
+            // Test form loading directly
+            await this.loadCreatePatientForm(dynamicContent);
+
+            console.log('✅ DIRECT FORM TEST COMPLETED');
+
+        } catch (error) {
+            console.error('❌ DIRECT FORM TEST FAILED:', error);
+            alert(`Direct form test failed: ${error.message}`);
         }
     }
 
@@ -1027,6 +1312,14 @@ class App {
         const dashboardContent = document.getElementById('dashboard-content');
         const dynamicContent = document.getElementById('dynamic-content');
 
+        if (!dashboardContent || !dynamicContent) {
+            console.error('Required content elements not found:', {
+                dashboardContent: !!dashboardContent,
+                dynamicContent: !!dynamicContent
+            });
+            return;
+        }
+
         if (route === 'dashboard') {
             dashboardContent.style.display = 'block';
             dynamicContent.style.display = 'none';
@@ -1050,6 +1343,11 @@ class App {
      */
     loadRouteContent(route) {
         const dynamicContent = document.getElementById('dynamic-content');
+
+        if (!dynamicContent) {
+            console.error('Dynamic content element not found for route:', route);
+            return;
+        }
 
         // Extract base route (remove parameters)
         const baseRoute = route.split('?')[0];
@@ -1121,104 +1419,70 @@ class App {
         }
     }
 
-    /**
-     * Load patient search view
-     * @param {Element} container - Container element to load search view into
-     */
-    loadPatientSearchView(container) {
-        try {
-            // Create search view instance
-            this.components.patientSearchView = new PatientSearchView(
-                this.components.patientManager,
-                this.components.uiRouter
-            );
 
-            // Render search view
-            container.innerHTML = this.components.patientSearchView.render();
 
-            // Initialize search view
-            setTimeout(() => {
-                this.components.patientSearchView.initialize();
-                // Make search view globally available for onclick handlers
-                window.patientSearchView = this.components.patientSearchView;
-            }, 100);
 
-        } catch (error) {
-            console.error('Failed to load patient search view:', error);
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h3>Error Loading Search</h3>
-                        <p>Failed to load patient search functionality.</p>
-                        <button class="btn btn-primary" onclick="app.navigateToRoute('dashboard')">
-                            Back to Dashboard
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-    }
 
     /**
-     * Load patient list view (shows all patients)
-     * @param {Element} container - Container element to load list view into
+     * Load patient edit form
+     * @param {Element} container - Container element
+     * @param {string} patientId - Patient ID to edit
      */
-    async loadPatientListView(container) {
+    async loadEditPatientForm(container, patientId) {
         try {
-            // Show loading state
+            console.log('Loading edit patient form for ID:', patientId);
+
+            if (!patientId) {
+                throw new Error('Patient ID is required for editing');
+            }
+
+            // Get patient data
+            const patient = await this.components.patientManager.getPatient(patientId);
+            if (!patient) {
+                throw new Error('Patient not found');
+            }
+
+            const formId = 'edit-patient-form';
+            const formHtml = this.components.formManager.renderPatientForm(formId, patient);
+
             container.innerHTML = `
                 <div class="content-header">
-                    <h2 class="content-title">Patient List</h2>
-                    <p class="content-subtitle">View and manage all patient records</p>
-                </div>
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="loading-spinner"></div>
-                        <p>Loading patients...</p>
-                    </div>
-                </div>
-            `;
-
-            // Get all patients
-            const patients = await this.components.patientManager.getAllPatients();
-
-            // Create search view with all patients pre-loaded
-            this.components.patientSearchView = new PatientSearchView(
-                this.components.patientManager,
-                this.components.uiRouter
-            );
-
-            // Set search results to all patients
-            this.components.patientSearchView.searchResults = patients;
-            this.components.patientSearchView.currentSearchTerm = '';
-
-            // Render view
-            container.innerHTML = `
-                <div class="search-container">
-                    <div class="content-header">
-                        <h2 class="content-title">All Patients</h2>
-                        <p class="content-subtitle">Complete list of patient records (${patients.length} patient${patients.length !== 1 ? 's' : ''})</p>
-                    </div>
-                    <div class="search-results-container">
-                        ${this.components.patientSearchView.renderSearchResults()}
-                    </div>
-                </div>
-            `;
-
-            // Make search view globally available for onclick handlers
-            window.patientSearchView = this.components.patientSearchView;
-
-        } catch (error) {
-            console.error('Failed to load patient list:', error);
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h3>Error Loading Patient List</h3>
-                        <p>Failed to load patient records.</p>
-                        <button class="btn btn-primary" onclick="app.navigateToRoute('dashboard')">
-                            Back to Dashboard
+                    <div class="content-header-actions">
+                        <button class="btn btn-secondary back-button" onclick="history.back()">
+                            ← Back
                         </button>
                     </div>
+                    <h2 class="content-title">Edit Patient</h2>
+                    <p class="content-subtitle">Modify patient record: ${patient.firstName} ${patient.lastName}</p>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        ${formHtml}
+                    </div>
+                </div>
+            `;
+
+            // Initialize the form
+            this.components.formManager.initializeForm(formId, {
+                displayName: 'Edit Patient Form',
+                description: `Editing patient: ${patient.firstName} ${patient.lastName}`,
+                onChangeCallback: (hasChanges) => {
+                    console.log('Form changes detected:', hasChanges);
+                }
+            });
+
+            console.log('Edit patient form loaded successfully');
+
+        } catch (error) {
+            console.error('Failed to load edit patient form:', error);
+            container.innerHTML = `
+                <div class="error-container" style="padding: 20px; border: 1px solid #dc3545; border-radius: 5px; background-color: #f8d7da; color: #721c24;">
+                    <h2>Error Loading Patient</h2>
+                    <p>Failed to load patient for editing.</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <button class="btn btn-primary" onclick="app.components.uiRouter.navigateTo('patient-list')">
+                        Back to Patient List
+                    </button>
                 </div>
             `;
         }
@@ -1350,12 +1614,53 @@ class App {
                     // Clear form unsaved changes
                     this.components.formManager.markFormAsSaved(formId);
 
+                    // Update dashboard statistics
+                    this.updateDashboardStats();
+
                     // Navigate back to dashboard after a short delay
                     setTimeout(() => {
                         this.navigateToRoute('dashboard');
                     }, 1500);
                 } else {
                     throw new Error(result.message || 'Failed to create patient');
+                }
+
+            } else if (formId === 'edit-patient-form') {
+                // Show loading state
+                loadingState = this.components.errorHandler.showLoading('Updating patient record...');
+                this.showFormLoading(formId, true);
+
+                // Update patient using PatientManager
+                console.log('Updating patient with data:', data);
+
+                if (!this.components.patientManager) {
+                    throw new Error('Patient manager not initialized');
+                }
+
+                const result = await this.components.patientManager.updatePatient(data.id, data);
+
+                if (result.success) {
+                    // Show success message
+                    this.components.errorHandler.showSuccess(
+                        result.message || 'Patient record updated successfully!'
+                    );
+
+                    // Clear form unsaved changes
+                    this.components.formManager.markFormAsSaved(formId);
+
+                    // Update dashboard statistics
+                    this.updateDashboardStats();
+
+                    // Navigate to patient detail view
+                    setTimeout(() => {
+                        if (this.components.uiRouter) {
+                            this.components.uiRouter.navigateTo('patient-detail', { patientId: data.id });
+                        } else {
+                            this.navigateToRoute('patient-detail', { patientId: data.id });
+                        }
+                    }, 1500);
+                } else {
+                    throw new Error(result.message || 'Failed to update patient');
                 }
 
             } else {
@@ -1510,12 +1815,20 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         app = new App();
         window.app = app; // Make app globally available
+
+        // Make key methods globally accessible for components
+        window.handlePatientDeletion = app.handlePatientDeletion.bind(app);
+
         app.handleDOMContentLoaded();
     });
 } else {
     // DOM is already ready
     app = new App();
     window.app = app; // Make app globally available
+
+    // Make key methods globally accessible for components
+    window.handlePatientDeletion = app.handlePatientDeletion.bind(app);
+
     app.handleDOMContentLoaded();
 }
 

@@ -1,3 +1,0 @@
-# Data Directory
-This directory will contain patient data files (JSON format).
-Note: This is for development. In production, data will be stored in C:\PneumoApp\Patients\

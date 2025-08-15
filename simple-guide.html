@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Patient Manager - Dr. S. Sahboub</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    
+    <style>
+        body { font-family: Arial, sans-serif; }
+        
+        .header {
+            background: #2c5aa0;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        .nav {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        
+        .nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            background: #2c5aa0;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+        .nav a:hover, .nav a.active {
+            background: #1e3f73;
+        }
+        
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            border-color: #2c5aa0;
+            outline: none;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .patient-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .patient-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c5aa0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: #e3f2fd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #2c5aa0;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box:focus {
+            border-color: #2c5aa0;
+            outline: none;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .welcome-message h1 {
+            color: #2c5aa0;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-message p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        .step-guide {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .step-guide h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .step-guide ol {
+            color: #856404;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>Patient Management System</h1>
+            <p>Dr. S. Sahboub - Pulmonology Practice</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="#dashboard" onclick="showSection('dashboard')" class="active">🏠 Dashboard</a>
+            <a href="#create" onclick="showSection('create')">👤 Create Patient</a>
+            <a href="#search" onclick="showSection('search')">🔍 Search Patients</a>
+            <a href="#list" onclick="showSection('list')">📋 Patient List</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <div class="welcome-message">
+                    <h1>Welcome to Patient Management</h1>
+                    <p>Manage your pulmonology practice patients easily and efficiently</p>
+                </div>
+                
+                <div class="step-guide">
+                    <h3>🚀 Quick Start Guide:</h3>
+                    <ol>
+                        <li><strong>Create Patient:</strong> Click "Create Patient" to add new patients</li>
+                        <li><strong>Search Patients:</strong> Use "Search Patients" to find existing records</li>
+                        <li><strong>View All:</strong> Check "Patient List" to see all patients</li>
+                        <li><strong>Dashboard:</strong> Stay here to see overview and statistics</li>
+                    </ol>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="total-patients">0</div>
+                        <div>Total Patients</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="recent-patients">0</div>
+                        <div>New This Month</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="system-status">🟢</div>
+                        <div>System Status</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Patient Section -->
+            <div id="create-section" class="section">
+                <h2>👤 Create New Patient</h2>
+                <p style="color: #666; margin-bottom: 20px;">Fill out the form below to add a new patient to your system.</p>
+                
+                <form id="create-patient-form">
+                    <div class="form-group">
+                        <label for="firstName" class="form-label">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" required placeholder="Enter first name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName" class="form-label">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" required placeholder="Enter last name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateOfBirth" class="form-label">Date of Birth *</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender" class="form-label">Gender *</label>
+                        <select id="gender" name="gender" class="form-control" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="placeOfResidence" class="form-label">Place of Residence *</label>
+                        <input type="text" id="placeOfResidence" name="placeOfResidence" class="form-control" required placeholder="Enter city or town">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter phone number (optional)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter email (optional)">
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary">✅ Create Patient</button>
+                        <button type="button" class="btn btn-secondary" onclick="showSection('dashboard')">❌ Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Search Patients Section -->
+            <div id="search-section" class="section">
+                <h2>🔍 Search Patients</h2>
+                <p style="color: #666; margin-bottom: 20px;">Search for patients by name, ID, or other information.</p>
+                
+                <input type="text" id="search-input" class="search-box" placeholder="Type to search patients (name, ID, phone, email)...">
+                
+                <div id="search-results">
+                    <p style="text-align: center; color: #666; font-style: italic;">Start typing to search for patients...</p>
+                </div>
+            </div>
+
+            <!-- Patient List Section -->
+            <div id="list-section" class="section">
+                <h2>📋 All Patients</h2>
+                <p style="color: #666; margin-bottom: 20px;">View all patients in your system.</p>
+                
+                <div id="patient-list-content">
+                    <p style="text-align: center; color: #666; font-style: italic;">No patients found. Create your first patient to get started!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update navigation active state
+            const navLinks = document.querySelectorAll('.nav a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Update URL hash
+            window.location.hash = sectionName;
+            
+            // Load section-specific data
+            if (sectionName === 'dashboard') {
+                updateStats();
+            } else if (sectionName === 'list') {
+                loadPatientList();
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('create-patient-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const patientData = Object.fromEntries(formData.entries());
+            
+            // Validation
+            if (!patientData.firstName || !patientData.lastName || !patientData.dateOfBirth || !patientData.gender || !patientData.placeOfResidence) {
+                alert('Please fill in all required fields (marked with *)');
+                return;
+            }
+            
+            // Calculate age
+            const birthDate = new Date(patientData.dateOfBirth);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            // Create patient
+            const patient = {
+                id: Date.now().toString(),
+                firstName: patientData.firstName,
+                lastName: patientData.lastName,
+                dateOfBirth: patientData.dateOfBirth,
+                age: age,
+                gender: patientData.gender,
+                placeOfResidence: patientData.placeOfResidence,
+                phoneNumber: patientData.phoneNumber || '',
+                email: patientData.email || '',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            patients.push(patient);
+            localStorage.setItem('patients', JSON.stringify(patients));
+            
+            alert('✅ Patient created successfully!');
+            this.reset();
+            showSection('dashboard');
+            updateStats();
+        });
+        
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            
+            if (searchTerm.length < 2) {
+                document.getElementById('search-results').innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">Start typing to search for patients...</p>';
+                return;
+            }
+            
+            const filteredPatients = patients.filter(patient => 
+                patient.firstName.toLowerCase().includes(searchTerm) ||
+                patient.lastName.toLowerCase().includes(searchTerm) ||
+                patient.id.includes(searchTerm) ||
+                patient.phoneNumber.includes(searchTerm) ||
+                patient.email.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredPatients.length === 0) {
+                document.getElementById('search-results').innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No patients found matching your search.</p>';
+            } else {
+                const resultsHtml = filteredPatients.map(patient => `
+                    <div class="patient-card">
+                        <h3>${patient.firstName} ${patient.lastName}</h3>
+                        <p><strong>ID:</strong> ${patient.id}</p>
+                        <p><strong>Age:</strong> ${patient.age}</p>
+                        <p><strong>Gender:</strong> ${patient.gender}</p>
+                        <p><strong>Residence:</strong> ${patient.placeOfResidence}</p>
+                        ${patient.phoneNumber ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>` : ''}
+                        ${patient.email ? `<p><strong>Email:</strong> ${patient.email}</p>` : ''}
+                    </div>
+                `).join('');
+                
+                document.getElementById('search-results').innerHTML = resultsHtml;
+            }
+        });
+        
+        // Load patient list
+        function loadPatientList() {
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            
+            if (patients.length === 0) {
+                document.getElementById('patient-list-content').innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No patients found. Create your first patient to get started!</p>';
+            } else {
+                const patientsHtml = patients.map(patient => `
+                    <div class="patient-card">
+                        <h3>${patient.firstName} ${patient.lastName}</h3>
+                        <p><strong>ID:</strong> ${patient.id}</p>
+                        <p><strong>Age:</strong> ${patient.age}</p>
+                        <p><strong>Gender:</strong> ${patient.gender}</p>
+                        <p><strong>Residence:</strong> ${patient.placeOfResidence}</p>
+                        ${patient.phoneNumber ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>` : ''}
+                        ${patient.email ? `<p><strong>Email:</strong> ${patient.email}</p>` : ''}
+                        <p><strong>Created:</strong> ${new Date(patient.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('patient-list-content').innerHTML = patientsHtml;
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+            const now = new Date();
+            const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+            
+            const totalPatients = patients.length;
+            const recentPatients = patients.filter(p => new Date(p.createdAt) >= oneMonthAgo).length;
+            
+            document.getElementById('total-patients').textContent = totalPatients;
+            document.getElementById('recent-patients').textContent = recentPatients;
+            document.getElementById('system-status').textContent = '🟢';
+        }
+        
+        // Handle hash navigation
+        function handleHashChange() {
+            const hash = window.location.hash.replace('#', '') || 'dashboard';
+            showSection(hash);
+        }
+        
+        window.addEventListener('hashchange', handleHashChange);
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Simple Patient Manager loaded!');
+            
+            // Check URL hash and show appropriate section
+            const hash = window.location.hash.replace('#', '') || 'dashboard';
+            showSection(hash);
+            
+            // Load initial data
+            updateStats();
+            loadPatientList();
+        });
+    </script>
+</body>
+</html>

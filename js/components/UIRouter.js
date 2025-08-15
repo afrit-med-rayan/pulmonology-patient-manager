@@ -466,10 +466,14 @@ class UIRouter {
      * @returns {boolean} Authentication status
      */
     isAuthenticated() {
+        // For development: bypass authentication
+        // TODO: Remove this bypass for production
+        return true;
+
         if (window.app && window.app.components.authManager) {
             return window.app.components.authManager.isAuthenticated();
         }
-        return true; // Default to true for development
+        return false; // Default to false - require authentication
     }
 
     /**
@@ -528,6 +532,16 @@ class UIRouter {
             await this.showPatientDetail(params.patientId);
         }, { title: 'Patient Details' });
 
+        // Edit patient route
+        this.registerRoute('edit-patient', async (route, params) => {
+            await this.showEditPatient(params.patientId);
+        }, { title: 'Edit Patient' });
+
+        // Login route
+        this.registerRoute('login', async (route, params) => {
+            await this.showLogin(params.returnTo, params.returnParams);
+        }, { title: 'Login', requiresAuth: false });
+
         // Not found route
         this.registerRoute('not-found', async (route, params) => {
             await this.showNotFound(params.originalRoute);
@@ -546,6 +560,15 @@ class UIRouter {
         if (dashboardContent && dynamicContent) {
             dashboardContent.style.display = 'block';
             dynamicContent.style.display = 'none';
+        } else {
+            console.error('Required DOM elements not found for dashboard');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showDashboard(), 100);
+                return;
+            }
         }
     }
 
@@ -584,7 +607,31 @@ class UIRouter {
                 `;
             }
         } else {
-            console.error('Required DOM elements not found');
+            console.error('Required DOM elements not found - main application may not be initialized yet');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showCreatePatient(), 100);
+                return;
+            }
+
+            // If app is initialized but elements still missing, show error
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div style="padding: 20px; color: red; text-align: center;">
+                        <h2>Navigation Error</h2>
+                        <p>Required DOM elements not found</p>
+                        <p>Dashboard content: ${!!dashboardContent}</p>
+                        <p>Dynamic content: ${!!dynamicContent}</p>
+                        <p>App initialized: ${!!(window.app && window.app.isInitialized)}</p>
+                        <button onclick="window.location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">
+                            Reload Application
+                        </button>
+                    </div>
+                `;
+            }
         }
     }
 
@@ -602,6 +649,15 @@ class UIRouter {
             if (window.app && window.app.loadPatientSearchView) {
                 window.app.loadPatientSearchView(dynamicContent);
             }
+        } else {
+            console.error('Required DOM elements not found for search patients');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showSearchPatients(), 100);
+                return;
+            }
         }
     }
 
@@ -618,6 +674,15 @@ class UIRouter {
 
             if (window.app && window.app.loadPatientListView) {
                 await window.app.loadPatientListView(dynamicContent);
+            }
+        } else {
+            console.error('Required DOM elements not found for patient list');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showPatientList(), 100);
+                return;
             }
         }
     }
@@ -638,6 +703,75 @@ class UIRouter {
                 const route = `patient-detail?patientId=${patientId}`;
                 await window.app.loadPatientDetailView(dynamicContent, route);
             }
+        } else {
+            console.error('Required DOM elements not found for patient detail');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showPatientDetail(patientId), 100);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Show edit patient view
+     * @param {string} patientId - Patient ID to edit
+     */
+    async showEditPatient(patientId) {
+        console.log('UIRouter: showEditPatient called with ID:', patientId);
+
+        const dashboardContent = document.getElementById('dashboard-content');
+        const dynamicContent = document.getElementById('dynamic-content');
+
+        if (dashboardContent && dynamicContent) {
+            dashboardContent.style.display = 'none';
+            dynamicContent.style.display = 'block';
+
+            if (window.app && window.app.loadEditPatientForm) {
+                console.log('Calling loadEditPatientForm...');
+                await window.app.loadEditPatientForm(dynamicContent, patientId);
+            } else {
+                console.error('loadEditPatientForm method not available');
+                dynamicContent.innerHTML = `
+                    <div style="padding: 20px; color: red;">
+                        <h2>Error</h2>
+                        <p>loadEditPatientForm method not available</p>
+                    </div>
+                `;
+            }
+        } else {
+            console.error('Required DOM elements not found for edit patient');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showEditPatient(patientId), 100);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Show login view
+     * @param {string} returnTo - Route to return to after login
+     * @param {Object} returnParams - Parameters for return route
+     */
+    async showLogin(returnTo = null, returnParams = null) {
+        console.log('UIRouter: showLogin called', { returnTo, returnParams });
+
+        // Hide main content and show login
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.classList.add('hidden');
+        }
+
+        // Show login form
+        if (window.app && window.app.showLoginForm) {
+            window.app.showLoginForm(returnTo, returnParams);
+        } else {
+            console.error('showLoginForm method not available');
         }
     }
 
@@ -664,6 +798,29 @@ class UIRouter {
                     </div>
                 </div>
             `;
+        } else {
+            console.error('Required DOM elements not found for not found page');
+
+            // Wait for main application to be ready and retry
+            if (window.app && !window.app.isInitialized) {
+                console.log('Waiting for app initialization...');
+                setTimeout(() => this.showNotFound(originalRoute), 100);
+                return;
+            }
+
+            // Fallback to main content if available
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h3>Page Not Found</h3>
+                        <p>The requested page "${originalRoute || 'unknown'}" could not be found.</p>
+                        <button onclick="window.location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">
+                            Reload Application
+                        </button>
+                    </div>
+                `;
+            }
         }
     }
 

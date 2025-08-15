@@ -4,10 +4,13 @@
  */
 
 class LoginView {
-    constructor(authManager) {
+    constructor(authManager, options = {}) {
         this.authManager = authManager;
         this.loginForm = null;
         this.isSubmitting = false;
+        this.returnTo = options.returnTo || null;
+        this.returnParams = options.returnParams || null;
+        this.onLoginSuccess = options.onLoginSuccess || null;
 
         // Bind methods
         this.render = this.render.bind(this);
@@ -155,8 +158,10 @@ class LoginView {
 
                 // Redirect to main application
                 setTimeout(() => {
-                    if (window.app && window.app.handleLoginSuccess) {
-                        window.app.handleLoginSuccess();
+                    if (this.onLoginSuccess) {
+                        this.onLoginSuccess(this.returnTo, this.returnParams);
+                    } else if (window.app && window.app.handleLoginSuccess) {
+                        window.app.handleLoginSuccess(this.returnTo, this.returnParams);
                     } else {
                         window.location.reload();
                     }
