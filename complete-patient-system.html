@@ -1,1543 +1,2718 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patient Management System - Dr. S. Sahboub</title>
-    
+
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/layout.css">
-    
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
     <style>
-        :root {
-            --primary-color: #1e40af;
-            --primary-dark: #1e3a8a;
-            --primary-light: #3b82f6;
-            --secondary-color: #475569;
-            --accent-color: #059669;
-            --accent-light: #10b981;
-            --danger-color: #dc2626;
-            --warning-color: #d97706;
-            --success-color: #059669;
-            --background-color: #f8fafc;
-            --surface-color: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --border-light: #f1f5f9;
-            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
-        }
+      :root {
+        --primary-color: #1e40af;
+        --primary-dark: #1e3a8a;
+        --primary-light: #3b82f6;
+        --secondary-color: #475569;
+        --accent-color: #059669;
+        --accent-light: #10b981;
+        --danger-color: #dc2626;
+        --warning-color: #d97706;
+        --success-color: #059669;
+        --background-color: #f8fafc;
+        --surface-color: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --border-light: #f1f5f9;
+        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+      }
 
-        * {
-            box-sizing: border-box;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
-        body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2rem 0;
-            box-shadow: var(--shadow-2xl);
-            position: relative;
-            overflow: hidden;
-        }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            margin-left: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: 300;
-            margin-right: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            letter-spacing: 0.05em;
-        }
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-dark) 100%
+        );
+        color: white;
+        padding: 2rem 0;
+        box-shadow: var(--shadow-2xl);
+        position: relative;
+        overflow: hidden;
+      }
 
-        .logo-icon {
-            width: 3rem;
-            height: 3rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .header-right {
-            margin-right: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.875rem 1.75rem;
-            border-radius: var(--radius-xl);
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
-            position: relative;
-            overflow: hidden;
-        }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 40%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 50%
+          );
+      }
 
-        .logout-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .logout-btn:hover::before {
-            left: 100%;
-        }
-        
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .nav {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 0;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.8);
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        .nav a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem 1.75rem;
-            background: transparent;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: var(--radius-xl);
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
+      .header-left {
+        display: flex;
+        align-items: center;
+        margin-left: 2rem;
+        position: relative;
+        z-index: 1;
+      }
 
-        .nav a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-        
-        .nav a:hover {
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
+      .logo {
+        font-size: 2rem;
+        font-weight: 300;
+        margin-right: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        letter-spacing: 0.05em;
+      }
 
-        .nav a:hover::before {
-            opacity: 1;
-        }
-        
-        .nav a.active {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            color: white;
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-1px);
-        }
-        
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .section {
-            display: none;
-            background: var(--surface-color);
-            padding: 2.5rem;
-            border-radius: var(--radius-2xl);
-            box-shadow: var(--shadow-xl);
-            margin: 2rem 0;
-            border: 1px solid var(--border-color);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+      .logo-icon {
+        width: 3rem;
+        height: 3rem;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2) 0%,
+          rgba(255, 255, 255, 0.1) 100%
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
 
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 50%, var(--primary-light) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .section.active {
-            display: block;
-            animation: sectionSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+      .header-right {
+        margin-right: 2rem;
+        position: relative;
+        z-index: 1;
+      }
 
-        .section.active::before {
-            opacity: 1;
-        }
+      .logout-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+      }
 
-        @keyframes sectionSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .form-group {
-            margin-bottom: 2rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            position: relative;
-        }
+      .logout-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
 
-        .form-label::after {
-            content: '';
-            position: absolute;
-            bottom: -0.25rem;
-            left: 0;
-            width: 2rem;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            border-radius: 1px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-xl);
-            font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: var(--surface-color);
-            color: var(--text-primary);
-            position: relative;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
-            transform: translateY(-2px);
-            background: white;
-        }
+      .logout-btn:hover::before {
+        left: 100%;
+      }
 
-        .form-control:hover {
-            border-color: var(--primary-light);
-            background: white;
-        }
+      .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+      }
 
-        .form-control:focus + .form-label {
-            color: var(--primary-color);
-        }
-        
-        .btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: var(--radius-xl);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 0.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            position: relative;
-            overflow: hidden;
-        }
+      .nav {
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.25rem 0;
+        box-shadow: var(--shadow-lg);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.8);
+      }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+      }
 
-        .btn:hover::before {
-            left: 100%;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
-            color: white;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-color) 100%);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-2xl);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #64748b 100%);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #64748b 0%, var(--secondary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #b91c1c 100%);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #b91c1c 0%, var(--danger-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #b45309 100%);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #b45309 0%, var(--warning-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .patient-card {
-            background: var(--surface-color);
-            padding: 2rem;
-            margin: 1.5rem 0;
-            border-radius: var(--radius-2xl);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+      .nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.75rem;
+        background: transparent;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: var(--radius-xl);
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .patient-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        }
-        
-        .patient-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-2xl);
-            border-color: var(--primary-light);
-        }
-        
-        .patient-card h3 {
-            margin: 0 0 1.5rem 0;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-        
-        .patient-card p {
-            margin: 0.75rem 0;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.6;
-        }
-        
-        .patient-actions {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .visits-section {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            margin: 2rem 0;
-            border: 1px solid #bae6fd;
-            position: relative;
-            overflow: hidden;
-        }
+      .nav a::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+      }
 
-        .visits-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-            animation: float 8s ease-in-out infinite;
-        }
+      .nav a:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(180deg); }
-        }
+      .nav a:hover::before {
+        opacity: 1;
+      }
 
-        .visits-section h4 {
-            color: var(--primary-color);
-            margin: 0 0 1.5rem 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .visit-item {
-            background: var(--surface-color);
-            padding: 1.5rem;
-            margin: 1.25rem 0;
-            border-radius: var(--radius-xl);
-            border-left: 4px solid var(--accent-color);
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 1;
-        }
+      .nav a.active {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: white;
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-1px);
+      }
 
-        .visit-item:hover {
-            transform: translateX(6px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .visit-date {
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-size: 1.125rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin: 2.5rem 0;
-        }
-        
-        .stat-box {
-            background: linear-gradient(135deg, var(--surface-color) 0%, #f8fafc 100%);
-            padding: 2.5rem;
-            border-radius: var(--radius-2xl);
-            text-align: center;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-xl);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+      .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-        .stat-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        }
+      .section {
+        display: none;
+        background: var(--surface-color);
+        padding: 2.5rem;
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-xl);
+        margin: 2rem 0;
+        border: 1px solid var(--border-color);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
 
-        .stat-box::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(30, 64, 175, 0.03) 0%, transparent 70%);
-            animation: statFloat 6s ease-in-out infinite;
-        }
+      .section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 50%,
+          var(--primary-light) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
-        @keyframes statFloat {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
-        }
-        
-        .stat-box:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-2xl);
-        }
-        
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin-bottom: 0.75rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 1.25rem 1.75rem;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-2xl);
-            font-size: 1.125rem;
-            margin-bottom: 2rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: var(--surface-color);
-            color: var(--text-primary);
-            position: relative;
-        }
-        
-        .search-box:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
-            transform: translateY(-3px);
-            background: white;
-        }
+      .section.active {
+        display: block;
+        animation: sectionSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-        .search-box:hover {
-            border-color: var(--primary-light);
-            background: white;
-        }
-        
-        .welcome-message {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: var(--radius-2xl);
-            margin: 2.5rem 0;
-            border: 1px solid #bae6fd;
-            position: relative;
-            overflow: hidden;
-        }
+      .section.active::before {
+        opacity: 1;
+      }
 
-        .welcome-message::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-            animation: welcomeFloat 10s ease-in-out infinite;
+      @keyframes sectionSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.98);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
 
-        @keyframes welcomeFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-            33% { transform: translateY(-20px) rotate(120deg) scale(1.1); }
-            66% { transform: translateY(20px) rotate(240deg) scale(0.9); }
-        }
-        
-        .welcome-message h1 {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 3rem;
-            font-weight: 800;
-            position: relative;
-            z-index: 1;
-            letter-spacing: -0.025em;
-        }
-        
-        .welcome-message p {
-            color: var(--text-secondary);
-            font-size: 1.375rem;
-            line-height: 1.7;
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .step-guide {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border: 1px solid #f59e0b;
-            border-radius: var(--radius-2xl);
-            padding: 2.5rem;
-            margin: 2.5rem 0;
-            position: relative;
-            overflow: hidden;
-        }
+      .form-group {
+        margin-bottom: 2rem;
+      }
 
-        .step-guide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 150px;
-            height: 150px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23f59e0b" stroke-width="2" opacity="0.2"/><circle cx="50" cy="50" r="25" fill="none" stroke="%23f59e0b" stroke-width="1" opacity="0.3"/></svg>');
-            opacity: 0.6;
-        }
-        
-        .step-guide h3 {
-            color: #92400e;
-            margin-top: 0;
-            font-size: 1.75rem;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .step-guide ol {
-            color: #92400e;
-            line-height: 2.2;
-            position: relative;
-            z-index: 1;
-        }
+      .form-label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        position: relative;
+      }
 
-        .step-guide li {
-            margin-bottom: 1rem;
-            font-weight: 500;
-            font-size: 1.125rem;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-        }
-        
-        .modal-content {
-            background-color: var(--surface-color);
-            margin: 10% auto;
-            padding: 3rem;
-            border-radius: var(--radius-2xl);
-            width: 90%;
-            max-width: 550px;
-            text-align: center;
-            box-shadow: var(--shadow-2xl);
-            border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+      .form-label::after {
+        content: "";
+        position: absolute;
+        bottom: -0.25rem;
+        left: 0;
+        width: 2rem;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        border-radius: 1px;
+      }
 
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        }
+      .form-control {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--surface-color);
+        color: var(--text-primary);
+        position: relative;
+      }
 
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-60px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .modal-buttons {
-            margin-top: 2.5rem;
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .modal-buttons button {
-            margin: 0;
-        }
-        
-        .success-message {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
-            padding: 1.5rem;
-            border-radius: var(--radius-xl);
-            margin: 2rem 0;
-            border: 1px solid #10b981;
-            text-align: center;
-            font-weight: 600;
-            box-shadow: var(--shadow-lg);
-            animation: successSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+      .form-control:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+        transform: translateY(-2px);
+        background: white;
+      }
 
-        .success-message::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
-            animation: successShine 2s ease-in-out;
-        }
+      .form-control:hover {
+        border-color: var(--primary-light);
+        background: white;
+      }
 
-        @keyframes successShine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+      .form-control:focus + .form-label {
+        color: var(--primary-color);
+      }
 
-        @keyframes successSlideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
+      .btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: var(--radius-xl);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--accent-color) 0%,
+          var(--accent-light) 100%
+        );
+        color: white;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--accent-light) 0%,
+          var(--accent-color) 100%
+        );
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-2xl);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-color) 0%,
+          #64748b 100%
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-secondary:hover {
+        background: linear-gradient(
+          135deg,
+          #64748b 0%,
+          var(--secondary-color) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-danger {
+        background: linear-gradient(
+          135deg,
+          var(--danger-color) 0%,
+          #b91c1c 100%
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(
+          135deg,
+          #b91c1c 0%,
+          var(--danger-color) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-warning {
+        background: linear-gradient(
+          135deg,
+          var(--warning-color) 0%,
+          #b45309 100%
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-warning:hover {
+        background: linear-gradient(
+          135deg,
+          #b45309 0%,
+          var(--warning-color) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .patient-card {
+        background: var(--surface-color);
+        padding: 2rem;
+        margin: 1.5rem 0;
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .patient-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+      }
+
+      .patient-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-2xl);
+        border-color: var(--primary-light);
+      }
+
+      .patient-card h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+
+      .patient-card p {
+        margin: 0.75rem 0;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
+      .patient-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .visits-section {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        margin: 2rem 0;
+        border: 1px solid #bae6fd;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .visits-section::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(59, 130, 246, 0.05) 0%,
+          transparent 70%
+        );
+        animation: float 8s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
         }
-        
+        50% {
+          transform: translateY(-30px) rotate(180deg);
+        }
+      }
+
+      .visits-section h4 {
+        color: var(--primary-color);
+        margin: 0 0 1.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+      }
+
+      .visit-item {
+        background: var(--surface-color);
+        padding: 1.5rem;
+        margin: 1.25rem 0;
+        border-radius: var(--radius-xl);
+        border-left: 4px solid var(--accent-color);
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1;
+      }
+
+      .visit-item:hover {
+        transform: translateX(6px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .visit-date {
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        font-size: 1.125rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 2.5rem 0;
+      }
+
+      .stat-box {
+        background: linear-gradient(
+          135deg,
+          var(--surface-color) 0%,
+          #f8fafc 100%
+        );
+        padding: 2.5rem;
+        border-radius: var(--radius-2xl);
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-xl);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+      }
+
+      .stat-box::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(30, 64, 175, 0.03) 0%,
+          transparent 70%
+        );
+        animation: statFloat 6s ease-in-out infinite;
+      }
+
+      @keyframes statFloat {
+        0%,
+        100% {
+          transform: translateY(0px) scale(1);
+        }
+        50% {
+          transform: translateY(-20px) scale(1.05);
+        }
+      }
+
+      .stat-box:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-2xl);
+      }
+
+      .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+      }
+
+      .search-box {
+        width: 100%;
+        padding: 1.25rem 1.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-2xl);
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--surface-color);
+        color: var(--text-primary);
+        position: relative;
+      }
+
+      .search-box:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+        transform: translateY(-3px);
+        background: white;
+      }
+
+      .search-box:hover {
+        border-color: var(--primary-light);
+        background: white;
+      }
+
+      .welcome-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: var(--radius-2xl);
+        margin: 2.5rem 0;
+        border: 1px solid #bae6fd;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .welcome-message::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(59, 130, 246, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(59, 130, 246, 0.1) 0%,
+            transparent 50%
+          );
+        animation: welcomeFloat 10s ease-in-out infinite;
+      }
+
+      @keyframes welcomeFloat {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg) scale(1);
+        }
+        33% {
+          transform: translateY(-20px) rotate(120deg) scale(1.1);
+        }
+        66% {
+          transform: translateY(20px) rotate(240deg) scale(0.9);
+        }
+      }
+
+      .welcome-message h1 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        font-size: 3rem;
+        font-weight: 800;
+        position: relative;
+        z-index: 1;
+        letter-spacing: -0.025em;
+      }
+
+      .welcome-message p {
+        color: var(--text-secondary);
+        font-size: 1.375rem;
+        line-height: 1.7;
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .step-guide {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 1px solid #f59e0b;
+        border-radius: var(--radius-2xl);
+        padding: 2.5rem;
+        margin: 2.5rem 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .step-guide::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23f59e0b" stroke-width="2" opacity="0.2"/><circle cx="50" cy="50" r="25" fill="none" stroke="%23f59e0b" stroke-width="1" opacity="0.3"/></svg>');
+        opacity: 0.6;
+      }
+
+      .step-guide h3 {
+        color: #92400e;
+        margin-top: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+
+      .step-guide ol {
+        color: #92400e;
+        line-height: 2.2;
+        position: relative;
+        z-index: 1;
+      }
+
+      .step-guide li {
+        margin-bottom: 1rem;
+        font-weight: 500;
+        font-size: 1.125rem;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+      }
+
+      .modal-content {
+        background-color: var(--surface-color);
+        margin: 10% auto;
+        padding: 3rem;
+        border-radius: var(--radius-2xl);
+        width: 90%;
+        max-width: 550px;
+        text-align: center;
+        box-shadow: var(--shadow-2xl);
+        border: 1px solid var(--border-color);
+        animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .modal-content::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-60px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .modal-buttons {
+        margin-top: 2.5rem;
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .modal-buttons button {
+        margin: 0;
+      }
+
+      .success-message {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #065f46;
+        padding: 1.5rem;
+        border-radius: var(--radius-xl);
+        margin: 2rem 0;
+        border: 1px solid #10b981;
+        text-align: center;
+        font-weight: 600;
+        box-shadow: var(--shadow-lg);
+        animation: successSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .success-message::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(16, 185, 129, 0.1),
+          transparent
+        );
+        animation: successShine 2s ease-in-out;
+      }
+
+      @keyframes successShine {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      @keyframes successSlideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-30px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .section h2 {
+        color: var(--primary-color);
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        letter-spacing: -0.025em;
+      }
+
+      .section h3 {
+        color: var(--text-primary);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 2.5rem 0 1.5rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 3px solid var(--border-light);
+        position: relative;
+      }
+
+      .section h3::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 3rem;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        border-radius: 1.5px;
+      }
+
+      @media (max-width: 768px) {
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        
-        .section h2 {
-            color: var(--primary-color);
-            font-size: 2.25rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            letter-spacing: -0.025em;
+          grid-template-columns: 1fr;
         }
 
-        .section h3 {
-            color: var(--text-primary);
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin: 2.5rem 0 1.5rem 0;
-            padding-bottom: 0.75rem;
-            border-bottom: 3px solid var(--border-light);
-            position: relative;
+        .main-content {
+          padding: 1rem;
         }
 
-        .section h3::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 3rem;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            border-radius: 1.5px;
-        }
-        
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .section {
-                padding: 1.5rem;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-container {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .nav a {
-                margin: 0.25rem;
-            }
-
-            .welcome-message h1 {
-                font-size: 2rem;
-            }
-
-            .welcome-message p {
-                font-size: 1.125rem;
-            }
+        .section {
+          padding: 1.5rem;
         }
 
-        /* Enhanced form styling */
-        .form-section {
-            background: linear-gradient(135deg, var(--border-light) 0%, #f8fafc 100%);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            margin: 2rem 0;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
+        .stats {
+          grid-template-columns: 1fr;
         }
 
-        .form-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            opacity: 0.7;
+        .nav-container {
+          flex-direction: column;
+          gap: 0.5rem;
         }
 
-        .form-section h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+        .nav a {
+          margin: 0.25rem;
         }
 
-        /* Enhanced button groups */
-        .button-group {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 3rem;
+        .welcome-message h1 {
+          font-size: 2rem;
         }
 
-        /* Loading states */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+        .welcome-message p {
+          font-size: 1.125rem;
         }
+      }
 
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;
-            height: 24px;
-            margin: -12px 0 0 -12px;
-            border: 3px solid var(--primary-color);
-            border-top: 3px solid transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+      /* Enhanced form styling */
+      .form-section {
+        background: linear-gradient(
+          135deg,
+          var(--border-light) 0%,
+          #f8fafc 100%
+        );
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        margin: 2rem 0;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+      }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+      .form-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        opacity: 0.7;
+      }
 
-        /* Premium scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+      .form-section h3 {
+        color: var(--primary-color);
+        margin-top: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
 
-        ::-webkit-scrollbar-track {
-            background: var(--border-light);
-            border-radius: 4px;
-        }
+      /* Enhanced button groups */
+      .button-group {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+      }
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            border-radius: 4px;
-        }
+      /* Loading states */
+      .loading {
+        opacity: 0.7;
+        pointer-events: none;
+      }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-color) 100%);
-        }
+      .loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        margin: -12px 0 0 -12px;
+        border: 3px solid var(--primary-color);
+        border-top: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
 
-        /* Selection styling */
-        ::selection {
-            background: rgba(30, 64, 175, 0.2);
-            color: var(--text-primary);
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-        /* Focus visible for accessibility */
-        .btn:focus-visible,
-        .form-control:focus-visible,
-        .nav a:focus-visible {
-            outline: 3px solid rgba(30, 64, 175, 0.5);
-            outline-offset: 2px;
+      /* Premium scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--border-light);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--accent-color) 100%
+        );
+      }
+
+      /* Selection styling */
+      ::selection {
+        background: rgba(30, 64, 175, 0.2);
+        color: var(--text-primary);
+      }
+
+      /* Focus visible for accessibility */
+      .btn:focus-visible,
+      .form-control:focus-visible,
+      .nav a:focus-visible {
+        outline: 3px solid rgba(30, 64, 175, 0.5);
+        outline-offset: 2px;
+      }
+
+      /* Tab styling */
+      .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+
+      .tab-btn:hover {
+        color: var(--primary-color);
+        background: rgba(30, 64, 175, 0.05);
+      }
+
+      .tab-btn.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        background: rgba(30, 64, 175, 0.1);
+      }
+
+      .edit-tab {
+        display: none;
+        animation: tabSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .edit-tab.active {
+        display: block;
+      }
+
+      @keyframes tabSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="app">
-        <!-- Header with Logo and Logout -->
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">
-                    <div class="logo-icon">MD</div>
-                    Dr. S. Sahboub
-                </div>
+      <!-- Header with Logo and Logout -->
+      <header class="header">
+        <div class="header-left">
+          <div class="logo">
+            <div class="logo-icon">MD</div>
+            Dr. S. Sahboub
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+      </header>
+
+      <!-- Navigation -->
+      <nav class="nav">
+        <div class="nav-container">
+          <a
+            href="#dashboard"
+            onclick="showSection('dashboard')"
+            class="active"
+          >
+            Dashboard
+          </a>
+          <a href="#create" onclick="showSection('create')"> Create Patient </a>
+          <a href="#search" onclick="showSection('search')">
+            Search Patients
+          </a>
+          <a href="#list" onclick="showSection('list')"> Patient List </a>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section active">
+          <div class="welcome-message">
+            <h1>Welcome to Patient Management System</h1>
+            <p>
+              Manage your pulmonology practice patients with comprehensive
+              record keeping and professional care
+            </p>
+          </div>
+
+          <div class="step-guide">
+            <h3>Quick Start Guide</h3>
+            <ol>
+              <li>
+                <strong>Create Patient:</strong> Add new patient records with
+                comprehensive visit information
+              </li>
+              <li>
+                <strong>Search Patients:</strong> Find existing patients by
+                name, ID, or contact details
+              </li>
+              <li>
+                <strong>View All:</strong> See complete patient list with
+                detailed medical history
+              </li>
+              <li>
+                <strong>Manage Records:</strong> Edit, update, or delete patient
+                information as needed
+              </li>
+            </ol>
+          </div>
+
+          <div class="stats">
+            <div class="stat-box">
+              <div class="stat-number" id="total-patients">0</div>
+              <div>Total Patients</div>
             </div>
-            <div class="header-right">
-                <button class="logout-btn" onclick="handleLogout()">
-                    Logout
+            <div class="stat-box">
+              <div class="stat-number" id="recent-patients">0</div>
+              <div>New This Month</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="total-visits">0</div>
+              <div>Total Visits</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="system-status">●</div>
+              <div>System Status</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create Patient Section -->
+        <div id="create-section" class="section">
+          <h2>Create New Patient</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+            Fill out the form below to add a new patient with comprehensive
+            visit information.
+          </p>
+
+          <form id="create-patient-form">
+            <div class="form-section">
+              <h3>Patient Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName" class="form-label">First Name *</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    class="form-control"
+                    required
+                    placeholder="Enter first name"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="lastName" class="form-label">Last Name *</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    class="form-control"
+                    required
+                    placeholder="Enter last name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="dateOfBirth" class="form-label"
+                    >Date of Birth *</label
+                  >
+                  <input
+                    type="date"
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="gender" class="form-label">Gender *</label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    class="form-control"
+                    required
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="placeOfResidence" class="form-label"
+                  >Place of Residence *</label
+                >
+                <input
+                  type="text"
+                  id="placeOfResidence"
+                  name="placeOfResidence"
+                  class="form-control"
+                  required
+                  placeholder="Enter city or town"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phoneNumber" class="form-label"
+                    >Phone Number</label
+                  >
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    class="form-control"
+                    placeholder="Enter phone number (optional)"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="email" class="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter email (optional)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section" id="first-visit-section">
+              <h3 id="visit-section-title">First Visit Information</h3>
+              <div class="form-group">
+                <label for="visitDate" class="form-label">Visit Date *</label>
+                <input
+                  type="date"
+                  id="visitDate"
+                  name="visitDate"
+                  class="form-control"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="medications" class="form-label"
+                  >Medications Prescribed</label
+                >
+                <textarea
+                  id="medications"
+                  name="medications"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter medications prescribed during this visit"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="observations" class="form-label"
+                  >Clinical Observations and Notes</label
+                >
+                <textarea
+                  id="observations"
+                  name="observations"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter clinical observations, symptoms, and medical notes"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="additionalComments" class="form-label"
+                  >Additional Comments</label
+                >
+                <textarea
+                  id="additionalComments"
+                  name="additionalComments"
+                  class="form-control"
+                  rows="2"
+                  placeholder="Any additional medical comments or recommendations"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Additional Visits Section (only shown when editing) -->
+            <div
+              class="form-section"
+              id="additional-visits-section"
+              style="display: none"
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                <h3>Previous Visits</h3>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="addNewVisit()"
+                >
+                  Add New Visit
                 </button>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="nav">
-            <div class="nav-container">
-                <a href="#dashboard" onclick="showSection('dashboard')" class="active">
-                    Dashboard
-                </a>
-                <a href="#create" onclick="showSection('create')">
-                    Create Patient
-                </a>
-                <a href="#search" onclick="showSection('search')">
-                    Search Patients
-                </a>
-                <a href="#list" onclick="showSection('list')">
-                    Patient List
-                </a>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Section -->
-            <div id="dashboard-section" class="section active">
-                <div class="welcome-message">
-                    <h1>Welcome to Patient Management System</h1>
-                    <p>Manage your pulmonology practice patients with comprehensive record keeping and professional care</p>
-                </div>
-                
-                <div class="step-guide">
-                    <h3>Quick Start Guide</h3>
-                    <ol>
-                        <li><strong>Create Patient:</strong> Add new patient records with comprehensive visit information</li>
-                        <li><strong>Search Patients:</strong> Find existing patients by name, ID, or contact details</li>
-                        <li><strong>View All:</strong> See complete patient list with detailed medical history</li>
-                        <li><strong>Manage Records:</strong> Edit, update, or delete patient information as needed</li>
-                    </ol>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-box">
-                        <div class="stat-number" id="total-patients">0</div>
-                        <div>Total Patients</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="recent-patients">0</div>
-                        <div>New This Month</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="total-visits">0</div>
-                        <div>Total Visits</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="system-status">●</div>
-                        <div>System Status</div>
-                    </div>
-                </div>
+              </div>
+              <div id="visits-list"></div>
             </div>
 
-            <!-- Create Patient Section -->
-            <div id="create-section" class="section">
-                <h2>Create New Patient</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Fill out the form below to add a new patient with comprehensive visit information.</p>
-                
-                <form id="create-patient-form">
-                    <div class="form-section">
-                        <h3>Patient Information</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName" class="form-label">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" class="form-control" required placeholder="Enter first name">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="lastName" class="form-label">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" class="form-control" required placeholder="Enter last name">
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="dateOfBirth" class="form-label">Date of Birth *</label>
-                                <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="gender" class="form-label">Gender *</label>
-                                <select id="gender" name="gender" class="form-control" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="placeOfResidence" class="form-label">Place of Residence *</label>
-                            <input type="text" id="placeOfResidence" name="placeOfResidence" class="form-control" required placeholder="Enter city or town">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="phoneNumber" class="form-label">Phone Number</label>
-                                <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter phone number (optional)">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="email" class="form-label">Email Address</label>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="Enter email (optional)">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <h3>First Visit Information</h3>
-                        <div class="form-group">
-                            <label for="visitDate" class="form-label">Visit Date *</label>
-                            <input type="date" id="visitDate" name="visitDate" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="medications" class="form-label">Medications Prescribed</label>
-                            <textarea id="medications" name="medications" class="form-control" rows="3" placeholder="Enter medications prescribed during this visit"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="observations" class="form-label">Clinical Observations and Notes</label>
-                            <textarea id="observations" name="observations" class="form-control" rows="3" placeholder="Enter clinical observations, symptoms, and medical notes"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="additionalComments" class="form-label">Additional Comments</label>
-                            <textarea id="additionalComments" name="additionalComments" class="form-control" rows="2" placeholder="Any additional medical comments or recommendations"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-primary">
-                            Save Patient Record
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="showSection('dashboard')">
-                            Cancel
-                        </button>
-                    </div>
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary">
+                Save Patient Record
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="showSection('dashboard')"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Edit Patient Section -->
+        <div id="edit-section" class="section">
+          <h2>Edit Patient</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+            Update patient information and manage their visit history.
+          </p>
+
+          <!-- Tab Navigation -->
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              margin-bottom: 2rem;
+              border-bottom: 2px solid var(--border-light);
+            "
+          >
+            <button
+              class="tab-btn active"
+              onclick="showEditTab('info')"
+              id="info-tab"
+            >
+              Patient Information
+            </button>
+            <button
+              class="tab-btn"
+              onclick="showEditTab('visits')"
+              id="visits-tab"
+            >
+              Visit Management
+            </button>
+          </div>
+
+          <!-- Patient Info Tab -->
+          <div id="edit-info-tab" class="edit-tab active">
+            <form id="edit-patient-form">
+              <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="edit-firstName" class="form-label"
+                      >First Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="edit-firstName"
+                      name="firstName"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-lastName" class="form-label"
+                      >Last Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="edit-lastName"
+                      name="lastName"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="edit-dateOfBirth" class="form-label"
+                      >Date of Birth *</label
+                    >
+                    <input
+                      type="date"
+                      id="edit-dateOfBirth"
+                      name="dateOfBirth"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-gender" class="form-label">Gender *</label>
+                    <select
+                      id="edit-gender"
+                      name="gender"
+                      class="form-control"
+                      required
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-placeOfResidence" class="form-label"
+                    >Place of Residence *</label
+                  >
+                  <input
+                    type="text"
+                    id="edit-placeOfResidence"
+                    name="placeOfResidence"
+                    class="form-control"
+                    required
+                  />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="edit-phoneNumber" class="form-label"
+                      >Phone Number</label
+                    >
+                    <input
+                      type="tel"
+                      id="edit-phoneNumber"
+                      name="phoneNumber"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-email" class="form-label"
+                      >Email Address</label
+                    >
+                    <input
+                      type="email"
+                      id="edit-email"
+                      name="email"
+                      class="form-control"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                  Update Patient Information
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="showSection('list')"
+                >
+                  Back to Patient List
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Visit Management Tab -->
+          <div id="edit-visits-tab" class="edit-tab">
+            <div class="form-section">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                <h3>Visit History</h3>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="showAddVisitForm()"
+                >
+                  Add New Visit
+                </button>
+              </div>
+              <div id="patient-visits-list"></div>
+            </div>
+
+            <!-- Add/Edit Visit Form -->
+            <div id="visit-form-section" style="display: none">
+              <div class="form-section">
+                <h3 id="visit-form-title">Add New Visit</h3>
+                <form id="visit-form">
+                  <div class="form-group">
+                    <label for="visit-date" class="form-label"
+                      >Visit Date *</label
+                    >
+                    <input
+                      type="date"
+                      id="visit-date"
+                      name="visitDate"
+                      class="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="visit-medications" class="form-label"
+                      >Medications Prescribed</label
+                    >
+                    <textarea
+                      id="visit-medications"
+                      name="medications"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Enter medications prescribed during this visit"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="visit-observations" class="form-label"
+                      >Clinical Observations and Notes</label
+                    >
+                    <textarea
+                      id="visit-observations"
+                      name="observations"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Enter clinical observations, symptoms, and medical notes"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="visit-comments" class="form-label"
+                      >Additional Comments</label
+                    >
+                    <textarea
+                      id="visit-comments"
+                      name="additionalComments"
+                      class="form-control"
+                      rows="2"
+                      placeholder="Any additional medical comments or recommendations"
+                    ></textarea>
+                  </div>
+
+                  <div class="button-group">
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      id="visit-submit-btn"
+                    >
+                      Save Visit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      onclick="hideAddVisitForm()"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </form>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Search Patients Section -->
-            <div id="search-section" class="section">
-                <h2>Search Patients</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Search for patients by name, ID, phone number, or email address.</p>
-                
-                <input type="text" id="search-input" class="search-box" placeholder="Type to search patients (name, ID, phone, email)...">
-                
-                <div id="search-results">
-                    <p style="text-align: center; color: var(--text-muted); font-style: italic;">Start typing to search for patients...</p>
-                </div>
-            </div>
+        <!-- Search Patients Section -->
+        <div id="search-section" class="section">
+          <h2>Search Patients</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+            Search for patients by name, ID, phone number, or email address.
+          </p>
 
-            <!-- Patient List Section -->
-            <div id="list-section" class="section">
-                <h2>All Patients</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">View and manage all patients in your system with complete medical history.</p>
-                
-                <div id="patient-list-content">
-                    <p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found. Create your first patient to get started!</p>
-                </div>
+          <input
+            type="text"
+            id="search-input"
+            class="search-box"
+            placeholder="Type to search patients (name, ID, phone, email)..."
+          />
+
+          <div id="search-results">
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                font-style: italic;
+              "
+            >
+              Start typing to search for patients...
+            </p>
+          </div>
+        </div>
+
+        <!-- Patient List Section -->
+        <div id="list-section" class="section">
+          <h2>All Patients</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+            View and manage all patients in your system with complete medical
+            history.
+          </p>
+
+          <!-- Search Box for Patient List -->
+          <div style="margin-bottom: 2rem">
+            <input
+              type="text"
+              id="patient-list-search"
+              class="search-box"
+              placeholder="Search patients by name, ID, phone, email, or residence..."
+              style="margin-bottom: 0"
+            />
+            <div
+              style="
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+              "
+            >
+              <button
+                class="btn btn-secondary"
+                onclick="clearPatientListSearch()"
+                style="font-size: 0.875rem; padding: 0.75rem 1.5rem"
+              >
+                Clear Search
+              </button>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  color: var(--text-muted);
+                  font-size: 0.875rem;
+                "
+              >
+                <span id="patient-count-display">0 patients found</span>
+              </div>
             </div>
-        </main>
+          </div>
+
+          <div id="patient-list-content">
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                font-style: italic;
+              "
+            >
+              No patients found. Create your first patient to get started!
+            </p>
+          </div>
+        </div>
+      </main>
     </div>
 
     <!-- Logout Confirmation Modal -->
     <div id="logoutModal" class="modal">
-        <div class="modal-content">
-            <h3>Unsaved Changes Detected</h3>
-            <p>You have unsaved changes in the form. What would you like to do?</p>
-            <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="saveAndLogout()">Save and Exit</button>
-                <button class="btn btn-danger" onclick="logoutWithoutSaving()">Exit without Saving</button>
-                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            </div>
+      <div class="modal-content">
+        <h3>Unsaved Changes Detected</h3>
+        <p>You have unsaved changes in the form. What would you like to do?</p>
+        <div class="modal-buttons">
+          <button class="btn btn-primary" onclick="saveAndLogout()">
+            Save and Exit
+          </button>
+          <button class="btn btn-danger" onclick="logoutWithoutSaving()">
+            Exit without Saving
+          </button>
+          <button class="btn btn-secondary" onclick="closeModal()">
+            Cancel
+          </button>
         </div>
+      </div>
     </div>
 
     <script>
-        let hasUnsavedChanges = false;
-        let currentPatientId = null;
-        
-        // Track form changes
-        function trackFormChanges() {
-            const form = document.getElementById('create-patient-form');
-            const inputs = form.querySelectorAll('input, textarea, select');
-            
-            inputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    hasUnsavedChanges = true;
-                });
-                input.addEventListener('change', () => {
-                    hasUnsavedChanges = true;
-                });
-            });
+      let hasUnsavedChanges = false;
+      let currentPatientId = null;
+      let currentEditingVisitIndex = null;
+
+      // Track form changes
+      function trackFormChanges() {
+        const form = document.getElementById("create-patient-form");
+        const inputs = form.querySelectorAll("input, textarea, select");
+
+        inputs.forEach((input) => {
+          input.addEventListener("input", () => {
+            hasUnsavedChanges = true;
+          });
+          input.addEventListener("change", () => {
+            hasUnsavedChanges = true;
+          });
+        });
+      }
+
+      // Simple navigation system
+      function showSection(sectionName) {
+        // Hide all sections
+        const sections = document.querySelectorAll(".section");
+        sections.forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        // Show the selected section
+        const targetSection = document.getElementById(sectionName + "-section");
+        if (targetSection) {
+          targetSection.classList.add("active");
         }
-        
-        // Simple navigation system
-        function showSection(sectionName) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the selected section
-            const targetSection = document.getElementById(sectionName + '-section');
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-            
-            // Update navigation active state
-            const navLinks = document.querySelectorAll('.nav a');
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            const activeLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Update URL hash
-            window.location.hash = sectionName;
-            
-            // Load section-specific data
-            if (sectionName === 'dashboard') {
-                updateStats();
-            } else if (sectionName === 'list') {
-                loadPatientList();
-            }
+
+        // Update navigation active state
+        const navLinks = document.querySelectorAll(".nav a");
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        const activeLink = document.querySelector(
+          `[onclick="showSection('${sectionName}')"]`
+        );
+        if (activeLink) {
+          activeLink.classList.add("active");
         }
-        
-        // Handle form submission
-        document.getElementById('create-patient-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const patientData = Object.fromEntries(formData.entries());
-            
-            // Validation
-            if (!patientData.firstName || !patientData.lastName || !patientData.dateOfBirth || !patientData.gender || !patientData.placeOfResidence || !patientData.visitDate) {
-                alert('Please fill in all required fields (marked with *)');
-                return;
+
+        // Update URL hash
+        window.location.hash = sectionName;
+
+        // Load section-specific data
+        if (sectionName === "dashboard") {
+          updateStats();
+        } else if (sectionName === "list") {
+          loadPatientList();
+          setupPatientListSearch();
+        } else if (sectionName === "create") {
+          // Always reset form for new patient creation
+          document.getElementById("create-patient-form").reset();
+          document.getElementById("additional-visits-section").style.display =
+            "none";
+          document.getElementById("visit-section-title").textContent =
+            "First Visit Information";
+          const submitBtn = document.querySelector(
+            '#create-patient-form button[type="submit"]'
+          );
+          submitBtn.textContent = "Save Patient Record";
+          currentPatientId = null;
+          currentEditingVisitIndex = null;
+        }
+      }
+
+      // Handle form submission
+      document
+        .getElementById("create-patient-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const patientData = Object.fromEntries(formData.entries());
+
+          // Validation
+          if (
+            !patientData.firstName ||
+            !patientData.lastName ||
+            !patientData.dateOfBirth ||
+            !patientData.gender ||
+            !patientData.placeOfResidence ||
+            !patientData.visitDate
+          ) {
+            alert("Please fill in all required fields (marked with *)");
+            return;
+          }
+
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+
+          if (currentPatientId) {
+            // Editing existing patient - add or update visit
+            const patientIndex = patients.findIndex(
+              (p) => p.id === currentPatientId
+            );
+
+            if (patientIndex !== -1) {
+              const patient = patients[patientIndex];
+
+              // Update patient basic info
+              patient.firstName = patientData.firstName;
+              patient.lastName = patientData.lastName;
+              patient.dateOfBirth = patientData.dateOfBirth;
+              patient.gender = patientData.gender;
+              patient.placeOfResidence = patientData.placeOfResidence;
+              patient.phoneNumber = patientData.phoneNumber || "";
+              patient.email = patientData.email || "";
+              patient.updatedAt = new Date().toISOString();
+
+              // Calculate age
+              const birthDate = new Date(patientData.dateOfBirth);
+              const today = new Date();
+              let age = today.getFullYear() - birthDate.getFullYear();
+              const monthDiff = today.getMonth() - birthDate.getMonth();
+              if (
+                monthDiff < 0 ||
+                (monthDiff === 0 && today.getDate() < birthDate.getDate())
+              ) {
+                age--;
+              }
+              patient.age = age;
+
+              // Initialize visits array if it doesn't exist
+              if (!patient.visits) {
+                patient.visits = [];
+              }
+
+              const visitData = {
+                id: Date.now().toString(),
+                visitDate: patientData.visitDate,
+                medications: patientData.medications || "",
+                observations: patientData.observations || "",
+                additionalComments: patientData.additionalComments || "",
+                createdAt: new Date().toISOString(),
+              };
+
+              if (currentEditingVisitIndex !== null) {
+                // Update existing visit
+                patient.visits[currentEditingVisitIndex] = {
+                  ...patient.visits[currentEditingVisitIndex],
+                  ...visitData,
+                  id: patient.visits[currentEditingVisitIndex].id, // Keep original ID
+                  createdAt: patient.visits[currentEditingVisitIndex].createdAt, // Keep original creation date
+                  updatedAt: new Date().toISOString(),
+                };
+                showSuccessMessage("Visit updated successfully!");
+              } else {
+                // Add new visit
+                patient.visits.push(visitData);
+                showSuccessMessage("New visit added successfully!");
+              }
+
+              localStorage.setItem("patients", JSON.stringify(patients));
+
+              // Reload visits display
+              loadExistingVisits(patient.visits);
+
+              // Clear form for next visit
+              document.getElementById("visitDate").value = "";
+              document.getElementById("medications").value = "";
+              document.getElementById("observations").value = "";
+              document.getElementById("additionalComments").value = "";
+
+              // Reset editing state
+              currentEditingVisitIndex = null;
+              const submitBtn = document.querySelector(
+                '#create-patient-form button[type="submit"]'
+              );
+              submitBtn.textContent = "Add New Visit";
             }
-            
+          } else {
+            // Creating new patient
             // Calculate age
             const birthDate = new Date(patientData.dateOfBirth);
             const today = new Date();
             let age = today.getFullYear() - birthDate.getFullYear();
             const monthDiff = today.getMonth() - birthDate.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
+            if (
+              monthDiff < 0 ||
+              (monthDiff === 0 && today.getDate() < birthDate.getDate())
+            ) {
+              age--;
             }
-            
-            // Create patient with visit
+
             const patient = {
-                id: currentPatientId || Date.now().toString(),
-                firstName: patientData.firstName,
-                lastName: patientData.lastName,
-                dateOfBirth: patientData.dateOfBirth,
-                age: age,
-                gender: patientData.gender,
-                placeOfResidence: patientData.placeOfResidence,
-                phoneNumber: patientData.phoneNumber || '',
-                email: patientData.email || '',
-                visits: [{
-                    id: Date.now().toString(),
-                    visitDate: patientData.visitDate,
-                    medications: patientData.medications || '',
-                    observations: patientData.observations || '',
-                    additionalComments: patientData.additionalComments || '',
-                    createdAt: new Date().toISOString()
-                }],
-                createdAt: currentPatientId ? undefined : new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+              id: Date.now().toString(),
+              firstName: patientData.firstName,
+              lastName: patientData.lastName,
+              dateOfBirth: patientData.dateOfBirth,
+              age: age,
+              gender: patientData.gender,
+              placeOfResidence: patientData.placeOfResidence,
+              phoneNumber: patientData.phoneNumber || "",
+              email: patientData.email || "",
+              visits: [
+                {
+                  id: Date.now().toString(),
+                  visitDate: patientData.visitDate,
+                  medications: patientData.medications || "",
+                  observations: patientData.observations || "",
+                  additionalComments: patientData.additionalComments || "",
+                  createdAt: new Date().toISOString(),
+                },
+              ],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
             };
-            
-            // Save to localStorage
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            
-            if (currentPatientId) {
-                // Update existing patient
-                const index = patients.findIndex(p => p.id === currentPatientId);
-                if (index !== -1) {
-                    patients[index] = { ...patients[index], ...patient };
-                }
-            } else {
-                // Add new patient
-                patients.push(patient);
-            }
-            
-            localStorage.setItem('patients', JSON.stringify(patients));
-            
-            // Show success message
-            showSuccessMessage('Patient record saved successfully!');
-            
+
+            patients.push(patient);
+            localStorage.setItem("patients", JSON.stringify(patients));
+
+            showSuccessMessage("Patient record created successfully!");
+
             // Reset form and flags
             this.reset();
             hasUnsavedChanges = false;
             currentPatientId = null;
-            
+
             // Update stats
             updateStats();
-            
+
             // Show dashboard
             setTimeout(() => {
-                showSection('dashboard');
+              showSection("dashboard");
             }, 2000);
+          }
+
+          // Update stats
+          updateStats();
         });
-        
-        // Show success message
-        function showSuccessMessage(message) {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-message';
-            successDiv.textContent = message;
-            
-            const form = document.getElementById('create-patient-form');
-            form.insertBefore(successDiv, form.firstChild);
-            
-            setTimeout(() => {
-                successDiv.remove();
-            }, 3000);
-        }
-        
-        // Search functionality
-        document.getElementById('search-input').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            
-            if (searchTerm.length < 2) {
-                document.getElementById('search-results').innerHTML = '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Start typing to search for patients...</p>';
-                return;
+
+      // Edit patient form handler
+      document
+        .getElementById("edit-patient-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const patientData = Object.fromEntries(formData.entries());
+
+          // Validation
+          if (
+            !patientData.firstName ||
+            !patientData.lastName ||
+            !patientData.dateOfBirth ||
+            !patientData.gender ||
+            !patientData.placeOfResidence
+          ) {
+            alert("Please fill in all required fields (marked with *)");
+            return;
+          }
+
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+          const patientIndex = patients.findIndex(
+            (p) => p.id === currentPatientId
+          );
+
+          if (patientIndex !== -1) {
+            // Calculate age
+            const birthDate = new Date(patientData.dateOfBirth);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (
+              monthDiff < 0 ||
+              (monthDiff === 0 && today.getDate() < birthDate.getDate())
+            ) {
+              age--;
             }
-            
-            const filteredPatients = patients.filter(patient => 
-                patient.firstName.toLowerCase().includes(searchTerm) ||
-                patient.lastName.toLowerCase().includes(searchTerm) ||
-                patient.id.includes(searchTerm) ||
-                patient.phoneNumber.includes(searchTerm) ||
-                patient.email.toLowerCase().includes(searchTerm)
-            );
-            
-            if (filteredPatients.length === 0) {
-                document.getElementById('search-results').innerHTML = '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found matching your search.</p>';
-            } else {
-                const resultsHtml = filteredPatients.map(patient => `
-                    <div class="patient-card">
-                        <h3>${patient.firstName} ${patient.lastName}</h3>
-                        <p><strong>ID:</strong> ${patient.id}</p>
-                        <p><strong>Age:</strong> ${patient.age}</p>
-                        <p><strong>Gender:</strong> ${patient.gender}</p>
-                        <p><strong>Residence:</strong> ${patient.placeOfResidence}</p>
-                        ${patient.phoneNumber ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>` : ''}
-                        ${patient.email ? `<p><strong>Email:</strong> ${patient.email}</p>` : ''}
-                        <p><strong>Total Visits:</strong> ${patient.visits ? patient.visits.length : 0}</p>
-                        <div class="patient-actions">
-                            <button class="btn btn-warning" onclick="editPatient('${patient.id}')">Edit</button>
-                            <button class="btn btn-danger" onclick="deletePatient('${patient.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.getElementById('search-results').innerHTML = resultsHtml;
-            }
-        });
-        
-        // Load patient list
-        function loadPatientList() {
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            
-            if (patients.length === 0) {
-                document.getElementById('patient-list-content').innerHTML = '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found. Create your first patient to get started!</p>';
-            } else {
-                const patientsHtml = patients.map(patient => `
-                    <div class="patient-card">
-                        <h3>${patient.firstName} ${patient.lastName}</h3>
-                        <p><strong>ID:</strong> ${patient.id}</p>
-                        <p><strong>Age:</strong> ${patient.age}</p>
-                        <p><strong>Gender:</strong> ${patient.gender}</p>
-                        <p><strong>Residence:</strong> ${patient.placeOfResidence}</p>
-                        ${patient.phoneNumber ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>` : ''}
-                        ${patient.email ? `<p><strong>Email:</strong> ${patient.email}</p>` : ''}
-                        <p><strong>Created:</strong> ${new Date(patient.createdAt).toLocaleDateString()}</p>
-                        
-                        ${patient.visits && patient.visits.length > 0 ? `
-                            <div class="visits-section">
-                                <h4>Visit History (${patient.visits.length} visits)</h4>
-                                ${patient.visits.map(visit => `
-                                    <div class="visit-item">
-                                        <div class="visit-date">${new Date(visit.visitDate).toLocaleDateString()}</div>
-                                        ${visit.medications ? `<p><strong>Medications:</strong> ${visit.medications}</p>` : ''}
-                                        ${visit.observations ? `<p><strong>Observations:</strong> ${visit.observations}</p>` : ''}
-                                        ${visit.additionalComments ? `<p><strong>Comments:</strong> ${visit.additionalComments}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                        
-                        <div class="patient-actions">
-                            <button class="btn btn-warning" onclick="editPatient('${patient.id}')">Edit</button>
-                            <button class="btn btn-danger" onclick="deletePatient('${patient.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.getElementById('patient-list-content').innerHTML = patientsHtml;
-            }
-        }
-        
-        // Edit patient
-        function editPatient(patientId) {
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            const patient = patients.find(p => p.id === patientId);
-            
-            if (patient) {
-                currentPatientId = patientId;
-                
-                // Fill form with patient data
-                document.getElementById('firstName').value = patient.firstName;
-                document.getElementById('lastName').value = patient.lastName;
-                document.getElementById('dateOfBirth').value = patient.dateOfBirth;
-                document.getElementById('gender').value = patient.gender;
-                document.getElementById('placeOfResidence').value = patient.placeOfResidence;
-                document.getElementById('phoneNumber').value = patient.phoneNumber || '';
-                document.getElementById('email').value = patient.email || '';
-                
-                // Fill latest visit data
-                if (patient.visits && patient.visits.length > 0) {
-                    const latestVisit = patient.visits[patient.visits.length - 1];
-                    document.getElementById('visitDate').value = latestVisit.visitDate;
-                    document.getElementById('medications').value = latestVisit.medications || '';
-                    document.getElementById('observations').value = latestVisit.observations || '';
-                    document.getElementById('additionalComments').value = latestVisit.additionalComments || '';
-                }
-                
-                // Change form button text
-                const submitBtn = document.querySelector('#create-patient-form button[type="submit"]');
-                submitBtn.textContent = 'Update Patient Record';
-                
-                // Show create section
-                showSection('create');
-                
-                // Reset change tracking
-                hasUnsavedChanges = false;
-            }
-        }
-        
-        // Delete patient
-        function deletePatient(patientId) {
-            if (confirm('Are you sure you want to delete this patient? This action cannot be undone.')) {
-                const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-                const filteredPatients = patients.filter(p => p.id !== patientId);
-                localStorage.setItem('patients', JSON.stringify(filteredPatients));
-                
-                // Refresh displays
-                loadPatientList();
-                updateStats();
-                
-                alert('Patient deleted successfully');
-            }
-        }
-        
-        // Update statistics
-        function updateStats() {
-            const patients = JSON.parse(localStorage.getItem('patients') || '[]');
-            const now = new Date();
-            const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-            
-            const totalPatients = patients.length;
-            const recentPatients = patients.filter(p => new Date(p.createdAt) >= oneMonthAgo).length;
-            const totalVisits = patients.reduce((total, p) => total + (p.visits ? p.visits.length : 0), 0);
-            
-            document.getElementById('total-patients').textContent = totalPatients;
-            document.getElementById('recent-patients').textContent = recentPatients;
-            document.getElementById('total-visits').textContent = totalVisits;
-            document.getElementById('system-status').textContent = '●';
-        }
-        
-        // Handle logout
-        function handleLogout() {
-            if (hasUnsavedChanges) {
-                document.getElementById('logoutModal').style.display = 'block';
-            } else {
-                logoutWithoutSaving();
-            }
-        }
-        
-        // Save and logout
-        function saveAndLogout() {
-            // Trigger form submission
-            document.getElementById('create-patient-form').dispatchEvent(new Event('submit'));
-            closeModal();
-            
-            // Wait for save to complete, then logout
-            setTimeout(() => {
-                logoutWithoutSaving();
-            }, 1000);
-        }
-        
-        // Logout without saving
-        function logoutWithoutSaving() {
-            if (confirm('Are you sure you want to logout?')) {
-                // Clear any unsaved changes
-                hasUnsavedChanges = false;
-                currentPatientId = null;
-                
-                // Reset form
-                document.getElementById('create-patient-form').reset();
-                
-                // Clear localStorage (optional - remove this line if you want to keep data)
-                // localStorage.removeItem('patients');
-                
-                alert('Logged out successfully');
-                location.reload();
-            }
-        }
-        
-        // Close modal
-        function closeModal() {
-            document.getElementById('logoutModal').style.display = 'none';
-        }
-        
-        // Handle hash navigation
-        function handleHashChange() {
-            const hash = window.location.hash.replace('#', '') || 'dashboard';
-            showSection(hash);
-        }
-        
-        window.addEventListener('hashchange', handleHashChange);
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Complete Patient Management System loaded!');
-            
-            // Track form changes
-            trackFormChanges();
-            
-            // Check URL hash and show appropriate section
-            const hash = window.location.hash.replace('#', '') || 'dashboard';
-            showSection(hash);
-            
-            // Load initial data
+
+            // Update patient info
+            patients[patientIndex] = {
+              ...patients[patientIndex],
+              firstName: patientData.firstName,
+              lastName: patientData.lastName,
+              dateOfBirth: patientData.dateOfBirth,
+              age: age,
+              gender: patientData.gender,
+              placeOfResidence: patientData.placeOfResidence,
+              phoneNumber: patientData.phoneNumber || "",
+              email: patientData.email || "",
+              updatedAt: new Date().toISOString(),
+            };
+
+            localStorage.setItem("patients", JSON.stringify(patients));
+            showSuccessMessage("Patient information updated successfully!");
+
+            // Update stats
             updateStats();
-            loadPatientList();
+          }
         });
+
+      // Visit form handler
+      document
+        .getElementById("visit-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const visitData = Object.fromEntries(formData.entries());
+
+          if (!visitData.visitDate) {
+            alert("Please select a visit date");
+            return;
+          }
+
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+          const patientIndex = patients.findIndex(
+            (p) => p.id === currentPatientId
+          );
+
+          if (patientIndex !== -1) {
+            if (!patients[patientIndex].visits) {
+              patients[patientIndex].visits = [];
+            }
+
+            const visit = {
+              id: Date.now().toString(),
+              visitDate: visitData.visitDate,
+              medications: visitData.medications || "",
+              observations: visitData.observations || "",
+              additionalComments: visitData.additionalComments || "",
+              createdAt: new Date().toISOString(),
+            };
+
+            if (currentEditingVisitIndex !== null) {
+              // Update existing visit
+              patients[patientIndex].visits[currentEditingVisitIndex] = {
+                ...patients[patientIndex].visits[currentEditingVisitIndex],
+                ...visit,
+                id: patients[patientIndex].visits[currentEditingVisitIndex].id,
+                createdAt:
+                  patients[patientIndex].visits[currentEditingVisitIndex]
+                    .createdAt,
+                updatedAt: new Date().toISOString(),
+              };
+              showSuccessMessage("Visit updated successfully!");
+            } else {
+              // Add new visit
+              patients[patientIndex].visits.push(visit);
+              showSuccessMessage("New visit added successfully!");
+            }
+
+            localStorage.setItem("patients", JSON.stringify(patients));
+
+            // Reload visits display
+            loadPatientVisits(patients[patientIndex].visits);
+
+            // Hide form
+            hideAddVisitForm();
+
+            // Update stats
+            updateStats();
+          }
+        });
+
+      // Show success message
+      function showSuccessMessage(message) {
+        const successDiv = document.createElement("div");
+        successDiv.className = "success-message";
+        successDiv.textContent = message;
+
+        const form = document.getElementById("create-patient-form");
+        form.insertBefore(successDiv, form.firstChild);
+
+        setTimeout(() => {
+          successDiv.remove();
+        }, 3000);
+      }
+
+      // Search functionality
+      document
+        .getElementById("search-input")
+        .addEventListener("input", function (e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+
+          if (searchTerm.length < 2) {
+            document.getElementById("search-results").innerHTML =
+              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Start typing to search for patients...</p>';
+            return;
+          }
+
+          const filteredPatients = patients.filter(
+            (patient) =>
+              patient.firstName.toLowerCase().includes(searchTerm) ||
+              patient.lastName.toLowerCase().includes(searchTerm) ||
+              patient.id.includes(searchTerm) ||
+              patient.phoneNumber.includes(searchTerm) ||
+              patient.email.toLowerCase().includes(searchTerm)
+          );
+
+          if (filteredPatients.length === 0) {
+            document.getElementById("search-results").innerHTML =
+              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found matching your search.</p>';
+          } else {
+            const resultsHtml = filteredPatients
+              .map(
+                (patient) => `
+                    <div class="patient-card">
+                        <h3>${patient.firstName} ${patient.lastName}</h3>
+                        <p><strong>ID:</strong> ${patient.id}</p>
+                        <p><strong>Age:</strong> ${patient.age}</p>
+                        <p><strong>Gender:</strong> ${patient.gender}</p>
+                        <p><strong>Residence:</strong> ${
+                          patient.placeOfResidence
+                        }</p>
+                        ${
+                          patient.phoneNumber
+                            ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>`
+                            : ""
+                        }
+                        ${
+                          patient.email
+                            ? `<p><strong>Email:</strong> ${patient.email}</p>`
+                            : ""
+                        }
+                        <p><strong>Total Visits:</strong> ${
+                          patient.visits ? patient.visits.length : 0
+                        }</p>
+                        <div class="patient-actions">
+                            <button class="btn btn-warning" onclick="editPatient('${
+                              patient.id
+                            }')">Edit</button>
+                            <button class="btn btn-danger" onclick="deletePatient('${
+                              patient.id
+                            }')">Delete</button>
+                        </div>
+                    </div>
+                `
+              )
+              .join("");
+
+            document.getElementById("search-results").innerHTML = resultsHtml;
+          }
+        });
+
+      // Load patient list
+      function loadPatientList(searchTerm = "") {
+        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+
+        // Filter patients based on search term
+        let filteredPatients = patients;
+        if (searchTerm.trim()) {
+          const search = searchTerm.toLowerCase().trim();
+          filteredPatients = patients.filter((patient) => {
+            return (
+              patient.firstName.toLowerCase().includes(search) ||
+              patient.lastName.toLowerCase().includes(search) ||
+              (patient.firstName + " " + patient.lastName)
+                .toLowerCase()
+                .includes(search) ||
+              patient.id.toLowerCase().includes(search) ||
+              (patient.phoneNumber &&
+                patient.phoneNumber.toLowerCase().includes(search)) ||
+              (patient.email && patient.email.toLowerCase().includes(search)) ||
+              patient.placeOfResidence.toLowerCase().includes(search) ||
+              patient.gender.toLowerCase().includes(search)
+            );
+          });
+        }
+
+        // Update patient count display
+        const countDisplay = document.getElementById("patient-count-display");
+        if (countDisplay) {
+          if (searchTerm.trim()) {
+            countDisplay.textContent = `${filteredPatients.length} of ${patients.length} patients found`;
+          } else {
+            countDisplay.textContent = `${patients.length} patients total`;
+          }
+        }
+
+        if (patients.length === 0) {
+          document.getElementById("patient-list-content").innerHTML =
+            '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found. Create your first patient to get started!</p>';
+        } else if (filteredPatients.length === 0) {
+          document.getElementById(
+            "patient-list-content"
+          ).innerHTML = `<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients match your search "${searchTerm}". Try a different search term.</p>`;
+        } else {
+          const patientsHtml = filteredPatients
+            .map(
+              (patient) => `
+                    <div class="patient-card">
+                        <h3>${patient.firstName} ${patient.lastName}</h3>
+                        <p><strong>ID:</strong> ${patient.id}</p>
+                        <p><strong>Age:</strong> ${patient.age}</p>
+                        <p><strong>Gender:</strong> ${patient.gender}</p>
+                        <p><strong>Residence:</strong> ${
+                          patient.placeOfResidence
+                        }</p>
+                        ${
+                          patient.phoneNumber
+                            ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>`
+                            : ""
+                        }
+                        ${
+                          patient.email
+                            ? `<p><strong>Email:</strong> ${patient.email}</p>`
+                            : ""
+                        }
+                        <p><strong>Created:</strong> ${new Date(
+                          patient.createdAt
+                        ).toLocaleDateString()}</p>
+                        
+                        ${
+                          patient.visits && patient.visits.length > 0
+                            ? `
+                            <div class="visits-section">
+                                <h4>Visit History (${
+                                  patient.visits.length
+                                } visits)</h4>
+                                ${patient.visits
+                                  .map(
+                                    (visit) => `
+                                    <div class="visit-item">
+                                        <div class="visit-date">${new Date(
+                                          visit.visitDate
+                                        ).toLocaleDateString()}</div>
+                                        ${
+                                          visit.medications
+                                            ? `<p><strong>Medications:</strong> ${visit.medications}</p>`
+                                            : ""
+                                        }
+                                        ${
+                                          visit.observations
+                                            ? `<p><strong>Observations:</strong> ${visit.observations}</p>`
+                                            : ""
+                                        }
+                                        ${
+                                          visit.additionalComments
+                                            ? `<p><strong>Comments:</strong> ${visit.additionalComments}</p>`
+                                            : ""
+                                        }
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        `
+                            : ""
+                        }
+                        
+                        <div class="patient-actions">
+                            <button class="btn btn-warning" onclick="editPatient('${
+                              patient.id
+                            }')">Edit</button>
+                            <button class="btn btn-danger" onclick="deletePatient('${
+                              patient.id
+                            }')">Delete</button>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+
+          document.getElementById("patient-list-content").innerHTML =
+            patientsHtml;
+        }
+      }
+
+      // Patient list search functionality
+      function setupPatientListSearch() {
+        const searchInput = document.getElementById("patient-list-search");
+        if (searchInput) {
+          // Real-time search as user types
+          searchInput.addEventListener("input", function () {
+            const searchTerm = this.value;
+            loadPatientList(searchTerm);
+          });
+
+          // Also search on Enter key
+          searchInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              const searchTerm = this.value;
+              loadPatientList(searchTerm);
+            }
+          });
+        }
+      }
+
+      // Clear patient list search
+      function clearPatientListSearch() {
+        const searchInput = document.getElementById("patient-list-search");
+        if (searchInput) {
+          searchInput.value = "";
+          loadPatientList(); // Reload all patients
+        }
+      }
+
+      // Edit patient
+      function editPatient(patientId) {
+        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+        const patient = patients.find((p) => p.id === patientId);
+
+        if (patient) {
+          currentPatientId = patientId;
+
+          // Fill edit form with patient data
+          document.getElementById("edit-firstName").value = patient.firstName;
+          document.getElementById("edit-lastName").value = patient.lastName;
+          document.getElementById("edit-dateOfBirth").value =
+            patient.dateOfBirth;
+          document.getElementById("edit-gender").value = patient.gender;
+          document.getElementById("edit-placeOfResidence").value =
+            patient.placeOfResidence;
+          document.getElementById("edit-phoneNumber").value =
+            patient.phoneNumber || "";
+          document.getElementById("edit-email").value = patient.email || "";
+
+          // Load patient visits
+          loadPatientVisits(patient.visits || []);
+
+          // Show edit section and default to info tab
+          showSection("edit");
+          showEditTab("info");
+
+          // Reset change tracking
+          hasUnsavedChanges = false;
+        }
+      }
+
+      // Tab management functions
+      function showEditTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll(".edit-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Remove active class from all tab buttons
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Show selected tab
+        document.getElementById(`edit-${tabName}-tab`).classList.add("active");
+        document.getElementById(`${tabName}-tab`).classList.add("active");
+      }
+
+      // Load patient visits for editing
+      function loadPatientVisits(visits) {
+        const visitsList = document.getElementById("patient-visits-list");
+        visitsList.innerHTML = "";
+
+        if (visits.length === 0) {
+          visitsList.innerHTML =
+            '<p style="color: var(--text-muted); font-style: italic;">No visits recorded yet.</p>';
+          return;
+        }
+
+        visits.forEach((visit, index) => {
+          const visitDiv = document.createElement("div");
+          visitDiv.className = "visit-item";
+          visitDiv.innerHTML = `
+            <div class="visit-date">📅 Visit ${index + 1} - ${new Date(
+            visit.visitDate
+          ).toLocaleDateString()}</div>
+            ${
+              visit.medications
+                ? `<p><strong>Medications:</strong> ${visit.medications}</p>`
+                : ""
+            }
+            ${
+              visit.observations
+                ? `<p><strong>Observations:</strong> ${visit.observations}</p>`
+                : ""
+            }
+            ${
+              visit.additionalComments
+                ? `<p><strong>Comments:</strong> ${visit.additionalComments}</p>`
+                : ""
+            }
+            <div style="margin-top: 1rem;">
+              <button type="button" class="btn btn-warning" onclick="editVisitInForm(${index})" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+                Edit Visit
+              </button>
+              <button type="button" class="btn btn-danger" onclick="deletePatientVisit(${index})" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+                Delete Visit
+              </button>
+            </div>
+          `;
+          visitsList.appendChild(visitDiv);
+        });
+      }
+
+      // Show add visit form
+      function showAddVisitForm() {
+        document.getElementById("visit-form-section").style.display = "block";
+        document.getElementById("visit-form-title").textContent =
+          "Add New Visit";
+        document.getElementById("visit-submit-btn").textContent = "Save Visit";
+
+        // Clear form
+        document.getElementById("visit-form").reset();
+        document.getElementById("visit-date").value = new Date()
+          .toISOString()
+          .split("T")[0];
+
+        currentEditingVisitIndex = null;
+
+        // Scroll to form
+        document
+          .getElementById("visit-form-section")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Hide add visit form
+      function hideAddVisitForm() {
+        document.getElementById("visit-form-section").style.display = "none";
+        currentEditingVisitIndex = null;
+      }
+
+      // Edit visit in form
+      function editVisitInForm(visitIndex) {
+        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+        const patient = patients.find((p) => p.id === currentPatientId);
+
+        if (patient && patient.visits && patient.visits[visitIndex]) {
+          const visit = patient.visits[visitIndex];
+
+          // Show form
+          document.getElementById("visit-form-section").style.display = "block";
+          document.getElementById("visit-form-title").textContent =
+            "Edit Visit";
+          document.getElementById("visit-submit-btn").textContent =
+            "Update Visit";
+
+          // Fill form
+          document.getElementById("visit-date").value = visit.visitDate;
+          document.getElementById("visit-medications").value =
+            visit.medications || "";
+          document.getElementById("visit-observations").value =
+            visit.observations || "";
+          document.getElementById("visit-comments").value =
+            visit.additionalComments || "";
+
+          currentEditingVisitIndex = visitIndex;
+
+          // Scroll to form
+          document
+            .getElementById("visit-form-section")
+            .scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      // Delete patient visit
+      function deletePatientVisit(visitIndex) {
+        if (
+          confirm(
+            "Are you sure you want to delete this visit? This action cannot be undone."
+          )
+        ) {
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+          const patientIndex = patients.findIndex(
+            (p) => p.id === currentPatientId
+          );
+
+          if (patientIndex !== -1 && patients[patientIndex].visits) {
+            patients[patientIndex].visits.splice(visitIndex, 1);
+            localStorage.setItem("patients", JSON.stringify(patients));
+
+            // Reload visits display
+            loadPatientVisits(patients[patientIndex].visits || []);
+
+            // Show success message
+            showSuccessMessage("Visit deleted successfully!");
+          }
+        }
+      }
+
+      // Delete patient
+      function deletePatient(patientId) {
+        if (
+          confirm(
+            "Are you sure you want to delete this patient? This action cannot be undone."
+          )
+        ) {
+          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+          const filteredPatients = patients.filter((p) => p.id !== patientId);
+          localStorage.setItem("patients", JSON.stringify(filteredPatients));
+
+          // Refresh displays
+          loadPatientList();
+          updateStats();
+
+          alert("Patient deleted successfully");
+        }
+      }
+
+      // Update statistics
+      function updateStats() {
+        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+        const now = new Date();
+        const oneMonthAgo = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+
+        const totalPatients = patients.length;
+        const recentPatients = patients.filter(
+          (p) => new Date(p.createdAt) >= oneMonthAgo
+        ).length;
+        const totalVisits = patients.reduce(
+          (total, p) => total + (p.visits ? p.visits.length : 0),
+          0
+        );
+
+        document.getElementById("total-patients").textContent = totalPatients;
+        document.getElementById("recent-patients").textContent = recentPatients;
+        document.getElementById("total-visits").textContent = totalVisits;
+        document.getElementById("system-status").textContent = "●";
+      }
+
+      // Handle logout
+      function handleLogout() {
+        if (hasUnsavedChanges) {
+          document.getElementById("logoutModal").style.display = "block";
+        } else {
+          logoutWithoutSaving();
+        }
+      }
+
+      // Save and logout
+      function saveAndLogout() {
+        // Trigger form submission
+        document
+          .getElementById("create-patient-form")
+          .dispatchEvent(new Event("submit"));
+        closeModal();
+
+        // Wait for save to complete, then logout
+        setTimeout(() => {
+          logoutWithoutSaving();
+        }, 1000);
+      }
+
+      // Logout without saving
+      function logoutWithoutSaving() {
+        if (confirm("Are you sure you want to logout?")) {
+          // Clear any unsaved changes
+          hasUnsavedChanges = false;
+          currentPatientId = null;
+
+          // Reset form
+          document.getElementById("create-patient-form").reset();
+
+          // Clear localStorage (optional - remove this line if you want to keep data)
+          // localStorage.removeItem('patients');
+
+          alert("Logged out successfully");
+          location.reload();
+        }
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById("logoutModal").style.display = "none";
+      }
+
+      // Handle hash navigation
+      function handleHashChange() {
+        const hash = window.location.hash.replace("#", "") || "dashboard";
+        showSection(hash);
+      }
+
+      window.addEventListener("hashchange", handleHashChange);
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("Complete Patient Management System loaded!");
+
+        // Track form changes
+        trackFormChanges();
+
+        // Check URL hash and show appropriate section
+        const hash = window.location.hash.replace("#", "") || "dashboard";
+        showSection(hash);
+
+        // Load initial data
+        updateStats();
+        loadPatientList();
+      });
     </script>
-</body>
+  </body>
 </html>
