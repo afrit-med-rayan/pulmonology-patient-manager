@@ -9,9 +9,35 @@
     />
     <meta name="author" content="Dr. S. Sahboub" />
     <title>Patient Management System - Dr. S. Sahboub</title>
-    <meta http-equiv="refresh" content="0; url=complete-patient-system.html" />
     <script>
-      window.location.href = "complete-patient-system.html";
+      // Check if user has a valid session
+      function checkSessionAndRedirect() {
+        const session = localStorage.getItem("userSession");
+        if (session) {
+          try {
+            const sessionData = JSON.parse(session);
+            const now = new Date().getTime();
+
+            if (now < sessionData.expiresAt) {
+              // Valid session, go to main app
+              window.location.href = "complete-patient-system.html";
+              return;
+            } else {
+              // Session expired, clear it
+              localStorage.removeItem("userSession");
+            }
+          } catch (e) {
+            // Invalid session data, clear it
+            localStorage.removeItem("userSession");
+          }
+        }
+
+        // No valid session, go to login
+        window.location.href = "login.html";
+      }
+
+      // Auto-redirect based on session status
+      checkSessionAndRedirect();
     </script>
   </head>
   <body></body>

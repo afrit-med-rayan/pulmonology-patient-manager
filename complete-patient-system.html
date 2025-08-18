@@ -1825,6 +1825,110 @@
     </div>
 
     <script>
+      // Session Management
+      const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+      let sessionCheckInterval;
+      let currentUser = null;
+
+      // Check session validity
+      function checkSession() {
+        const session = localStorage.getItem("userSession");
+        if (!session) {
+          redirectToLogin("No active session found. Please login.");
+          return false;
+        }
+
+        try {
+          const sessionData = JSON.parse(session);
+          const now = new Date().getTime();
+
+          if (now >= sessionData.expiresAt) {
+            // Session expired
+            localStorage.removeItem("userSession");
+            redirectToLogin("Session expired. Please login again.");
+            return false;
+          }
+
+          // Session is valid, update current user
+          currentUser = sessionData.username;
+          return true;
+        } catch (e) {
+          // Invalid session data
+          localStorage.removeItem("userSession");
+          redirectToLogin("Invalid session. Please login again.");
+          return false;
+        }
+      }
+
+      // Redirect to login page
+      function redirectToLogin(message = "") {
+        if (message) {
+          localStorage.setItem("loginMessage", message);
+        }
+        window.location.href = "login.html";
+      }
+
+      // Extend session (refresh expiration time)
+      function extendSession() {
+        const session = localStorage.getItem("userSession");
+        if (session) {
+          try {
+            const sessionData = JSON.parse(session);
+            const now = new Date().getTime();
+            sessionData.expiresAt = now + SESSION_DURATION;
+            localStorage.setItem("userSession", JSON.stringify(sessionData));
+          } catch (e) {
+            console.error("Error extending session:", e);
+          }
+        }
+      }
+
+      // Start session monitoring
+      function startSessionMonitoring() {
+        // Check session every minute
+        sessionCheckInterval = setInterval(() => {
+          if (!checkSession()) {
+            clearInterval(sessionCheckInterval);
+          }
+        }, 60000); // Check every minute
+
+        // Extend session on user activity
+        const activityEvents = ["click", "keypress", "scroll", "mousemove"];
+        let lastActivity = new Date().getTime();
+
+        activityEvents.forEach((event) => {
+          document.addEventListener(event, () => {
+            const now = new Date().getTime();
+            // Only extend session if more than 5 minutes have passed since last extension
+            if (now - lastActivity > 5 * 60 * 1000) {
+              extendSession();
+              lastActivity = now;
+            }
+          });
+        });
+      }
+
+      // Initialize session on page load
+      function initializeSession() {
+        if (!checkSession()) {
+          return; // Will redirect to login
+        }
+
+        // Update header with user info
+        updateUserDisplay();
+
+        // Start monitoring
+        startSessionMonitoring();
+      }
+
+      // Update user display in header
+      function updateUserDisplay() {
+        if (currentUser) {
+          // You can add user display logic here if needed
+          console.log("Logged in as:", currentUser);
+        }
+      }
+
       let hasUnsavedChanges = false;
       let currentPatientId = null;
       let currentEditingVisitIndex = null;
@@ -2670,18 +2774,30 @@
       // Logout without saving
       function logoutWithoutSaving() {
         if (confirm("Are you sure you want to logout?")) {
+          // Clear session monitoring
+          if (sessionCheckInterval) {
+            clearInterval(sessionCheckInterval);
+          }
+
+          // Clear session data
+          localStorage.removeItem("userSession");
+
           // Clear any unsaved changes
           hasUnsavedChanges = false;
           currentPatientId = null;
+          currentEditingVisitIndex = null;
+          currentUser = null;
 
           // Reset form
           document.getElementById("create-patient-form").reset();
 
-          // Clear localStorage (optional - remove this line if you want to keep data)
+          // Note: We keep patient data in localStorage so it persists across sessions
+          // If you want to clear patient data on logout, uncomment the next line:
           // localStorage.removeItem('patients');
 
-          alert("Logged out successfully");
-          location.reload();
+          // Redirect to login page
+          localStorage.setItem("loginMessage", "Logged out successfully");
+          window.location.href = "login.html";
         }
       }
 
@@ -2702,16 +2818,22 @@
       document.addEventListener("DOMContentLoaded", function () {
         console.log("Complete Patient Management System loaded!");
 
-        // Track form changes
-        trackFormChanges();
+        // Initialize session first - this will redirect to login if no valid session
+        initializeSession();
 
-        // Check URL hash and show appropriate section
-        const hash = window.location.hash.replace("#", "") || "dashboard";
-        showSection(hash);
+        // Only continue if session is valid
+        if (currentUser) {
+          // Track form changes
+          trackFormChanges();
 
-        // Load initial data
-        updateStats();
-        loadPatientList();
+          // Check URL hash and show appropriate section
+          const hash = window.location.hash.replace("#", "") || "dashboard";
+          showSection(hash);
+
+          // Load initial data
+          updateStats();
+          loadPatientList();
+        }
       });
     </script>
   </body>
