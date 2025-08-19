@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/layout.css" />
 
+    <!-- Shared Storage Manager -->
+    <script src="js/shared-storage.js"></script>
+
     <style>
       :root {
         --primary-color: #1e40af;
@@ -71,6 +74,9 @@
         box-shadow: var(--shadow-2xl);
         position: relative;
         overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .header::before {
@@ -103,6 +109,7 @@
         margin-left: 2rem;
         position: relative;
         z-index: 1;
+        flex: 1;
       }
 
       .logo {
@@ -136,6 +143,8 @@
         margin-right: 2rem;
         position: relative;
         z-index: 1;
+        display: flex;
+        align-items: center;
       }
 
       .logout-btn {
@@ -1005,6 +1014,32 @@
 
         .nav a {
           margin: 0.25rem;
+        }
+
+        .header {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1.5rem 0;
+        }
+
+        .header-left {
+          margin-left: 1rem;
+          justify-content: center;
+        }
+
+        .header-right {
+          margin-right: 1rem;
+          justify-content: center;
+        }
+
+        .logo {
+          font-size: 1.5rem;
+        }
+
+        .logo-icon {
+          width: 2.5rem;
+          height: 2.5rem;
+          font-size: 1.25rem;
         }
 
         .welcome-message h1 {
@@ -1933,6 +1968,69 @@
       let currentPatientId = null;
       let currentEditingVisitIndex = null;
 
+      // Shared Storage Wrapper Functions
+      async function getPatients() {
+        try {
+          return await window.sharedStorage.getPatients();
+        } catch (error) {
+          console.warn(
+            "Failed to get patients from shared storage, using localStorage"
+          );
+          return JSON.parse(localStorage.getItem("patients") || "[]");
+        }
+      }
+
+      async function savePatients(patients) {
+        try {
+          await window.sharedStorage.savePatients(patients);
+          return true;
+        } catch (error) {
+          console.warn(
+            "Failed to save patients to shared storage, using localStorage"
+          );
+          localStorage.setItem("patients", JSON.stringify(patients));
+          return true;
+        }
+      }
+
+      async function getUserSession() {
+        try {
+          return await window.sharedStorage.getSession();
+        } catch (error) {
+          console.warn(
+            "Failed to get session from shared storage, using localStorage"
+          );
+          return JSON.parse(localStorage.getItem("userSession") || "null");
+        }
+      }
+
+      async function saveUserSession(sessionData) {
+        try {
+          await window.sharedStorage.saveSession(sessionData);
+          return true;
+        } catch (error) {
+          console.warn(
+            "Failed to save session to shared storage, using localStorage"
+          );
+          localStorage.setItem("userSession", JSON.stringify(sessionData));
+          return true;
+        }
+      }
+
+      async function deleteUserSession() {
+        try {
+          await window.sharedStorage.deleteSession();
+          localStorage.removeItem("userSession");
+          return true;
+        } catch (error) {
+          console.warn(
+            "Failed to delete session from shared storage, using localStorage"
+          );
+          localStorage.removeItem("userSession");
+          return true;
+        }
+      }
+
       // Track form changes
       function trackFormChanges() {
         const form = document.getElementById("create-patient-form");
@@ -2003,7 +2101,7 @@
       // Handle form submission
       document
         .getElementById("create-patient-form")
-        .addEventListener("submit", function (e) {
+        .addEventListener("submit", async function (e) {
           e.preventDefault();
 
           const formData = new FormData(this);
@@ -2022,7 +2120,7 @@
             return;
           }
 
-          const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+          const patients = await getPatients();
 
           if (currentPatientId) {
             // Editing existing patient - add or update visit
@@ -2086,7 +2184,7 @@
                 showSuccessMessage("New visit added successfully!");
               }
 
-              localStorage.setItem("patients", JSON.stringify(patients));
+              await savePatients(patients);
 
               // Reload visits display
               loadExistingVisits(patient.visits);
@@ -2372,8 +2470,8 @@
         });
 
       // Load patient list
-      function loadPatientList(searchTerm = "") {
-        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      async function loadPatientList(searchTerm = "") {
+        const patients = await getPatients();
 
         // Filter patients based on search term
         let filteredPatients = patients;
@@ -2525,8 +2623,8 @@
       }
 
       // Edit patient
-      function editPatient(patientId) {
-        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      async function editPatient(patientId) {
+        const patients = await getPatients();
         const patient = patients.find((p) => p.id === patientId);
 
         if (patient) {
@@ -2724,8 +2822,8 @@
       }
 
       // Update statistics
-      function updateStats() {
-        const patients = JSON.parse(localStorage.getItem("patients") || "[]");
+      async function updateStats() {
+        const patients = await getPatients();
         const now = new Date();
         const oneMonthAgo = new Date(
           now.getFullYear(),
