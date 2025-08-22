@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patient Management System - Dr. S. Sahboub</title>
+    <title>Système de Gestion des Patients - Dr. S. Sahboub</title>
 
     <!-- CSS Files -->
     <link rel="stylesheet" href="css/reset.css" />
@@ -1225,7 +1225,9 @@
           </div>
         </div>
         <div class="header-right">
-          <button class="logout-btn" onclick="handleLogout()">Logout</button>
+          <button class="logout-btn" onclick="handleLogout()">
+            Déconnexion
+          </button>
         </div>
       </header>
 
@@ -1237,13 +1239,15 @@
             onclick="showSection('dashboard')"
             class="active"
           >
-            Dashboard
+            Tableau de Bord
           </a>
-          <a href="#create" onclick="showSection('create')"> Create Patient </a>
+          <a href="#create" onclick="showSection('create')">
+            Créer un Patient
+          </a>
           <a href="#search" onclick="showSection('search')">
-            Search Patients
+            Rechercher des Patients
           </a>
-          <a href="#list" onclick="showSection('list')"> Patient List </a>
+          <a href="#list" onclick="showSection('list')"> Liste des Patients </a>
         </div>
       </nav>
 
@@ -1252,31 +1256,31 @@
         <!-- Dashboard Section -->
         <div id="dashboard-section" class="section active">
           <div class="welcome-message">
-            <h1>Welcome to Patient Management System</h1>
+            <h1>Bienvenue dans le Système de Gestion des Patients</h1>
             <p>
-              Manage your pulmonology practice patients with comprehensive
-              record keeping and professional care
+              Gérez les patients de votre pratique de pneumologie avec une tenue
+              de dossiers complète et des soins professionnels
             </p>
           </div>
 
           <div class="step-guide">
-            <h3>Quick Start Guide</h3>
+            <h3>Guide de Démarrage Rapide</h3>
             <ol>
               <li>
-                <strong>Create Patient:</strong> Add new patient records with
-                comprehensive visit information
+                <strong>Créer un Patient :</strong> Ajouter de nouveaux dossiers
+                de patients avec des informations de visite complètes
               </li>
               <li>
-                <strong>Search Patients:</strong> Find existing patients by
-                name, ID, or contact details
+                <strong>Rechercher des Patients :</strong> Trouver des patients
+                existants par nom, ID ou coordonnées
               </li>
               <li>
-                <strong>View All:</strong> See complete patient list with
-                detailed medical history
+                <strong>Voir Tout :</strong> Voir la liste complète des patients
+                avec l'historique médical détaillé
               </li>
               <li>
-                <strong>Manage Records:</strong> Edit, update, or delete patient
-                information as needed
+                <strong>Gérer les Dossiers :</strong> Modifier, mettre à jour ou
+                supprimer les informations des patients selon les besoins
               </li>
             </ol>
           </div>
@@ -1284,56 +1288,58 @@
           <div class="stats">
             <div class="stat-box">
               <div class="stat-number" id="total-patients">0</div>
-              <div>Total Patients</div>
+              <div>Total des Patients</div>
             </div>
             <div class="stat-box">
               <div class="stat-number" id="recent-patients">0</div>
-              <div>New This Month</div>
+              <div>Nouveaux ce Mois</div>
             </div>
             <div class="stat-box">
               <div class="stat-number" id="total-visits">0</div>
-              <div>Total Visits</div>
+              <div>Total des Visites</div>
             </div>
             <div class="stat-box">
               <div class="stat-number" id="system-status">●</div>
-              <div>System Status</div>
+              <div>État du Système</div>
             </div>
           </div>
         </div>
 
         <!-- Create Patient Section -->
         <div id="create-section" class="section">
-          <h2>Create New Patient</h2>
+          <h2>Créer un Nouveau Patient</h2>
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
-            Fill out the form below to add a new patient with comprehensive
-            visit information.
+            Remplissez le formulaire ci-dessous pour ajouter un nouveau patient
+            avec des informations de visite complètes.
           </p>
 
           <form id="create-patient-form">
             <div class="form-section">
-              <h3>Patient Information</h3>
+              <h3>Informations du Patient</h3>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="firstName" class="form-label">First Name *</label>
+                  <label for="firstName" class="form-label">Prénom *</label>
                   <input
                     type="text"
                     id="firstName"
                     name="firstName"
                     class="form-control"
                     required
-                    placeholder="Enter first name"
+                    placeholder="Entrez le prénom"
                   />
                 </div>
 
                 <div class="form-group">
-                  <label for="lastName" class="form-label">Last Name *</label>
+                  <label for="lastName" class="form-label"
+                    >Nom de famille *</label
+                  >
                   <input
                     type="text"
                     id="lastName"
                     name="lastName"
                     class="form-control"
                     required
-                    placeholder="Enter last name"
+                    placeholder="Entrez le nom de famille"
                   />
                 </div>
               </div>
@@ -1341,7 +1347,7 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="dateOfBirth" class="form-label"
-                    >Date of Birth *</label
+                    >Date de naissance *</label
                   >
                   <input
                     type="date"
@@ -1353,24 +1359,24 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="gender" class="form-label">Gender *</label>
+                  <label for="gender" class="form-label">Sexe *</label>
                   <select
                     id="gender"
                     name="gender"
                     class="form-control"
                     required
                   >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="">Sélectionnez le sexe</option>
+                    <option value="male">Masculin</option>
+                    <option value="female">Féminin</option>
+                    <option value="other">Autre</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="placeOfResidence" class="form-label"
-                  >Place of Residence *</label
+                  >Lieu de résidence *</label
                 >
                 <input
                   type="text"
@@ -1378,41 +1384,45 @@
                   name="placeOfResidence"
                   class="form-control"
                   required
-                  placeholder="Enter city or town"
+                  placeholder="Entrez la ville ou commune"
                 />
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label for="phoneNumber" class="form-label"
-                    >Phone Number</label
+                    >Numéro de téléphone</label
                   >
                   <input
                     type="tel"
                     id="phoneNumber"
                     name="phoneNumber"
                     class="form-control"
-                    placeholder="Enter phone number (optional)"
+                    placeholder="Entrez le numéro de téléphone (optionnel)"
                   />
                 </div>
 
                 <div class="form-group">
-                  <label for="email" class="form-label">Email Address</label>
+                  <label for="email" class="form-label">Adresse e-mail</label>
                   <input
                     type="email"
                     id="email"
                     name="email"
                     class="form-control"
-                    placeholder="Enter email (optional)"
+                    placeholder="Entrez l'e-mail (optionnel)"
                   />
                 </div>
               </div>
             </div>
 
             <div class="form-section" id="first-visit-section">
-              <h3 id="visit-section-title">First Visit Information</h3>
+              <h3 id="visit-section-title">
+                Informations de la Première Visite
+              </h3>
               <div class="form-group">
-                <label for="visitDate" class="form-label">Visit Date *</label>
+                <label for="visitDate" class="form-label"
+                  >Date de visite *</label
+                >
                 <input
                   type="date"
                   id="visitDate"
@@ -1424,40 +1434,40 @@
 
               <div class="form-group">
                 <label for="medications" class="form-label"
-                  >Medications Prescribed</label
+                  >Médicaments prescrits</label
                 >
                 <textarea
                   id="medications"
                   name="medications"
                   class="form-control"
                   rows="3"
-                  placeholder="Enter medications prescribed during this visit"
+                  placeholder="Entrez les médicaments prescrits lors de cette visite"
                 ></textarea>
               </div>
 
               <div class="form-group">
                 <label for="observations" class="form-label"
-                  >Clinical Observations and Notes</label
+                  >Observations cliniques et notes</label
                 >
                 <textarea
                   id="observations"
                   name="observations"
                   class="form-control"
                   rows="3"
-                  placeholder="Enter clinical observations, symptoms, and medical notes"
+                  placeholder="Entrez les observations cliniques, symptômes et notes médicales"
                 ></textarea>
               </div>
 
               <div class="form-group">
                 <label for="additionalComments" class="form-label"
-                  >Additional Comments</label
+                  >Commentaires supplémentaires</label
                 >
                 <textarea
                   id="additionalComments"
                   name="additionalComments"
                   class="form-control"
                   rows="2"
-                  placeholder="Any additional medical comments or recommendations"
+                  placeholder="Commentaires médicaux supplémentaires ou recommandations"
                 ></textarea>
               </div>
             </div>
@@ -1476,13 +1486,13 @@
                   margin-bottom: 1.5rem;
                 "
               >
-                <h3>Previous Visits</h3>
+                <h3>Visites Précédentes</h3>
                 <button
                   type="button"
                   class="btn btn-primary"
                   onclick="addNewVisit()"
                 >
-                  Add New Visit
+                  Ajouter une Nouvelle Visite
                 </button>
               </div>
               <div id="visits-list"></div>
@@ -1490,14 +1500,14 @@
 
             <div class="button-group">
               <button type="submit" class="btn btn-primary">
-                Save Patient Record
+                Sauvegarder le Dossier Patient
               </button>
               <button
                 type="button"
                 class="btn btn-secondary"
                 onclick="showSection('dashboard')"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </form>
@@ -1505,9 +1515,10 @@
 
         <!-- Edit Patient Section -->
         <div id="edit-section" class="section">
-          <h2>Edit Patient</h2>
+          <h2>Modifier le Patient</h2>
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
-            Update patient information and manage their visit history.
+            Mettre à jour les informations du patient et gérer son historique de
+            visites.
           </p>
 
           <!-- Tab Navigation -->
@@ -1524,14 +1535,14 @@
               onclick="showEditTab('info')"
               id="info-tab"
             >
-              Patient Information
+              Informations du Patient
             </button>
             <button
               class="tab-btn"
               onclick="showEditTab('visits')"
               id="visits-tab"
             >
-              Visit Management
+              Gestion des Visites
             </button>
           </div>
 
@@ -1539,11 +1550,11 @@
           <div id="edit-info-tab" class="edit-tab active">
             <form id="edit-patient-form">
               <div class="form-section">
-                <h3>Personal Information</h3>
+                <h3>Informations Personnelles</h3>
                 <div class="form-row">
                   <div class="form-group">
                     <label for="edit-firstName" class="form-label"
-                      >First Name *</label
+                      >Prénom *</label
                     >
                     <input
                       type="text"
@@ -1555,7 +1566,7 @@
                   </div>
                   <div class="form-group">
                     <label for="edit-lastName" class="form-label"
-                      >Last Name *</label
+                      >Nom de famille *</label
                     >
                     <input
                       type="text"
@@ -1570,7 +1581,7 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label for="edit-dateOfBirth" class="form-label"
-                      >Date of Birth *</label
+                      >Date de naissance *</label
                     >
                     <input
                       type="date"
@@ -1581,24 +1592,24 @@
                     />
                   </div>
                   <div class="form-group">
-                    <label for="edit-gender" class="form-label">Gender *</label>
+                    <label for="edit-gender" class="form-label">Sexe *</label>
                     <select
                       id="edit-gender"
                       name="gender"
                       class="form-control"
                       required
                     >
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
+                      <option value="">Sélectionnez le sexe</option>
+                      <option value="male">Masculin</option>
+                      <option value="female">Féminin</option>
+                      <option value="other">Autre</option>
                     </select>
                   </div>
                 </div>
 
                 <div class="form-group">
                   <label for="edit-placeOfResidence" class="form-label"
-                    >Place of Residence *</label
+                    >Lieu de résidence *</label
                   >
                   <input
                     type="text"
@@ -1612,7 +1623,7 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label for="edit-phoneNumber" class="form-label"
-                      >Phone Number</label
+                      >Numéro de téléphone</label
                     >
                     <input
                       type="tel"
@@ -1623,7 +1634,7 @@
                   </div>
                   <div class="form-group">
                     <label for="edit-email" class="form-label"
-                      >Email Address</label
+                      >Adresse e-mail</label
                     >
                     <input
                       type="email"
@@ -1637,7 +1648,7 @@
 
               <div class="button-group">
                 <button type="submit" class="btn btn-primary">
-                  Update Patient Information
+                  Mettre à Jour les Informations du Patient
                 </button>
                 <button
                   type="button"
@@ -1661,13 +1672,13 @@
                   margin-bottom: 1.5rem;
                 "
               >
-                <h3>Visit History</h3>
+                <h3>Historique des Visites</h3>
                 <button
                   type="button"
                   class="btn btn-primary"
                   onclick="showAddVisitForm()"
                 >
-                  Add New Visit
+                  Ajouter une Nouvelle Visite
                 </button>
               </div>
               <div id="patient-visits-list"></div>
@@ -1676,11 +1687,11 @@
             <!-- Add/Edit Visit Form -->
             <div id="visit-form-section" style="display: none">
               <div class="form-section">
-                <h3 id="visit-form-title">Add New Visit</h3>
+                <h3 id="visit-form-title">Ajouter une Nouvelle Visite</h3>
                 <form id="visit-form">
                   <div class="form-group">
                     <label for="visit-date" class="form-label"
-                      >Visit Date *</label
+                      >Date de visite *</label
                     >
                     <input
                       type="date"
@@ -1693,40 +1704,40 @@
 
                   <div class="form-group">
                     <label for="visit-medications" class="form-label"
-                      >Medications Prescribed</label
+                      >Médicaments prescrits</label
                     >
                     <textarea
                       id="visit-medications"
                       name="medications"
                       class="form-control"
                       rows="3"
-                      placeholder="Enter medications prescribed during this visit"
+                      placeholder="Entrez les médicaments prescrits lors de cette visite"
                     ></textarea>
                   </div>
 
                   <div class="form-group">
                     <label for="visit-observations" class="form-label"
-                      >Clinical Observations and Notes</label
+                      >Observations cliniques et notes</label
                     >
                     <textarea
                       id="visit-observations"
                       name="observations"
                       class="form-control"
                       rows="3"
-                      placeholder="Enter clinical observations, symptoms, and medical notes"
+                      placeholder="Entrez les observations cliniques, symptômes et notes médicales"
                     ></textarea>
                   </div>
 
                   <div class="form-group">
                     <label for="visit-comments" class="form-label"
-                      >Additional Comments</label
+                      >Commentaires supplémentaires</label
                     >
                     <textarea
                       id="visit-comments"
                       name="additionalComments"
                       class="form-control"
                       rows="2"
-                      placeholder="Any additional medical comments or recommendations"
+                      placeholder="Commentaires médicaux supplémentaires ou recommandations"
                     ></textarea>
                   </div>
 
@@ -1754,16 +1765,17 @@
 
         <!-- Search Patients Section -->
         <div id="search-section" class="section">
-          <h2>Search Patients</h2>
+          <h2>Rechercher des Patients</h2>
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
-            Search for patients by name, ID, phone number, or email address.
+            Rechercher des patients par nom, ID, numéro de téléphone ou adresse
+            e-mail.
           </p>
 
           <input
             type="text"
             id="search-input"
             class="search-box"
-            placeholder="Type to search patients (name, ID, phone, email)..."
+            placeholder="Tapez pour rechercher des patients (nom, ID, téléphone, e-mail)..."
           />
 
           <div id="search-results">
@@ -1774,17 +1786,17 @@
                 font-style: italic;
               "
             >
-              Start typing to search for patients...
+              Commencez à taper pour rechercher des patients...
             </p>
           </div>
         </div>
 
         <!-- Patient List Section -->
         <div id="list-section" class="section">
-          <h2>All Patients</h2>
+          <h2>Tous les Patients</h2>
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
-            View and manage all patients in your system with complete medical
-            history.
+            Voir et gérer tous les patients de votre système avec l'historique
+            médical complet.
           </p>
 
           <!-- Search Box for Patient List -->
@@ -1793,7 +1805,7 @@
               type="text"
               id="patient-list-search"
               class="search-box"
-              placeholder="Search patients by name, ID, phone, email, or residence..."
+              placeholder="Rechercher des patients par nom, ID, téléphone, e-mail ou résidence..."
               style="margin-bottom: 0"
             />
             <div
@@ -1809,7 +1821,7 @@
                 onclick="clearPatientListSearch()"
                 style="font-size: 0.875rem; padding: 0.75rem 1.5rem"
               >
-                Clear Search
+                Effacer la Recherche
               </button>
               <div
                 style="
@@ -1820,7 +1832,7 @@
                   font-size: 0.875rem;
                 "
               >
-                <span id="patient-count-display">0 patients found</span>
+                <span id="patient-count-display">0 patients trouvés</span>
               </div>
             </div>
           </div>
@@ -1833,7 +1845,7 @@
                 font-style: italic;
               "
             >
-              No patients found. Create your first patient to get started!
+              Aucun patient trouvé. Créez votre premier patient pour commencer !
             </p>
           </div>
         </div>
@@ -1843,14 +1855,17 @@
     <!-- Logout Confirmation Modal -->
     <div id="logoutModal" class="modal">
       <div class="modal-content">
-        <h3>Unsaved Changes Detected</h3>
-        <p>You have unsaved changes in the form. What would you like to do?</p>
+        <h3>Modifications non sauvegardées détectées</h3>
+        <p>
+          Vous avez des modifications non sauvegardées dans le formulaire. Que
+          souhaitez-vous faire ?
+        </p>
         <div class="modal-buttons">
           <button class="btn btn-primary" onclick="saveAndLogout()">
-            Save and Exit
+            Sauvegarder et quitter
           </button>
           <button class="btn btn-danger" onclick="logoutWithoutSaving()">
-            Exit without Saving
+            Quitter sans sauvegarder
           </button>
           <button class="btn btn-secondary" onclick="closeModal()">
             Cancel
@@ -2088,11 +2103,11 @@
           document.getElementById("additional-visits-section").style.display =
             "none";
           document.getElementById("visit-section-title").textContent =
-            "First Visit Information";
+            "Informations de la Première Visite";
           const submitBtn = document.querySelector(
             '#create-patient-form button[type="submit"]'
           );
-          submitBtn.textContent = "Save Patient Record";
+          submitBtn.textContent = "Sauvegarder le Dossier Patient";
           currentPatientId = null;
           currentEditingVisitIndex = null;
         }
@@ -2116,7 +2131,9 @@
             !patientData.placeOfResidence ||
             !patientData.visitDate
           ) {
-            alert("Please fill in all required fields (marked with *)");
+            alert(
+              "Veuillez remplir tous les champs obligatoires (marqués d'un *)"
+            );
             return;
           }
 
@@ -2177,11 +2194,11 @@
                   createdAt: patient.visits[currentEditingVisitIndex].createdAt, // Keep original creation date
                   updatedAt: new Date().toISOString(),
                 };
-                showSuccessMessage("Visit updated successfully!");
+                showSuccessMessage("Visite mise à jour avec succès !");
               } else {
                 // Add new visit
                 patient.visits.push(visitData);
-                showSuccessMessage("New visit added successfully!");
+                showSuccessMessage("Nouvelle visite ajoutée avec succès !");
               }
 
               await savePatients(patients);
@@ -2200,7 +2217,7 @@
               const submitBtn = document.querySelector(
                 '#create-patient-form button[type="submit"]'
               );
-              submitBtn.textContent = "Add New Visit";
+              submitBtn.textContent = "Ajouter une Nouvelle Visite";
             }
           } else {
             // Creating new patient
@@ -2243,7 +2260,7 @@
             patients.push(patient);
             localStorage.setItem("patients", JSON.stringify(patients));
 
-            showSuccessMessage("Patient record created successfully!");
+            showSuccessMessage("Dossier patient créé avec succès !");
 
             // Reset form and flags
             this.reset();
@@ -2280,7 +2297,9 @@
             !patientData.gender ||
             !patientData.placeOfResidence
           ) {
-            alert("Please fill in all required fields (marked with *)");
+            alert(
+              "Veuillez remplir tous les champs obligatoires (marqués d'un *)"
+            );
             return;
           }
 
@@ -2317,7 +2336,9 @@
             };
 
             localStorage.setItem("patients", JSON.stringify(patients));
-            showSuccessMessage("Patient information updated successfully!");
+            showSuccessMessage(
+              "Informations du patient mises à jour avec succès !"
+            );
 
             // Update stats
             updateStats();
@@ -2334,7 +2355,7 @@
           const visitData = Object.fromEntries(formData.entries());
 
           if (!visitData.visitDate) {
-            alert("Please select a visit date");
+            alert("Veuillez sélectionner une date de visite");
             return;
           }
 
@@ -2368,11 +2389,11 @@
                     .createdAt,
                 updatedAt: new Date().toISOString(),
               };
-              showSuccessMessage("Visit updated successfully!");
+              showSuccessMessage("Visite mise à jour avec succès !");
             } else {
               // Add new visit
               patients[patientIndex].visits.push(visit);
-              showSuccessMessage("New visit added successfully!");
+              showSuccessMessage("Nouvelle visite ajoutée avec succès !");
             }
 
             localStorage.setItem("patients", JSON.stringify(patients));
@@ -2411,7 +2432,7 @@
 
           if (searchTerm.length < 2) {
             document.getElementById("search-results").innerHTML =
-              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Start typing to search for patients...</p>';
+              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Commencez à taper pour rechercher des patients...</p>';
             return;
           }
 
@@ -2426,7 +2447,7 @@
 
           if (filteredPatients.length === 0) {
             document.getElementById("search-results").innerHTML =
-              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found matching your search.</p>';
+              '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Aucun patient trouvé correspondant à votre recherche.</p>';
           } else {
             const resultsHtml = filteredPatients
               .map(
@@ -2434,31 +2455,31 @@
                     <div class="patient-card">
                         <h3>${patient.firstName} ${patient.lastName}</h3>
                         <p><strong>ID:</strong> ${patient.id}</p>
-                        <p><strong>Age:</strong> ${patient.age}</p>
-                        <p><strong>Gender:</strong> ${patient.gender}</p>
-                        <p><strong>Residence:</strong> ${
+                        <p><strong>Âge:</strong> ${patient.age}</p>
+                        <p><strong>Sexe:</strong> ${patient.gender}</p>
+                        <p><strong>Résidence:</strong> ${
                           patient.placeOfResidence
                         }</p>
                         ${
                           patient.phoneNumber
-                            ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>`
+                            ? `<p><strong>Téléphone:</strong> ${patient.phoneNumber}</p>`
                             : ""
                         }
                         ${
                           patient.email
-                            ? `<p><strong>Email:</strong> ${patient.email}</p>`
+                            ? `<p><strong>E-mail:</strong> ${patient.email}</p>`
                             : ""
                         }
-                        <p><strong>Total Visits:</strong> ${
+                        <p><strong>Total des Visites:</strong> ${
                           patient.visits ? patient.visits.length : 0
                         }</p>
                         <div class="patient-actions">
                             <button class="btn btn-warning" onclick="editPatient('${
                               patient.id
-                            }')">Edit</button>
+                            }')">Modifier</button>
                             <button class="btn btn-danger" onclick="deletePatient('${
                               patient.id
-                            }')">Delete</button>
+                            }')">Supprimer</button>
                         </div>
                     </div>
                 `
@@ -2498,15 +2519,15 @@
         const countDisplay = document.getElementById("patient-count-display");
         if (countDisplay) {
           if (searchTerm.trim()) {
-            countDisplay.textContent = `${filteredPatients.length} of ${patients.length} patients found`;
+            countDisplay.textContent = `${filteredPatients.length} sur ${patients.length} patients trouvés`;
           } else {
-            countDisplay.textContent = `${patients.length} patients total`;
+            countDisplay.textContent = `${patients.length} patients au total`;
           }
         }
 
         if (patients.length === 0) {
           document.getElementById("patient-list-content").innerHTML =
-            '<p style="text-align: center; color: var(--text-muted); font-style: italic;">No patients found. Create your first patient to get started!</p>';
+            '<p style="text-align: center; color: var(--text-muted); font-style: italic;">Aucun patient trouvé. Créez votre premier patient pour commencer !</p>';
         } else if (filteredPatients.length === 0) {
           document.getElementById(
             "patient-list-content"
@@ -2518,22 +2539,22 @@
                     <div class="patient-card">
                         <h3>${patient.firstName} ${patient.lastName}</h3>
                         <p><strong>ID:</strong> ${patient.id}</p>
-                        <p><strong>Age:</strong> ${patient.age}</p>
-                        <p><strong>Gender:</strong> ${patient.gender}</p>
-                        <p><strong>Residence:</strong> ${
+                        <p><strong>Âge:</strong> ${patient.age}</p>
+                        <p><strong>Sexe:</strong> ${patient.gender}</p>
+                        <p><strong>Résidence:</strong> ${
                           patient.placeOfResidence
                         }</p>
                         ${
                           patient.phoneNumber
-                            ? `<p><strong>Phone:</strong> ${patient.phoneNumber}</p>`
+                            ? `<p><strong>Téléphone:</strong> ${patient.phoneNumber}</p>`
                             : ""
                         }
                         ${
                           patient.email
-                            ? `<p><strong>Email:</strong> ${patient.email}</p>`
+                            ? `<p><strong>E-mail:</strong> ${patient.email}</p>`
                             : ""
                         }
-                        <p><strong>Created:</strong> ${new Date(
+                        <p><strong>Créé:</strong> ${new Date(
                           patient.createdAt
                         ).toLocaleDateString()}</p>
                         
@@ -2541,7 +2562,7 @@
                           patient.visits && patient.visits.length > 0
                             ? `
                             <div class="visits-section">
-                                <h4>Visit History (${
+                                <h4>Historique des Visites (${
                                   patient.visits.length
                                 } visits)</h4>
                                 ${patient.visits
@@ -2553,7 +2574,7 @@
                                         ).toLocaleDateString()}</div>
                                         ${
                                           visit.medications
-                                            ? `<p><strong>Medications:</strong> ${visit.medications}</p>`
+                                            ? `<p><strong>Médicaments:</strong> ${visit.medications}</p>`
                                             : ""
                                         }
                                         ${
@@ -2578,10 +2599,10 @@
                         <div class="patient-actions">
                             <button class="btn btn-warning" onclick="editPatient('${
                               patient.id
-                            }')">Edit</button>
+                            }')">Modifier</button>
                             <button class="btn btn-danger" onclick="deletePatient('${
                               patient.id
-                            }')">Delete</button>
+                            }')">Supprimer</button>
                         </div>
                     </div>
                 `
@@ -2691,7 +2712,7 @@
           ).toLocaleDateString()}</div>
             ${
               visit.medications
-                ? `<p><strong>Medications:</strong> ${visit.medications}</p>`
+                ? `<p><strong>Médicaments:</strong> ${visit.medications}</p>`
                 : ""
             }
             ${
@@ -2706,7 +2727,7 @@
             }
             <div style="margin-top: 1rem;">
               <button type="button" class="btn btn-warning" onclick="editVisitInForm(${index})" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
-                Edit Visit
+                Modifier la Visite
               </button>
               <button type="button" class="btn btn-danger" onclick="deletePatientVisit(${index})" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
                 Delete Visit
@@ -2721,8 +2742,9 @@
       function showAddVisitForm() {
         document.getElementById("visit-form-section").style.display = "block";
         document.getElementById("visit-form-title").textContent =
-          "Add New Visit";
-        document.getElementById("visit-submit-btn").textContent = "Save Visit";
+          "Ajouter une Nouvelle Visite";
+        document.getElementById("visit-submit-btn").textContent =
+          "Sauvegarder la Visite";
 
         // Clear form
         document.getElementById("visit-form").reset();
@@ -2797,7 +2819,7 @@
             loadPatientVisits(patients[patientIndex].visits || []);
 
             // Show success message
-            showSuccessMessage("Visit deleted successfully!");
+            showSuccessMessage("Visite supprimée avec succès !");
           }
         }
       }
@@ -2817,7 +2839,7 @@
           loadPatientList();
           updateStats();
 
-          alert("Patient deleted successfully");
+          alert("Patient supprimé avec succès");
         }
       }
 

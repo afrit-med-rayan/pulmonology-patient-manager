@@ -1,170 +1,170 @@
-# Patient Management System - Dr. S. Sahboub
+# Système de Gestion des Patients - Dr. S. Sahboub
 
-A comprehensive, professional patient management system for pulmonology practice with modern web technologies.
+Un système de gestion des patients complet et professionnel pour la pratique de pneumologie avec des technologies web modernes.
 
-## 🚀 Quick Start
+## 🚀 Démarrage Rapide
 
-1. **Open** `index.html` in your browser via a local server
-2. **Start using** the system immediately - authentication is bypassed for development!
+1. **Ouvrez** `index.html` dans votre navigateur via un serveur local
+2. **Commencez à utiliser** le système immédiatement - l'authentification est contournée pour le développement !
 
-## 🖥️ How to Run
+## 🖥️ Comment Exécuter
 
-### **Option 1: Local Web Server (Recommended)**
+### **Option 1 : Serveur Web Local (Recommandé)**
 
-1. **Open Command Prompt/Terminal/PowerShell**
-2. **Navigate** to your project folder:
+1. **Ouvrez l'Invite de Commandes/Terminal/PowerShell**
+2. **Naviguez** vers votre dossier de projet :
    ```bash
    cd "C:\Users\asus\OneDrive\Documents\pulmonology-patient-manager"
    ```
-3. **Start Python server:**
+3. **Démarrez le serveur Python :**
    ```bash
    python -m http.server 8000
    ```
-4. **Open browser** and go to:
-   - `http://localhost:8000/` (main application)
-   - `http://localhost:8000/index.html` (direct access)
+4. **Ouvrez le navigateur** et allez à :
+   - `http://localhost:8000/` (application principale)
+   - `http://localhost:8000/index.html` (accès direct)
 
-### **Option 2: Other Server Options**
+### **Option 2 : Autres Options de Serveur**
 
-- **Node.js:** `npx serve .`
-- **PHP:** `php -S localhost:8000`
-- **Live Server (VS Code):** Right-click `index.html` → "Open with Live Server"
+- **Node.js :** `npx serve .`
+- **PHP :** `php -S localhost:8000`
+- **Live Server (VS Code) :** Clic droit sur `index.html` → "Open with Live Server"
 
-### **⚠️ Important: Use a Local Server**
+### **⚠️ Important : Utilisez un Serveur Local**
 
-This application requires a local server to function properly due to:
+Cette application nécessite un serveur local pour fonctionner correctement en raison de :
 
-- Modern JavaScript modules and components
-- CORS security policies
-- Local file system access for data storage
+- Modules et composants JavaScript modernes
+- Politiques de sécurité CORS
+- Accès au système de fichiers local pour le stockage des données
 
-### **Option 3: Other Server Options**
+### **Option 3 : Autres Options de Serveur**
 
-- **Node.js:** `npx serve .`
-- **PHP:** `php -S localhost:8000`
-- **Live Server (VS Code):** Right-click `simple-guide.html` → "Open with Live Server"
+- **Node.js :** `npx serve .`
+- **PHP :** `php -S localhost:8000`
+- **Live Server (VS Code) :** Clic droit sur `simple-guide.html` → "Open with Live Server"
 
-## ✨ Features
+## ✨ Fonctionnalités
 
-- **👤 Create Patients** - Comprehensive patient forms with validation
-- **🔍 Search Patients** - Advanced search with real-time filtering
-- **📋 Patient List** - Organized patient records with detailed views
-- **📊 Dashboard** - Statistics and quick access to all features
-- **🔄 Single Page Application** - Modern routing and navigation
-- **💾 Local Storage** - Secure data persistence on your computer
-- **🎨 Professional UI** - Medical-themed, responsive design
-- **🔧 Component Architecture** - Modular, maintainable codebase
+- **👤 Créer des Patients** - Formulaires de patients complets avec validation
+- **🔍 Rechercher des Patients** - Recherche avancée avec filtrage en temps réel
+- **📋 Liste des Patients** - Dossiers de patients organisés avec vues détaillées
+- **📊 Tableau de Bord** - Statistiques et accès rapide à toutes les fonctionnalités
+- **🔄 Application Page Unique** - Routage et navigation modernes
+- **💾 Stockage Local** - Persistance sécurisée des données sur votre ordinateur
+- **🎨 Interface Professionnelle** - Design médical réactif
+- **🔧 Architecture de Composants** - Base de code modulaire et maintenable
 
-## 🎯 What This System Does
+## 🎯 Ce Que Fait Ce Système
 
-This is a **professional patient management system** that provides:
+Il s'agit d'un **système professionnel de gestion des patients** qui fournit :
 
-- **Complete Patient Records** - Store comprehensive patient information
-- **Advanced Search & Filtering** - Find patients quickly with multiple criteria
-- **Modern Web Interface** - Single-page application with smooth navigation
-- **Data Validation** - Ensure data integrity with built-in validation
-- **Performance Optimization** - Fast, responsive user experience
-- **Local Data Storage** - Your data stays secure on your computer
+- **Dossiers Patients Complets** - Stocker des informations complètes sur les patients
+- **Recherche et Filtrage Avancés** - Trouver rapidement les patients avec plusieurs critères
+- **Interface Web Moderne** - Application page unique avec navigation fluide
+- **Validation des Données** - Assurer l'intégrité des données avec validation intégrée
+- **Optimisation des Performances** - Expérience utilisateur rapide et réactive
+- **Stockage Local des Données** - Vos données restent sécurisées sur votre ordinateur
 
-## 🔧 How to Use
+## 🔧 Comment Utiliser
 
-### **Dashboard**
+### **Tableau de Bord**
 
-- **Overview** - See patient statistics and quick access cards
-- **Navigation** - Click cards or use the navigation menu
-- **Statistics** - View total patients, recent visits, and monthly data
+- **Vue d'Ensemble** - Voir les statistiques des patients et les cartes d'accès rapide
+- **Navigation** - Cliquer sur les cartes ou utiliser le menu de navigation
+- **Statistiques** - Voir le total des patients, visites récentes et données mensuelles
 
-### **Create Patient**
+### **Créer un Patient**
 
-- **Comprehensive Form** - Fill out patient details with validation
-- **Auto-calculations** - Age calculated automatically from date of birth
-- **Data Validation** - Real-time validation ensures data quality
-- **Save & Continue** - Automatic saving with success notifications
+- **Formulaire Complet** - Remplir les détails du patient avec validation
+- **Calculs Automatiques** - Âge calculé automatiquement à partir de la date de naissance
+- **Validation des Données** - Validation en temps réel assure la qualité des données
+- **Sauvegarder et Continuer** - Sauvegarde automatique avec notifications de succès
 
-### **Search Patients**
+### **Rechercher des Patients**
 
-- **Real-time Search** - Results update as you type
-- **Multiple Criteria** - Search by name, ID, phone, email, or residence
-- **Advanced Filtering** - Filter by gender, age range, or other criteria
-- **Quick Access** - Click results to view or edit patient details
+- **Recherche en Temps Réel** - Les résultats se mettent à jour pendant que vous tapez
+- **Critères Multiples** - Rechercher par nom, ID, téléphone, email ou résidence
+- **Filtrage Avancé** - Filtrer par sexe, tranche d'âge ou autres critères
+- **Accès Rapide** - Cliquer sur les résultats pour voir ou modifier les détails du patient
 
-### **Patient List**
+### **Liste des Patients**
 
-- **Complete Overview** - View all patients in organized cards
-- **Sorting Options** - Sort by name, date created, or other fields
-- **Quick Actions** - Edit, view details, or delete patients
-- **Pagination** - Handle large patient databases efficiently
+- **Vue d'Ensemble Complète** - Voir tous les patients dans des cartes organisées
+- **Options de Tri** - Trier par nom, date de création ou autres champs
+- **Actions Rapides** - Modifier, voir les détails ou supprimer des patients
+- **Pagination** - Gérer efficacement de grandes bases de données de patients
 
-## 📁 File Structure
+## 📁 Structure des Fichiers
 
 ```
 pulmonology-patient-manager/
-├── simple-guide.html          # Main application (use this!)
-├── index.html                 # Auto-redirect to main app
-├── landing.html               # Welcome/landing page
-├── css/                       # Styling files
-├── js/                        # JavaScript components
-├── assets/                    # Images and logos
-└── README.md                  # This file
+├── simple-guide.html          # Application principale (utilisez ceci !)
+├── index.html                 # Redirection automatique vers l'app principale
+├── landing.html               # Page d'accueil/d'atterrissage
+├── css/                       # Fichiers de style
+├── js/                        # Composants JavaScript
+├── assets/                    # Images et logos
+└── README.md                  # Ce fichier
 ```
 
-## 🌟 Why This Version?
+## 🌟 Pourquoi Cette Version ?
 
-- **Simple & Clean** - No overwhelming features
-- **Immediate Use** - Works right away, no setup
-- **Professional Look** - Clean, medical-themed design
-- **Local Storage** - Your data stays on your computer
-- **No Dependencies** - Pure HTML/CSS/JavaScript
+- **Simple et Propre** - Pas de fonctionnalités accablantes
+- **Utilisation Immédiate** - Fonctionne immédiatement, pas de configuration
+- **Apparence Professionnelle** - Design propre à thème médical
+- **Stockage Local** - Vos données restent sur votre ordinateur
+- **Pas de Dépendances** - HTML/CSS/JavaScript pur
 
-## 🚫 What's Not Included
+## 🚫 Ce Qui N'est Pas Inclus
 
-- No complex authentication
-- No database setup
-- No server configuration
-- No complex testing frameworks
+- Pas d'authentification complexe
+- Pas de configuration de base de données
+- Pas de configuration de serveur
+- Pas de frameworks de test complexes
 
-## 💡 Tips
+## 💡 Conseils
 
-- **Start with Dashboard** - Read the instructions first
-- **Create a test patient** - Try the system with sample data
-- **Use search** - It's real-time and very fast
-- **Data persists** - Your patients stay saved between sessions
+- **Commencez par le Tableau de Bord** - Lisez d'abord les instructions
+- **Créez un patient de test** - Essayez le système avec des données d'exemple
+- **Utilisez la recherche** - Elle est en temps réel et très rapide
+- **Les données persistent** - Vos patients restent sauvegardés entre les sessions
 
-## 🔗 Direct Links
+## 🔗 Liens Directs
 
-- **Main App:** `simple-guide.html`
-- **Dashboard:** `simple-guide.html#dashboard`
-- **Create:** `simple-guide.html#create`
-- **Search:** `simple-guide.html#search`
-- **List:** `simple-guide.html#list`
+- **App Principale :** `simple-guide.html`
+- **Tableau de Bord :** `simple-guide.html#dashboard`
+- **Créer :** `simple-guide.html#create`
+- **Rechercher :** `simple-guide.html#search`
+- **Liste :** `simple-guide.html#list`
 
-## 🚨 Troubleshooting
+## 🚨 Dépannage
 
-### **If the app doesn't load:**
+### **Si l'application ne se charge pas :**
 
-1. **Check file path** - Make sure you're in the right folder
-2. **Try different browser** - Chrome, Firefox, Edge work best
-3. **Use local server** - Option 2 above is most reliable
-4. **Check console** - Press F12 to see any error messages
+1. **Vérifiez le chemin du fichier** - Assurez-vous d'être dans le bon dossier
+2. **Essayez un navigateur différent** - Chrome, Firefox, Edge fonctionnent le mieux
+3. **Utilisez un serveur local** - L'option 2 ci-dessus est la plus fiable
+4. **Vérifiez la console** - Appuyez sur F12 pour voir les messages d'erreur
 
-### **If server won't start:**
+### **Si le serveur ne démarre pas :**
 
-1. **Check Python installation:** `python --version`
-2. **Try different port:** `python -m http.server 8080`
-3. **Check if port is in use** - Try port 3000 or 5000
-4. **Use different server** - Try Node.js or PHP options above
+1. **Vérifiez l'installation Python :** `python --version`
+2. **Essayez un port différent :** `python -m http.server 8080`
+3. **Vérifiez si le port est utilisé** - Essayez le port 3000 ou 5000
+4. **Utilisez un serveur différent** - Essayez les options Node.js ou PHP ci-dessus
 
-### **If navigation doesn't work:**
+### **Si la navigation ne fonctionne pas :**
 
-1. **Use direct links** - Go to `simple-guide.html` directly
-2. **Check hash navigation** - URLs with `#dashboard` should work
-3. **Clear browser cache** - Press Ctrl+F5 to refresh
+1. **Utilisez les liens directs** - Allez directement à `simple-guide.html`
+2. **Vérifiez la navigation par hash** - Les URLs avec `#dashboard` devraient fonctionner
+3. **Videz le cache du navigateur** - Appuyez sur Ctrl+F5 pour actualiser
 
 ## 📞 Support
 
-This is a simplified, working version of the patient management system. All complex features have been removed to provide a clean, functional experience.
+Il s'agit d'une version simplifiée et fonctionnelle du système de gestion des patients. Toutes les fonctionnalités complexes ont été supprimées pour fournir une expérience propre et fonctionnelle.
 
 ---
 
-**Dr. S. Sahboub - Pulmonology Practice**
-_Simple, Effective Patient Management_
+**Dr. S. Sahboub - Pratique de Pneumologie**
+_Gestion Simple et Efficace des Patients_

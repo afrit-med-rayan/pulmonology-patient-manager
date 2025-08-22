@@ -1,6 +1,6 @@
 /**
- * Form Manager Component
- * Handles form rendering, validation, and state management
+ * Composant Gestionnaire de Formulaires
+ * Gère le rendu, la validation et la gestion d'état des formulaires
  */
 
 class FormManager {
@@ -32,12 +32,12 @@ class FormManager {
                 
                 <!-- Personal Information Section -->
                 <div class="form-section">
-                    <h3 class="form-section-title">Personal Information</h3>
+                    <h3 class="form-section-title">Informations Personnelles</h3>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="${formId}-firstName" class="form-label">
-                                First Name <span class="required">*</span>
+                                Prénom <span class="required">*</span>
                             </label>
                             <input 
                                 type="text" 
@@ -45,7 +45,7 @@ class FormManager {
                                 name="firstName" 
                                 class="form-control" 
                                 value="${patient.firstName || ''}"
-                                placeholder="Enter first name"
+                                placeholder="Entrez le prénom"
                                 maxlength="50"
                                 required
                             />
@@ -54,7 +54,7 @@ class FormManager {
                         
                         <div class="form-group">
                             <label for="${formId}-lastName" class="form-label">
-                                Last Name <span class="required">*</span>
+                                Nom de famille <span class="required">*</span>
                             </label>
                             <input 
                                 type="text" 
@@ -62,7 +62,7 @@ class FormManager {
                                 name="lastName" 
                                 class="form-control" 
                                 value="${patient.lastName || ''}"
-                                placeholder="Enter last name"
+                                placeholder="Entrez le nom de famille"
                                 maxlength="50"
                                 required
                             />
@@ -73,7 +73,7 @@ class FormManager {
                     <div class="form-row">
                         <div class="form-group">
                             <label for="${formId}-dateOfBirth" class="form-label">
-                                Date of Birth <span class="required">*</span>
+                                Date de naissance <span class="required">*</span>
                             </label>
                             <input 
                                 type="date" 
@@ -88,7 +88,7 @@ class FormManager {
                         </div>
                         
                         <div class="form-group">
-                            <label for="${formId}-age" class="form-label">Age</label>
+                            <label for="${formId}-age" class="form-label">Âge</label>
                             <input 
                                 type="number" 
                                 id="${formId}-age" 
@@ -98,7 +98,7 @@ class FormManager {
                                 min="0" 
                                 max="150"
                                 readonly
-                                placeholder="Calculated from birth date"
+                                placeholder="Calculé à partir de la date de naissance"
                             />
                         </div>
                     </div>
@@ -106,7 +106,7 @@ class FormManager {
                     <div class="form-row">
                         <div class="form-group">
                             <label for="${formId}-placeOfResidence" class="form-label">
-                                Place of Residence <span class="required">*</span>
+                                Lieu de résidence <span class="required">*</span>
                             </label>
                             <input 
                                 type="text" 
@@ -114,7 +114,7 @@ class FormManager {
                                 name="placeOfResidence" 
                                 class="form-control" 
                                 value="${patient.placeOfResidence || ''}"
-                                placeholder="Enter place of residence"
+                                placeholder="Entrez le lieu de résidence"
                                 maxlength="100"
                                 required
                             />
@@ -123,7 +123,7 @@ class FormManager {
                         
                         <div class="form-group">
                             <label for="${formId}-gender" class="form-label">
-                                Gender <span class="required">*</span>
+                                Sexe <span class="required">*</span>
                             </label>
                             <select 
                                 id="${formId}-gender" 
@@ -131,10 +131,10 @@ class FormManager {
                                 class="form-control" 
                                 required
                             >
-                                <option value="">Select gender</option>
-                                <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Male</option>
-                                <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Female</option>
-                                <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Other</option>
+                                <option value="">Sélectionnez le sexe</option>
+                                <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Masculin</option>
+                                <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Féminin</option>
+                                <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Autre</option>
                             </select>
                             <div class="form-error" id="${formId}-gender-error"></div>
                         </div>

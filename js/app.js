@@ -1,6 +1,6 @@
 /**
- * Main Application Entry Point
- * Patient Management System for Dr. S. Sahboub
+ * Point d'Entrée Principal de l'Application
+ * Système de Gestion des Patients pour Dr. S. Sahboub
  * 
  * This file initializes the application and manages the overall application lifecycle.
  * It coordinates between different components and handles the initial application setup.
@@ -22,7 +22,7 @@ class App {
      */
     async init() {
         try {
-            console.log('Initializing Patient Management System...');
+            console.log('Initialisation du Système de Gestion des Patients...');
 
             // Initialize core components (will be implemented in later tasks)
             console.log('Step 1: Initializing components...');
@@ -50,7 +50,7 @@ class App {
         } catch (error) {
             console.error('Failed to initialize application:', error);
             console.error('Error stack:', error.stack);
-            this.showError('Failed to initialize application. Please refresh the page.');
+            this.showError('Échec de l\'initialisation de l\'application. Veuillez actualiser la page.');
         }
     }
 
@@ -390,9 +390,9 @@ class App {
                             <!-- Logo will be inserted here by LogoManager -->
                         </div>
                         <div class="header-actions">
-                            <span class="user-info">Welcome, ${user.username}</span>
+                            <span class="user-info">Bienvenue, ${user.username}</span>
                             <button class="btn btn-secondary logout-btn" id="logout-button">
-                                Logout
+                                Déconnexion
                             </button>
                         </div>
                     </div>
@@ -404,22 +404,22 @@ class App {
                         <ul class="nav-list">
                             <li class="nav-item">
                                 <a href="#dashboard" class="nav-link active" data-route="dashboard">
-                                    Dashboard
+                                    Tableau de Bord
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#create-patient" class="nav-link" data-route="create-patient">
-                                    Create Patient
+                                    Créer un Patient
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#search-patients" class="nav-link" data-route="search-patients">
-                                    Search Patients
+                                    Rechercher des Patients
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#patient-list" class="nav-link" data-route="patient-list">
-                                    Patient List
+                                    Liste des Patients
                                 </a>
                             </li>
                         </ul>
@@ -429,8 +429,8 @@ class App {
                 <!-- Main Content Area -->
                 <div class="main-container">
                     <div class="content-header">
-                        <h1 class="content-title">Patient Management System</h1>
-                        <p class="content-subtitle">Dr. S. Sahboub - Pulmonology Practice</p>
+                        <h1 class="content-title">Système de Gestion des Patients</h1>
+                        <p class="content-subtitle">Dr. S. Sahboub - Cabinet de Pneumologie</p>
                     </div>
 
                     <!-- Dashboard Content -->
@@ -438,9 +438,9 @@ class App {
                         <div class="dashboard-grid">
                             <div class="dashboard-card" data-action="create-patient">
                                 <div class="dashboard-card-icon">👤</div>
-                                <h3 class="dashboard-card-title">Create New Patient</h3>
+                                <h3 class="dashboard-card-title">Créer un Nouveau Patient</h3>
                                 <p class="dashboard-card-description">
-                                    Add a new patient record with comprehensive medical information
+                                    Ajouter un nouveau dossier patient avec des informations médicales complètes
                                 </p>
                                 <button onclick="window.app.testFormDirectly()" style="margin-top: 10px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 3px; font-size: 12px;">
                                     🔧 Debug Form
@@ -449,25 +449,25 @@ class App {
                             
                             <div class="dashboard-card" data-action="search-patients">
                                 <div class="dashboard-card-icon">🔍</div>
-                                <h3 class="dashboard-card-title">Search Patients</h3>
+                                <h3 class="dashboard-card-title">Rechercher des Patients</h3>
                                 <p class="dashboard-card-description">
-                                    Find existing patient records by name or other criteria
+                                    Trouver des dossiers patients existants par nom ou autres critères
                                 </p>
                             </div>
                             
                             <div class="dashboard-card" data-action="patient-list">
                                 <div class="dashboard-card-icon">📋</div>
-                                <h3 class="dashboard-card-title">Patient List</h3>
+                                <h3 class="dashboard-card-title">Liste des Patients</h3>
                                 <p class="dashboard-card-description">
-                                    View and manage all patient records in the system
+                                    Voir et gérer tous les dossiers patients dans le système
                                 </p>
                             </div>
                             
                             <div class="dashboard-card" data-action="reports">
                                 <div class="dashboard-card-icon">📊</div>
-                                <h3 class="dashboard-card-title">Reports</h3>
+                                <h3 class="dashboard-card-title">Rapports</h3>
                                 <p class="dashboard-card-description">
-                                    Generate reports and analytics for patient data
+                                    Générer des rapports et analyses pour les données patients
                                 </p>
                             </div>
                         </div>
@@ -476,21 +476,21 @@ class App {
                         <div class="quick-stats">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Quick Statistics</h3>
+                                    <h3 class="card-title">Statistiques Rapides</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="stats-grid">
                                         <div class="stat-item">
                                             <div class="stat-value">0</div>
-                                            <div class="stat-label">Total Patients</div>
+                                            <div class="stat-label">Total des Patients</div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-value">0</div>
-                                            <div class="stat-label">Recent Visits</div>
+                                            <div class="stat-label">Visites Récentes</div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-value">0</div>
-                                            <div class="stat-label">This Month</div>
+                                            <div class="stat-label">Ce Mois</div>
                                         </div>
                                     </div>
                                 </div>

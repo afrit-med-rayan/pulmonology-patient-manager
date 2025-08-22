@@ -7,13 +7,13 @@ const PORT = 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'patients.json');
 const SESSIONS_FILE = path.join(__dirname, 'data', 'sessions.json');
 
-// Ensure data directory exists
+// S'assurer que le répertoire de données existe
 const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir);
 }
 
-// Initialize data files if they don't exist
+// Initialiser les fichiers de données s'ils n'existent pas
 if (!fs.existsSync(DATA_FILE)) {
     fs.writeFileSync(DATA_FILE, JSON.stringify([]));
 }
@@ -22,7 +22,7 @@ if (!fs.existsSync(SESSIONS_FILE)) {
     fs.writeFileSync(SESSIONS_FILE, JSON.stringify({}));
 }
 
-// MIME types for different file extensions
+// Types MIME pour différentes extensions de fichiers
 const mimeTypes = {
     '.html': 'text/html',
     '.js': 'text/javascript',
@@ -41,7 +41,7 @@ const mimeTypes = {
     '.wasm': 'application/wasm'
 };
 
-// Helper function to read JSON file safely
+// Fonction utilitaire pour lire un fichier JSON en toute sécurité
 function readJSONFile(filePath) {
     try {
         const data = fs.readFileSync(filePath, 'utf8');
@@ -52,7 +52,7 @@ function readJSONFile(filePath) {
     }
 }
 
-// Helper function to write JSON file safely
+// Fonction utilitaire pour écrire un fichier JSON en toute sécurité
 function writeJSONFile(filePath, data) {
     try {
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
@@ -63,9 +63,9 @@ function writeJSONFile(filePath, data) {
     }
 }
 
-// Handle API requests
+// Gérer les requêtes API
 function handleAPI(req, res, pathname, query) {
-    // Set CORS headers
+    // Définir les en-têtes CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -78,12 +78,12 @@ function handleAPI(req, res, pathname, query) {
 
     if (pathname === '/api/patients') {
         if (req.method === 'GET') {
-            // Get all patients
+            // Obtenir tous les patients
             const patients = readJSONFile(DATA_FILE);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(patients));
         } else if (req.method === 'POST') {
-            // Save patients data
+            // Sauvegarder les données des patients
             let body = '';
             req.on('data', chunk => {
                 body += chunk.toString();
@@ -96,17 +96,17 @@ function handleAPI(req, res, pathname, query) {
                         res.end(JSON.stringify({ success: true }));
                     } else {
                         res.writeHead(500, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Failed to save data' }));
+                        res.end(JSON.stringify({ error: 'Échec de la sauvegarde des données' }));
                     }
                 } catch (error) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Invalid JSON data' }));
+                    res.end(JSON.stringify({ error: 'Données JSON invalides' }));
                 }
             });
         }
     } else if (pathname === '/api/sessions') {
         if (req.method === 'GET') {
-            // Get session data
+            // Obtenir les données de session
             const sessionId = query.sessionId;
             if (sessionId) {
                 const sessions = readJSONFile(SESSIONS_FILE);
@@ -115,10 +115,10 @@ function handleAPI(req, res, pathname, query) {
                 res.end(JSON.stringify(session || null));
             } else {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Session ID required' }));
+                res.end(JSON.stringify({ error: 'ID de session requis' }));
             }
         } else if (req.method === 'POST') {
-            // Save session data
+            // Sauvegarder les données de session
             let body = '';
             req.on('data', chunk => {
                 body += chunk.toString();
@@ -134,15 +134,15 @@ function handleAPI(req, res, pathname, query) {
                         res.end(JSON.stringify({ success: true }));
                     } else {
                         res.writeHead(500, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Failed to save session' }));
+                        res.end(JSON.stringify({ error: 'Échec de la sauvegarde de la session' }));
                     }
                 } catch (error) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Invalid JSON data' }));
+                    res.end(JSON.stringify({ error: 'Données JSON invalides' }));
                 }
             });
         } else if (req.method === 'DELETE') {
-            // Delete session
+            // Supprimer la session
             const sessionId = query.sessionId;
             if (sessionId) {
                 const sessions = readJSONFile(SESSIONS_FILE);
@@ -153,29 +153,29 @@ function handleAPI(req, res, pathname, query) {
                     res.end(JSON.stringify({ success: true }));
                 } else {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Failed to delete session' }));
+                    res.end(JSON.stringify({ error: 'Échec de la suppression de la session' }));
                 }
             } else {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Session ID required' }));
+                res.end(JSON.stringify({ error: 'ID de session requis' }));
             }
         }
     } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'API endpoint not found' }));
+        res.end(JSON.stringify({ error: 'Point de terminaison API introuvable' }));
     }
 }
 
-// Serve static files
+// Servir les fichiers statiques
 function serveStaticFile(req, res, filePath) {
     fs.readFile(filePath, (err, content) => {
         if (err) {
             if (err.code === 'ENOENT') {
                 res.writeHead(404);
-                res.end('File not found');
+                res.end('Fichier introuvable');
             } else {
                 res.writeHead(500);
-                res.end('Server error');
+                res.end('Erreur du serveur');
             }
         } else {
             const ext = path.extname(filePath);
@@ -186,7 +186,7 @@ function serveStaticFile(req, res, filePath) {
     });
 }
 
-// Create HTTP server
+// Créer le serveur HTTP
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
@@ -194,56 +194,56 @@ const server = http.createServer((req, res) => {
 
     console.log(`${req.method} ${pathname}`);
 
-    // Handle API requests
+    // Gérer les requêtes API
     if (pathname.startsWith('/api/')) {
         handleAPI(req, res, pathname, query);
         return;
     }
 
-    // Handle static file requests
+    // Gérer les requêtes de fichiers statiques
     let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
 
-    // Security check - prevent directory traversal
+    // Vérification de sécurité - empêcher la traversée de répertoires
     if (!filePath.startsWith(__dirname)) {
         res.writeHead(403);
-        res.end('Forbidden');
+        res.end('Interdit');
         return;
     }
 
     serveStaticFile(req, res, filePath);
 });
 
-// Start server
+// Démarrer le serveur
 server.listen(PORT, 'localhost', () => {
-    console.log(`🚀 Patient Management System Server running at http://localhost:${PORT}`);
-    console.log(`📁 Data stored in: ${dataDir}`);
-    console.log(`🔒 Sessions file: ${SESSIONS_FILE}`);
-    console.log(`👥 Patients file: ${DATA_FILE}`);
-    console.log('\n📋 Available endpoints:');
-    console.log('   GET  /                     - Main application');
-    console.log('   GET  /login.html           - Login page');
-    console.log('   GET  /complete-patient-system.html - Patient management');
-    console.log('   GET  /api/patients         - Get all patients');
-    console.log('   POST /api/patients         - Save patients data');
-    console.log('   GET  /api/sessions?sessionId=X - Get session');
-    console.log('   POST /api/sessions         - Save session');
-    console.log('   DELETE /api/sessions?sessionId=X - Delete session');
-    console.log('\n🌐 Access from any browser at: http://localhost:3000');
+    console.log(`🚀 Serveur du Système de Gestion des Patients en cours d'exécution sur http://localhost:${PORT}`);
+    console.log(`📁 Données stockées dans : ${dataDir}`);
+    console.log(`🔒 Fichier de sessions : ${SESSIONS_FILE}`);
+    console.log(`👥 Fichier des patients : ${DATA_FILE}`);
+    console.log('\n📋 Points de terminaison disponibles :');
+    console.log('   GET  /                     - Application principale');
+    console.log('   GET  /login.html           - Page de connexion');
+    console.log('   GET  /complete-patient-system.html - Gestion des patients');
+    console.log('   GET  /api/patients         - Obtenir tous les patients');
+    console.log('   POST /api/patients         - Sauvegarder les données des patients');
+    console.log('   GET  /api/sessions?sessionId=X - Obtenir la session');
+    console.log('   POST /api/sessions         - Sauvegarder la session');
+    console.log('   DELETE /api/sessions?sessionId=X - Supprimer la session');
+    console.log('\n🌐 Accès depuis n\'importe quel navigateur à : http://localhost:3000');
 });
 
-// Handle server shutdown gracefully
+// Gérer l'arrêt du serveur de manière élégante
 process.on('SIGINT', () => {
-    console.log('\n🛑 Shutting down server...');
+    console.log('\n🛑 Arrêt du serveur en cours...');
     server.close(() => {
-        console.log('✅ Server closed successfully');
+        console.log('✅ Serveur fermé avec succès');
         process.exit(0);
     });
 });
 
 process.on('SIGTERM', () => {
-    console.log('\n🛑 Shutting down server...');
+    console.log('\n🛑 Arrêt du serveur en cours...');
     server.close(() => {
-        console.log('✅ Server closed successfully');
+        console.log('✅ Serveur fermé avec succès');
         process.exit(0);
     });
 });
