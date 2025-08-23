@@ -4,12 +4,36 @@ Un système de gestion des patients complet et professionnel pour la pratique de
 
 ## 🚀 Démarrage Rapide
 
-1. **Ouvrez** `index.html` dans votre navigateur via un serveur local
+### **🎯 MÉTHODE LA PLUS SIMPLE (Recommandée)**
+
+1. **Double-cliquez** sur `Launch_Patient_Manager.bat`
+2. **Attendez** que le navigateur s'ouvre automatiquement
+3. **Commencez à utiliser** le système immédiatement !
+
+### **🔧 Méthode Manuelle**
+
+1. **Ouvrez** `complete-patient-system.html` dans votre navigateur via un serveur local
 2. **Commencez à utiliser** le système immédiatement - l'authentification est contournée pour le développement !
 
 ## 🖥️ Comment Exécuter
 
-### **Option 1 : Serveur Web Local (Recommandé)**
+### **🎯 Option 1 : Lanceur Automatique (LE PLUS SIMPLE)**
+
+**Fichiers de lancement disponibles :**
+
+- ✅ `Launch_Patient_Manager.bat` - Double-cliquez pour lancer (Windows)
+- ✅ `Launch_Patient_Manager.ps1` - Script PowerShell (Windows)
+- ✅ `launch_patient_manager.py` - Script Python (Multiplateforme)
+
+**Ce que fait le lanceur :**
+
+- ✅ Vérifie que Python est installé
+- ✅ Trouve un port libre automatiquement
+- ✅ Démarre le serveur local
+- ✅ Ouvre le navigateur automatiquement
+- ✅ Charge le système de gestion des patients
+
+### **Option 2 : Serveur Web Local (Manuel)**
 
 1. **Ouvrez l'Invite de Commandes/Terminal/PowerShell**
 2. **Naviguez** vers votre dossier de projet :
@@ -99,13 +123,17 @@ Il s'agit d'un **système professionnel de gestion des patients** qui fournit :
 
 ```
 pulmonology-patient-manager/
-├── simple-guide.html          # Application principale (utilisez ceci !)
-├── index.html                 # Redirection automatique vers l'app principale
-├── landing.html               # Page d'accueil/d'atterrissage
-├── css/                       # Fichiers de style
-├── js/                        # Composants JavaScript
-├── assets/                    # Images et logos
-└── README.md                  # Ce fichier
+├── 🚀 Launch_Patient_Manager.bat     # LANCEUR PRINCIPAL (utilisez ceci !)
+├── Launch_Patient_Manager.ps1        # Lanceur PowerShell
+├── launch_patient_manager.py         # Lanceur Python
+├── complete-patient-system.html      # Application principale
+├── index.html                        # Redirection automatique
+├── css/                              # Fichiers de style
+├── js/                               # Composants JavaScript
+├── assets/                           # Images et logos
+├── README_UTILISATION_SIMPLE.txt     # Guide utilisateur simple
+├── CREATE_EXE_INSTRUCTIONS.md        # Instructions pour créer un .exe
+└── README.md                         # Ce fichier
 ```
 
 ## 🌟 Pourquoi Cette Version ?
@@ -132,11 +160,21 @@ pulmonology-patient-manager/
 
 ## 🔗 Liens Directs
 
-- **App Principale :** `simple-guide.html`
-- **Tableau de Bord :** `simple-guide.html#dashboard`
-- **Créer :** `simple-guide.html#create`
-- **Rechercher :** `simple-guide.html#search`
-- **Liste :** `simple-guide.html#list`
+- **🚀 Lanceur Principal :** `Launch_Patient_Manager.bat` (Double-cliquez !)
+- **App Principale :** `complete-patient-system.html`
+- **Tableau de Bord :** `complete-patient-system.html#dashboard`
+- **Créer :** `complete-patient-system.html#create`
+- **Rechercher :** `complete-patient-system.html#search`
+- **Liste :** `complete-patient-system.html#list`
+
+## 🎯 Créer un Fichier .EXE
+
+Pour créer un fichier .exe qui ne nécessite pas Python installé :
+
+1. **Consultez :** `CREATE_EXE_INSTRUCTIONS.md`
+2. **Utilisez PyInstaller :** `pip install pyinstaller`
+3. **Créez l'EXE :** `pyinstaller --onefile --windowed launch_patient_manager.py`
+4. **Distribuez :** Le fichier .exe sera dans le dossier `dist/`
 
 ## 🚨 Dépannage
 
