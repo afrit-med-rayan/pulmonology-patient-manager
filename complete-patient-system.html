@@ -1459,12 +1459,34 @@
               </div>
 
               <div class="form-group">
-                <label for="medications" class="form-label"
-                  >Médicaments prescrits</label
+                <label for="consultation" class="form-label"
+                  >CONSULTATION</label
                 >
                 <textarea
-                  id="medications"
-                  name="medications"
+                  id="consultation"
+                  name="consultation"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Entrez les observations cliniques, les symptômes et les notes médicales"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="billan" class="form-label">BILLAN</label>
+                <textarea
+                  id="billan"
+                  name="billan"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Entrez les remarques sur le bilan"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="cat" class="form-label">CAT</label>
+                <textarea
+                  id="cat"
+                  name="cat"
                   class="form-control"
                   rows="3"
                   placeholder="Entrez les médicaments prescrits lors de cette visite"
@@ -1472,28 +1494,15 @@
               </div>
 
               <div class="form-group">
-                <label for="observations" class="form-label"
-                  >Observations cliniques et notes</label
+                <label for="examenClinique" class="form-label"
+                  >EXAMEN CLINIQUE</label
                 >
                 <textarea
-                  id="observations"
-                  name="observations"
+                  id="examenClinique"
+                  name="examenClinique"
                   class="form-control"
-                  rows="3"
-                  placeholder="Entrez les observations cliniques, symptômes et notes médicales"
-                ></textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="additionalComments" class="form-label"
-                  >Commentaires supplémentaires</label
-                >
-                <textarea
-                  id="additionalComments"
-                  name="additionalComments"
-                  class="form-control"
-                  rows="2"
-                  placeholder="Commentaires médicaux supplémentaires ou recommandations"
+                  rows="4"
+                  placeholder="Entrez les remarques sur l'examen clinique"
                 ></textarea>
               </div>
             </div>
@@ -1755,12 +1764,34 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="visit-medications" class="form-label"
-                      >Médicaments prescrits</label
+                    <label for="visit-consultation" class="form-label"
+                      >CONSULTATION</label
                     >
                     <textarea
-                      id="visit-medications"
-                      name="medications"
+                      id="visit-consultation"
+                      name="consultation"
+                      class="form-control"
+                      rows="4"
+                      placeholder="Entrez les observations cliniques, les symptômes et les notes médicales"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="visit-billan" class="form-label">BILLAN</label>
+                    <textarea
+                      id="visit-billan"
+                      name="billan"
+                      class="form-control"
+                      rows="4"
+                      placeholder="Entrez les remarques sur le bilan"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="visit-cat" class="form-label">CAT</label>
+                    <textarea
+                      id="visit-cat"
+                      name="cat"
                       class="form-control"
                       rows="3"
                       placeholder="Entrez les médicaments prescrits lors de cette visite"
@@ -1768,28 +1799,15 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="visit-observations" class="form-label"
-                      >Observations cliniques et notes</label
+                    <label for="visit-examen-clinique" class="form-label"
+                      >EXAMEN CLINIQUE</label
                     >
                     <textarea
-                      id="visit-observations"
-                      name="observations"
+                      id="visit-examen-clinique"
+                      name="examenClinique"
                       class="form-control"
-                      rows="3"
-                      placeholder="Entrez les observations cliniques, symptômes et notes médicales"
-                    ></textarea>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="visit-comments" class="form-label"
-                      >Commentaires supplémentaires</label
-                    >
-                    <textarea
-                      id="visit-comments"
-                      name="additionalComments"
-                      class="form-control"
-                      rows="2"
-                      placeholder="Commentaires médicaux supplémentaires ou recommandations"
+                      rows="4"
+                      placeholder="Entrez les remarques sur l'examen clinique"
                     ></textarea>
                   </div>
 
@@ -2225,9 +2243,10 @@
               const visitData = {
                 id: Date.now().toString(),
                 visitDate: patientData.visitDate,
-                medications: patientData.medications || "",
-                observations: patientData.observations || "",
-                additionalComments: patientData.additionalComments || "",
+                consultation: patientData.consultation || "",
+                billan: patientData.billan || "",
+                cat: patientData.cat || "",
+                examenClinique: patientData.examenClinique || "",
                 createdAt: new Date().toISOString(),
               };
 
@@ -2254,9 +2273,10 @@
 
               // Clear form for next visit
               document.getElementById("visitDate").value = "";
-              document.getElementById("medications").value = "";
-              document.getElementById("observations").value = "";
-              document.getElementById("additionalComments").value = "";
+              document.getElementById("consultation").value = "";
+              document.getElementById("billan").value = "";
+              document.getElementById("cat").value = "";
+              document.getElementById("examenClinique").value = "";
 
               // Reset editing state
               currentEditingVisitIndex = null;
@@ -2297,9 +2317,10 @@
                 {
                   id: Date.now().toString(),
                   visitDate: patientData.visitDate,
-                  medications: patientData.medications || "",
-                  observations: patientData.observations || "",
-                  additionalComments: patientData.additionalComments || "",
+                  consultation: patientData.consultation || "",
+                  billan: patientData.billan || "",
+                  cat: patientData.cat || "",
+                  examenClinique: patientData.examenClinique || "",
                   createdAt: new Date().toISOString(),
                 },
               ],
@@ -2418,9 +2439,10 @@
             const visit = {
               id: Date.now().toString(),
               visitDate: visitData.visitDate,
-              medications: visitData.medications || "",
-              observations: visitData.observations || "",
-              additionalComments: visitData.additionalComments || "",
+              consultation: visitData.consultation || "",
+              billan: visitData.billan || "",
+              cat: visitData.cat || "",
+              examenClinique: visitData.examenClinique || "",
               createdAt: new Date().toISOString(),
             };
 
@@ -2619,18 +2641,23 @@
                                           visit.visitDate
                                         ).toLocaleDateString()}</div>
                                         ${
-                                          visit.medications
-                                            ? `<p><strong>Médicaments:</strong> ${visit.medications}</p>`
+                                          visit.consultation
+                                            ? `<p><strong>CONSULTATION:</strong> ${visit.consultation}</p>`
                                             : ""
                                         }
                                         ${
-                                          visit.observations
-                                            ? `<p><strong>Observations:</strong> ${visit.observations}</p>`
+                                          visit.billan
+                                            ? `<p><strong>BILLAN:</strong> ${visit.billan}</p>`
                                             : ""
                                         }
                                         ${
-                                          visit.additionalComments
-                                            ? `<p><strong>Comments:</strong> ${visit.additionalComments}</p>`
+                                          visit.cat
+                                            ? `<p><strong>CAT:</strong> ${visit.cat}</p>`
+                                            : ""
+                                        }
+                                        ${
+                                          visit.examenClinique
+                                            ? `<p><strong>EXAMEN CLINIQUE:</strong> ${visit.examenClinique}</p>`
                                             : ""
                                         }
                                     </div>
@@ -2761,18 +2788,19 @@
             visit.visitDate
           ).toLocaleDateString()}</div>
             ${
-              visit.medications
-                ? `<p><strong>Médicaments:</strong> ${visit.medications}</p>`
+              visit.consultation
+                ? `<p><strong>CONSULTATION:</strong> ${visit.consultation}</p>`
                 : ""
             }
             ${
-              visit.observations
-                ? `<p><strong>Observations:</strong> ${visit.observations}</p>`
+              visit.billan
+                ? `<p><strong>BILLAN:</strong> ${visit.billan}</p>`
                 : ""
             }
+            ${visit.cat ? `<p><strong>CAT:</strong> ${visit.cat}</p>` : ""}
             ${
-              visit.additionalComments
-                ? `<p><strong>Comments:</strong> ${visit.additionalComments}</p>`
+              visit.examenClinique
+                ? `<p><strong>EXAMEN CLINIQUE:</strong> ${visit.examenClinique}</p>`
                 : ""
             }
             <div style="margin-top: 1rem;">
@@ -2833,12 +2861,12 @@
 
           // Fill form
           document.getElementById("visit-date").value = visit.visitDate;
-          document.getElementById("visit-medications").value =
-            visit.medications || "";
-          document.getElementById("visit-observations").value =
-            visit.observations || "";
-          document.getElementById("visit-comments").value =
-            visit.additionalComments || "";
+          document.getElementById("visit-consultation").value =
+            visit.consultation || "";
+          document.getElementById("visit-billan").value = visit.billan || "";
+          document.getElementById("visit-cat").value = visit.cat || "";
+          document.getElementById("visit-examen-clinique").value =
+            visit.examenClinique || "";
 
           currentEditingVisitIndex = visitIndex;
 

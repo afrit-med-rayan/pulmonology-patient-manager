@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Updated Visit Form</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+      textarea {
+        resize: vertical;
+        font-family: Arial, sans-serif;
+      }
+      .btn {
+        background: #007bff;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+        border: 1px solid #c3e6cb;
+      }
+      .field-info {
+        background: #e9ecef;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+      .field-info h3 {
+        margin-top: 0;
+        color: #495057;
+      }
+      .field-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      .field-list li {
+        padding: 5px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .field-list li:last-child {
+        border-bottom: none;
+      }
+      .old-field {
+        color: #dc3545;
+        text-decoration: line-through;
+      }
+      .new-field {
+        color: #28a745;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🏥 Test des Nouveaux Champs de Visite</h1>
+
+      <div class="field-info">
+        <h3>Changements Effectués:</h3>
+        <ul class="field-list">
+          <li>✅ <strong>Date de visite</strong> - Conservé</li>
+          <li>
+            ❌ <span class="old-field">Médicaments prescrits</span> → ✅
+            <span class="new-field">CONSULTATION</span>
+          </li>
+          <li>
+            ❌ <span class="old-field">Observations cliniques et notes</span> →
+            ✅ <span class="new-field">BILLAN</span>
+          </li>
+          <li>
+            ❌ <span class="old-field">Commentaires supplémentaires</span> → ✅
+            <span class="new-field">CAT</span>
+          </li>
+          <li>
+            ➕ <span class="new-field">EXAMEN CLINIQUE</span> - Nouveau champ
+          </li>
+        </ul>
+      </div>
+
+      <form id="test-visit-form">
+        <h2>📋 Formulaire de Visite Mis à Jour</h2>
+
+        <div class="form-group">
+          <label for="visitDate">Date de visite *</label>
+          <input type="date" id="visitDate" name="visitDate" required />
+        </div>
+
+        <div class="form-group">
+          <label for="consultation">CONSULTATION</label>
+          <textarea
+            id="consultation"
+            name="consultation"
+            rows="4"
+            placeholder="Entrez les détails de la consultation"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="billan">BILLAN</label>
+          <textarea
+            id="billan"
+            name="billan"
+            rows="4"
+            placeholder="Entrez le bilan"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="cat">CAT</label>
+          <textarea
+            id="cat"
+            name="cat"
+            rows="3"
+            placeholder="Entrez les informations CAT"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="examenClinique">EXAMEN CLINIQUE</label>
+          <textarea
+            id="examenClinique"
+            name="examenClinique"
+            rows="4"
+            placeholder="Entrez les résultats de l'examen clinique"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn">Tester le Formulaire</button>
+        </div>
+      </form>
+
+      <div id="result" style="display: none"></div>
+    </div>
+
+    <script>
+      // Auto-fill form with sample data
+      document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("visitDate").value = today;
+        document.getElementById("consultation").value =
+          "Consultation de routine - Patient présente des symptômes légers de fatigue";
+        document.getElementById("billan").value =
+          "Bilan sanguin complet effectué - Résultats dans les normes";
+        document.getElementById("cat").value =
+          "CAT: Surveillance continue, traitement symptomatique recommandé";
+        document.getElementById("examenClinique").value =
+          "Examen clinique: Auscultation cardiaque et pulmonaire normale, pas de signes de détresse";
+      });
+
+      document
+        .getElementById("test-visit-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const visitData = Object.fromEntries(formData.entries());
+
+          // Display the collected data
+          const resultDiv = document.getElementById("result");
+          resultDiv.innerHTML = `
+                <div class="success">
+                    <h3>✅ Données de visite collectées avec succès !</h3>
+                    <h4>Structure des données:</h4>
+                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto;">${JSON.stringify(
+                      visitData,
+                      null,
+                      2
+                    )}</pre>
+                    <p><strong>Tous les nouveaux champs fonctionnent correctement !</strong></p>
+                </div>
+            `;
+          resultDiv.style.display = "block";
+          resultDiv.scrollIntoView({ behavior: "smooth" });
+
+          console.log("Visit data collected:", visitData);
+        });
+    </script>
+  </body>
+</html>

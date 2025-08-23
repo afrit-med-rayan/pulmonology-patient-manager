@@ -259,33 +259,63 @@ class FormManager {
                 </div>
                 
                 <div class="form-group">
-                    <label for="${formId}-visit-${index}-medications" class="form-label">
-                        Medications Prescribed
+                    <label for="${formId}-visit-${index}-consultation" class="form-label">
+                        CONSULTATION
                     </label>
                     <textarea 
-                        id="${formId}-visit-${index}-medications" 
-                        name="visits[${index}][medications]" 
+                        id="${formId}-visit-${index}-consultation" 
+                        name="visits[${index}][consultation]" 
                         class="form-control" 
-                        rows="3"
-                        placeholder="Enter medications prescribed during this visit"
-                        maxlength="1000"
-                    >${visit.medications || ''}</textarea>
-                    <div class="form-error" id="${formId}-visit-${index}-medications-error"></div>
+                        rows="4"
+                        placeholder="Entrez les observations cliniques, les symptômes et les notes médicales"
+                        maxlength="2000"
+                    >${visit.consultation || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-consultation-error"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="${formId}-visit-${index}-observations" class="form-label">
-                        Observations and Notes
+                    <label for="${formId}-visit-${index}-billan" class="form-label">
+                        BILLAN
                     </label>
                     <textarea 
-                        id="${formId}-visit-${index}-observations" 
-                        name="visits[${index}][observations]" 
+                        id="${formId}-visit-${index}-billan" 
+                        name="visits[${index}][billan]" 
                         class="form-control" 
                         rows="4"
-                        placeholder="Enter observations and notes from this visit"
+                        placeholder="Entrez les remarques sur le bilan"
                         maxlength="2000"
-                    >${visit.observations || ''}</textarea>
-                    <div class="form-error" id="${formId}-visit-${index}-observations-error"></div>
+                    >${visit.billan || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-billan-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="${formId}-visit-${index}-cat" class="form-label">
+                        CAT
+                    </label>
+                    <textarea 
+                        id="${formId}-visit-${index}-cat" 
+                        name="visits[${index}][cat]" 
+                        class="form-control" 
+                        rows="3"
+                        placeholder="Entrez les médicaments prescrits lors de cette visite"
+                        maxlength="1000"
+                    >${visit.cat || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-cat-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="${formId}-visit-${index}-examenClinique" class="form-label">
+                        EXAMEN CLINIQUE
+                    </label>
+                    <textarea 
+                        id="${formId}-visit-${index}-examenClinique" 
+                        name="visits[${index}][examenClinique]" 
+                        class="form-control" 
+                        rows="4"
+                        placeholder="Entrez les remarques sur l'examen clinique"
+                        maxlength="2000"
+                    >${visit.examenClinique || ''}</textarea>
+                    <div class="form-error" id="${formId}-visit-${index}-examenClinique-error"></div>
                 </div>
                 
                 <div class="form-group">
@@ -777,7 +807,7 @@ class FormManager {
                 }
 
                 // Validate textarea fields for visits
-                if (fieldName.includes('medications') || fieldName.includes('observations') || fieldName.includes('additionalComments')) {
+                if (fieldName.includes('consultation') || fieldName.includes('billan') || fieldName.includes('cat') || fieldName.includes('examenClinique')) {
                     if (fieldValue.length > 2000) {
                         errors.push('Text is too long (maximum 2000 characters)');
                     }
@@ -1102,18 +1132,22 @@ class FormManager {
             let hasValidVisit = false;
             visitElements.forEach((visitElement, index) => {
                 const dateField = visitElement.querySelector('[name*="visitDate"]');
-                const medicationsField = visitElement.querySelector('[name*="medications"]');
-                const observationsField = visitElement.querySelector('[name*="observations"]');
+                const consultationField = visitElement.querySelector('[name*="consultation"]');
+                const billanField = visitElement.querySelector('[name*="billan"]');
+                const catField = visitElement.querySelector('[name*="cat"]');
+                const examenCliniqueField = visitElement.querySelector('[name*="examenClinique"]');
 
                 if (dateField && dateField.value &&
-                    (medicationsField && medicationsField.value.trim() ||
-                        observationsField && observationsField.value.trim())) {
+                    (consultationField && consultationField.value.trim() ||
+                        billanField && billanField.value.trim() ||
+                        catField && catField.value.trim() ||
+                        examenCliniqueField && examenCliniqueField.value.trim())) {
                     hasValidVisit = true;
                 }
             });
 
             if (!hasValidVisit && visitElements.length > 0) {
-                errors.visits = 'At least one visit must have a date and either medications or observations';
+                errors.visits = 'At least one visit must have a date and one of: consultation, billan, CAT, or examen clinique';
                 isValid = false;
             }
         }
