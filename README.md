@@ -532,6 +532,6 @@ The **Pulmonology Patient Management System** is a comprehensive, professional s
 _Professional Patient Management Made Simple_
 
 **Version:** 2.0  
-**Last Updated:** 2024  
+**Last Updated:** 08/23/2025 
 **License:** Open Source  
 **Support:** GitHub Issues & Documentation
