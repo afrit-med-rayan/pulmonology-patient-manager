@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Form Changes</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .btn {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Patient Form Changes</h1>
+    <p>
+      This form tests the changes: removed gender field, added age field, and
+      added medical/surgical history fields.
+    </p>
+
+    <form id="test-patient-form">
+      <div class="form-group">
+        <h3>Informations Personnelles</h3>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Prénom *</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            required
+            placeholder="Entrez le prénom"
+          />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Nom de famille *</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            required
+            placeholder="Entrez le nom de famille"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dateOfBirth">Date de naissance *</label>
+          <input type="date" id="dateOfBirth" name="dateOfBirth" required />
+        </div>
+        <div class="form-group">
+          <label for="age">Âge *</label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            required
+            min="0"
+            max="150"
+            placeholder="Entrez l'âge"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="placeOfResidence">Lieu de résidence *</label>
+        <input
+          type="text"
+          id="placeOfResidence"
+          name="placeOfResidence"
+          required
+          placeholder="Entrez la ville ou commune"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="atcdsMedicaux">ATCDS MEDICAUX</label>
+          <textarea
+            id="atcdsMedicaux"
+            name="atcdsMedicaux"
+            rows="4"
+            placeholder="Entrez les antécédents médicaux"
+            maxlength="2000"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="atcdsChirurgicaux">ATCDS CHIRURGICAUX</label>
+          <textarea
+            id="atcdsChirurgicaux"
+            name="atcdsChirurgicaux"
+            rows="4"
+            placeholder="Entrez les antécédents chirurgicaux"
+            maxlength="2000"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn">Tester le Formulaire</button>
+      </div>
+    </form>
+
+    <div id="result" style="display: none"></div>
+
+    <script>
+      document
+        .getElementById("test-patient-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const patientData = Object.fromEntries(formData.entries());
+
+          // Display the collected data
+          const resultDiv = document.getElementById("result");
+          resultDiv.innerHTML = `
+                <div class="success">
+                    <h3>Données collectées avec succès !</h3>
+                    <pre>${JSON.stringify(patientData, null, 2)}</pre>
+                </div>
+            `;
+          resultDiv.style.display = "block";
+
+          console.log("Patient data collected:", patientData);
+        });
+
+      // Auto-fill form for testing - only required fields
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("firstName").value = "Jean";
+        document.getElementById("lastName").value = "Dupont";
+        // Optional fields - can be left empty to test the form
+        // document.getElementById("dateOfBirth").value = "1980-05-15";
+        // document.getElementById("age").value = "44";
+        // document.getElementById("placeOfResidence").value = "Paris";
+        // document.getElementById("atcdsMedicaux").value = "Hypertension artérielle, Diabète type 2";
+        // document.getElementById("atcdsChirurgicaux").value = "Appendicectomie en 2010";
+      });
+    </script>
+  </body>
+</html>

@@ -53,7 +53,7 @@ class UnitTestSuite {
             lastName: 'Doe',
             dateOfBirth: '1990-01-01',
             placeOfResidence: 'New York',
-            gender: 'male'
+            age: 34
         };
 
         const patient = new Patient(patientData);
@@ -404,21 +404,24 @@ class UnitTestSuite {
         const invalidDate = validateDateOfBirth('invalid-date');
         this.assert(!invalidDate.isValid, 'Invalid date format should fail');
 
-        // Test gender validation
-        const validGender = validateGender('male');
-        this.assert(validGender.isValid, 'Valid gender should pass');
+        // Test age validation
+        const validAge = validateAge(25);
+        this.assert(validAge.isValid, 'Valid age should pass');
 
-        const validGenderFemale = validateGender('female');
-        this.assert(validGenderFemale.isValid, 'Female gender should pass');
+        const validAgeString = validateAge('30');
+        this.assert(validAgeString.isValid, 'Valid age as string should pass');
 
-        const validGenderOther = validateGender('other');
-        this.assert(validGenderOther.isValid, 'Other gender should pass');
+        const emptyAge = validateAge('');
+        this.assert(!emptyAge.isValid, 'Empty age should fail');
 
-        const emptyGender = validateGender('');
-        this.assert(!emptyGender.isValid, 'Empty gender should fail');
+        const invalidAge = validateAge('invalid');
+        this.assert(!invalidAge.isValid, 'Invalid age should fail');
 
-        const invalidGender = validateGender('invalid');
-        this.assert(!invalidGender.isValid, 'Invalid gender should fail');
+        const negativeAge = validateAge(-5);
+        this.assert(!negativeAge.isValid, 'Negative age should fail');
+
+        const tooOldAge = validateAge(200);
+        this.assert(!tooOldAge.isValid, 'Age over 150 should fail');
 
         // Test place of residence validation
         const validPlace = validatePlaceOfResidence('New York');

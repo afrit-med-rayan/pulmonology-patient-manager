@@ -88,13 +88,13 @@ class FormManager {
                         </div>
                         
                         <div class="form-group">
-                            <label for="${formId}-age" class="form-label">Âge</label>
+                            <label for="${formId}-dateAge" class="form-label">Âge calculé</label>
                             <input 
                                 type="number" 
-                                id="${formId}-age" 
-                                name="age" 
+                                id="${formId}-dateAge" 
+                                name="dateAge" 
                                 class="form-control" 
-                                value="${patient.age || ''}"
+                                value="${patient.dateAge || ''}"
                                 min="0" 
                                 max="150"
                                 readonly
@@ -122,21 +122,53 @@ class FormManager {
                         </div>
                         
                         <div class="form-group">
-                            <label for="${formId}-gender" class="form-label">
-                                Sexe <span class="required">*</span>
+                            <label for="${formId}-age" class="form-label">
+                                Âge <span class="required">*</span>
                             </label>
-                            <select 
-                                id="${formId}-gender" 
-                                name="gender" 
+                            <input 
+                                type="number" 
+                                id="${formId}-age" 
+                                name="age" 
                                 class="form-control" 
+                                value="${patient.age || ''}"
+                                min="0" 
+                                max="150"
+                                placeholder="Entrez l'âge"
                                 required
-                            >
-                                <option value="">Sélectionnez le sexe</option>
-                                <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Masculin</option>
-                                <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Féminin</option>
-                                <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Autre</option>
-                            </select>
-                            <div class="form-error" id="${formId}-gender-error"></div>
+                            />
+                            <div class="form-error" id="${formId}-age-error"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="${formId}-atcdsMedicaux" class="form-label">
+                                ATCDS MEDICAUX
+                            </label>
+                            <textarea 
+                                id="${formId}-atcdsMedicaux" 
+                                name="atcdsMedicaux" 
+                                class="form-control" 
+                                rows="4"
+                                placeholder="Entrez les antécédents médicaux"
+                                maxlength="2000"
+                            >${patient.atcdsMedicaux || ''}</textarea>
+                            <div class="form-error" id="${formId}-atcdsMedicaux-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${formId}-atcdsChirurgicaux" class="form-label">
+                                ATCDS CHIRURGICAUX
+                            </label>
+                            <textarea 
+                                id="${formId}-atcdsChirurgicaux" 
+                                name="atcdsChirurgicaux" 
+                                class="form-control" 
+                                rows="4"
+                                placeholder="Entrez les antécédents chirurgicaux"
+                                maxlength="2000"
+                            >${patient.atcdsChirurgicaux || ''}</textarea>
+                            <div class="form-error" id="${formId}-atcdsChirurgicaux-error"></div>
                         </div>
                     </div>
                 </div>
@@ -433,11 +465,11 @@ class FormManager {
     updateAge(formId) {
         const form = this.forms[formId];
         const dobField = form.querySelector('[name="dateOfBirth"]');
-        const ageField = form.querySelector('[name="age"]');
+        const dateAgeField = form.querySelector('[name="dateAge"]');
 
-        if (dobField && ageField && dobField.value) {
+        if (dobField && dateAgeField && dobField.value) {
             const age = this.calculateAge(dobField.value);
-            ageField.value = age;
+            dateAgeField.value = age;
             this.checkForChanges(formId);
         }
     }
@@ -727,6 +759,20 @@ class FormManager {
                     }
                     if (fieldValue.length > 100) {
                         errors.push('Must be less than 100 characters');
+                    }
+                }
+
+                if (fieldName === 'age') {
+                    const age = parseInt(fieldValue);
+                    if (isNaN(age) || age < 0 || age > 150) {
+                        errors.push('Please enter a valid age between 0 and 150');
+                    }
+                }
+
+                // Validate medical and surgical history fields
+                if (fieldName === 'atcdsMedicaux' || fieldName === 'atcdsChirurgicaux') {
+                    if (fieldValue.length > 2000) {
+                        errors.push('Text is too long (maximum 2000 characters)');
                     }
                 }
 

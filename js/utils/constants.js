@@ -54,17 +54,26 @@ const VALIDATION_RULES = {
             pattern: /^[a-zA-Z\s\-']+$/
         },
         dateOfBirth: {
-            required: true,
+            required: false,
             maxDate: new Date()
         },
         placeOfResidence: {
-            required: true,
+            required: false,
             minLength: 2,
             maxLength: 100
         },
-        gender: {
-            required: true,
-            options: ['male', 'female', 'other']
+        age: {
+            required: false,
+            min: 0,
+            max: 150
+        },
+        atcdsMedicaux: {
+            required: false,
+            maxLength: 2000
+        },
+        atcdsChirurgicaux: {
+            required: false,
+            maxLength: 2000
         }
     }
 };

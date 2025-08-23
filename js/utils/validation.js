@@ -26,25 +26,48 @@ function validatePatientForm(formData) {
         isValid = false;
     }
 
-    // Validate date of birth
-    const dobResult = validateDateOfBirth(formData.dateOfBirth);
-    if (!dobResult.isValid) {
-        errors.dateOfBirth = dobResult.errors;
-        isValid = false;
+    // Validate date of birth (optional)
+    if (formData.dateOfBirth) {
+        const dobResult = validateDateOfBirth(formData.dateOfBirth);
+        if (!dobResult.isValid) {
+            errors.dateOfBirth = dobResult.errors;
+            isValid = false;
+        }
     }
 
-    // Validate place of residence
-    const residenceResult = validatePlaceOfResidence(formData.placeOfResidence);
-    if (!residenceResult.isValid) {
-        errors.placeOfResidence = residenceResult.errors;
-        isValid = false;
+    // Validate place of residence (optional)
+    if (formData.placeOfResidence) {
+        const residenceResult = validatePlaceOfResidence(formData.placeOfResidence);
+        if (!residenceResult.isValid) {
+            errors.placeOfResidence = residenceResult.errors;
+            isValid = false;
+        }
     }
 
-    // Validate gender
-    const genderResult = validateGender(formData.gender);
-    if (!genderResult.isValid) {
-        errors.gender = genderResult.errors;
-        isValid = false;
+    // Validate age (optional)
+    if (formData.age) {
+        const ageResult = validateAge(formData.age);
+        if (!ageResult.isValid) {
+            errors.age = ageResult.errors;
+            isValid = false;
+        }
+    }
+
+    // Validate medical history fields (optional)
+    if (formData.atcdsMedicaux) {
+        const atcdsMedicauxResult = validateTextArea(formData.atcdsMedicaux, 'ATCDS MEDICAUX');
+        if (!atcdsMedicauxResult.isValid) {
+            errors.atcdsMedicaux = atcdsMedicauxResult.errors;
+            isValid = false;
+        }
+    }
+
+    if (formData.atcdsChirurgicaux) {
+        const atcdsChirurgicauxResult = validateTextArea(formData.atcdsChirurgicaux, 'ATCDS CHIRURGICAUX');
+        if (!atcdsChirurgicauxResult.isValid) {
+            errors.atcdsChirurgicaux = atcdsChirurgicauxResult.errors;
+            isValid = false;
+        }
     }
 
     // Validate visits if provided
@@ -127,9 +150,8 @@ function validateLastName(lastName) {
 function validateDateOfBirth(dateOfBirth) {
     const errors = [];
 
-    if (!dateOfBirth) {
-        errors.push(ERROR_MESSAGES.validation.required);
-    } else {
+    // Date of birth is now optional
+    if (dateOfBirth) {
         const date = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
         const today = new Date();
         const minDate = new Date(today.getFullYear() - 150, today.getMonth(), today.getDate()); // 150 years ago
@@ -159,9 +181,8 @@ function validatePlaceOfResidence(placeOfResidence) {
     const errors = [];
     const rules = VALIDATION_RULES.patient.placeOfResidence;
 
-    if (!placeOfResidence || placeOfResidence.trim() === '') {
-        errors.push(ERROR_MESSAGES.validation.required);
-    } else {
+    // Place of residence is now optional
+    if (placeOfResidence && placeOfResidence.trim() !== '') {
         const trimmed = placeOfResidence.trim();
 
         if (trimmed.length < rules.minLength) {
@@ -177,22 +198,42 @@ function validatePlaceOfResidence(placeOfResidence) {
 }
 
 /**
- * Validate gender field
- * @param {string} gender - Gender to validate
+ * Validate age field
+ * @param {number|string} age - Age to validate
  * @returns {Object} Validation result
  */
-function validateGender(gender) {
+function validateAge(age) {
     const errors = [];
-    const rules = VALIDATION_RULES.patient.gender;
+    const rules = VALIDATION_RULES.patient.age;
 
-    if (!gender || gender.trim() === '') {
-        errors.push(ERROR_MESSAGES.validation.required);
-    } else {
-        const normalized = gender.trim().toLowerCase();
+    // Age is now optional
+    if (age || age === 0) {
+        const ageNum = parseInt(age);
 
-        if (!rules.options.includes(normalized)) {
-            errors.push('Gender must be one of: ' + rules.options.join(', '));
+        if (isNaN(ageNum)) {
+            errors.push('Age must be a valid number');
+        } else if (ageNum < rules.min) {
+            errors.push(`Age must be at least ${rules.min}`);
+        } else if (ageNum > rules.max) {
+            errors.push(`Age must be no more than ${rules.max}`);
         }
+    }
+
+    return { isValid: errors.length === 0, errors };
+}
+
+/**
+ * Validate textarea field (for medical history fields)
+ * @param {string} text - Text to validate
+ * @param {string} fieldName - Name of the field for error messages
+ * @returns {Object} Validation result
+ */
+function validateTextArea(text, fieldName) {
+    const errors = [];
+    const maxLength = 2000;
+
+    if (text && text.length > maxLength) {
+        errors.push(`${fieldName} must be less than ${maxLength} characters`);
     }
 
     return { isValid: errors.length === 0, errors };
@@ -358,8 +399,12 @@ function validateField(fieldName, value) {
             return validateDateOfBirth(value);
         case 'placeOfResidence':
             return validatePlaceOfResidence(value);
-        case 'gender':
-            return validateGender(value);
+        case 'age':
+            return validateAge(value);
+        case 'atcdsMedicaux':
+            return validateTextArea(value, 'ATCDS MEDICAUX');
+        case 'atcdsChirurgicaux':
+            return validateTextArea(value, 'ATCDS CHIRURGICAUX');
         case 'visitDate':
             return validateVisitDate(value);
         case 'medications':
@@ -385,7 +430,9 @@ function getFieldValidationRules(fieldName) {
         case 'firstName':
         case 'lastName':
         case 'placeOfResidence':
-        case 'gender':
+        case 'age':
+        case 'atcdsMedicaux':
+        case 'atcdsChirurgicaux':
         case 'dateOfBirth':
             return patientRules[fieldName] || {};
         default:
@@ -455,7 +502,8 @@ if (typeof module !== 'undefined' && module.exports) {
         validateLastName,
         validateDateOfBirth,
         validatePlaceOfResidence,
-        validateGender,
+        validateAge,
+        validateTextArea,
         validateVisits,
         validateVisit,
         validateVisitDate,
